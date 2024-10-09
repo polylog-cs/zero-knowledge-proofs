@@ -14,7 +14,7 @@ import {
 import {Solarized} from "../utilities";
 
 import user_tie from '../assets/icons/user-tie-solid.svg';
-import android from '../assets/icons/android-brands-solid.svg';
+import thumbs_up from '../assets/icons/thumbs-up-solid.svg';
 
 import gradientShader from "../shaders/gradient2.glsl";
 
@@ -22,13 +22,13 @@ import chroma from 'chroma-js'
 
 export interface MobileProps extends NodeProps {
     pinLength: number;
-    blurStrength?: number;
+    blurStrength?: number;  // TODO: this!!!
 
     width?: number;
     height?: number;
 }
 
-export class Mobile extends Node {
+export class Mobile extends Layout {
     private readonly background = createRef<Rect>();
     private readonly notchTop = createRef<Rect>();
     private readonly notchAround = createRef<Rect>();
@@ -42,12 +42,6 @@ export class Mobile extends Node {
 
     private readonly passwordSection = createRef<Layout>();
     private readonly passwordCircles = Array.from({length: 10}, () => createRef<Circle>());
-
-    @signal()
-    public declare readonly width: SimpleSignal<number, this>;
-
-    @signal()
-    public declare readonly height: SimpleSignal<number, this>;
 
     public constructor(props?: MobileProps) {
         super({...props});
@@ -130,34 +124,44 @@ export class Mobile extends Node {
         );
     }
 
-    public* inputPin(pin: Array<number>) {
+    public* inputPin(pin: Array<number>, click_duration: number = 0.5, success_delay: number = 0) {
+        this.passwordTextPins.forEach(ref => ref().save())
+
+        let origColor = this.passwordCircles[0]().fill();
+
         yield* all(
             ...pin.map((i, idx) => {
                 return delay(
-                    idx * 0.5,
+                    idx * click_duration,
                     all(
-                        delay(
-                            0.1,
+                        all(
+                            this.passwordTextPins[idx]().opacity(1, 0.5),
+                            this.passwordTextPins[idx]().fill(Solarized.cyan, 0.5),
+                        ),
+                        chain(
                             all(
-                                this.passwordTextPins[idx]().opacity(1, 0.5),
-                                this.passwordTextPins[idx]().fill(Solarized.cyan, 0.5),
+                                this.passwordCircles[i]().scale(1.1, 0.25, easeInExpo),
+                                this.passwordCircles[i]().fill(Solarized.cyan, 0.25, easeInExpo),
                             ),
-                        ),
-                        chain(
-                            this.passwordCircles[i]().scale(1.1, 0.25, easeInExpo),
-                            this.passwordCircles[i]().scale(1, 0.25),
-                        ),
-                        chain(
-                            this.passwordCircles[i]().opacity(.5, 0.25, easeInExpo),
-                            this.passwordCircles[i]().opacity(1, 0.25),
-                        ),
+                            all(
+                                this.passwordCircles[i]().scale(1, 0.25, easeInExpo),
+                                this.passwordCircles[i]().fill(origColor, 0.25, easeInExpo),
+                            )
+                        )
                     )
                 )
             }),
             delay(
-                1.85,
+                1.85 + success_delay,
                 this.passwordPINText().text('Success!', 0.5),
             ),
+        )
+    }
+
+    public* resetPin() {
+        yield* all(
+            ...this.passwordTextPins.map(ref => ref().restore(0.5)),
+            this.passwordPINText().text('PIN', 0.5),
         )
     }
 
@@ -168,10 +172,20 @@ export class Mobile extends Node {
             this.passwordSection().filters.blur(10, 1),
         );
     }
+
+    public* swipeRight() {
+        yield* all(
+            this.passwordSection().position(this.background().position, 1),
+            this.passwordSection().opacity(1, 1),
+            this.passwordSection().filters.blur(0, 1),
+        );
+    }
 }
 
 export default makeScene2D(function* (view) {
     view.fill(Solarized.base2);
+
+    const PIN = [3, 1, 9, 2];
 
     const mobile = createRef<Mobile>();
 
@@ -194,43 +208,43 @@ export default makeScene2D(function* (view) {
     yield mobile().spinPin();
 
     yield* mobile().showScreen();
-    yield* mobile().inputPin([3, 1, 9, 2]);
+    yield* mobile().inputPin(PIN);
 
     const line = createRef<Line>();
 
     view.add(
         <>
-        <Layout ref={ta} layout gap={50} alignItems={'center'} direction={'column'}>
-            <Circle ref={taCircle} stroke={Solarized.base02} lineWidth={20} size={300}>
-                <Circle layout={false} size={() => taCircle().width() - 20} fill={Solarized.base1}
-                        shaders={{
-                            fragment: gradientShader,
-                            uniforms: {
-                                mixColor: chroma('white').rgba().map(i => i / 256),
-                                mixStrength: 8,
-                                distFactor: 1,
-                                position: () => image().position(),
-                            },
-                        }}
-                >
+            <Layout ref={ta} layout gap={50} alignItems={'center'} direction={'column'}>
+                <Circle ref={taCircle} stroke={Solarized.base02} lineWidth={20} size={300}>
+                    <Circle layout={false} size={() => taCircle().width() - 20} fill={Solarized.base1}
+                            shaders={{
+                                fragment: gradientShader,
+                                uniforms: {
+                                    mixColor: chroma('white').rgba().map(i => i / 256),
+                                    mixStrength: 8,
+                                    distFactor: 1,
+                                    position: () => image().position(),
+                                },
+                            }}
+                    >
+                    </Circle>
+                    <Node cache>
+                        <Img ref={image} layout={false} width={() => taCircle().width() / 2} src={user_tie}/>
+                        <Rect layout={false} size={() => Math.max(image().width(), image().height()) * 5}
+                              rotation={image().rotation}
+                              fill={Solarized.base02}
+                              compositeOperation={'source-in'}/>
+                    </Node>
                 </Circle>
-                <Node cache>
-                    <Img ref={image} layout={false} width={() => taCircle().width() / 2} src={user_tie}/>
-                    <Rect layout={false} size={() => Math.max(image().width(), image().height()) * 5}
-                          rotation={image().rotation}
-                          fill={Solarized.base02}
-                          compositeOperation={'source-in'}/>
-                </Node>
-            </Circle>
-            <Txt ref={taText} textAlign={'center'} fontSize={50}/>
-        </Layout>
-        <Line ref={line} points={() => {
-            let b = ta().position().add(taCircle().left());
-            let a = new Vector2(mobile().position().x, b.y);
+                <Txt ref={taText} textAlign={'center'} fontSize={50}/>
+            </Layout>
+            <Line ref={line} points={() => {
+                let b = ta().position().add(taCircle().left());
+                let a = new Vector2(mobile().right().x, b.y);
 
-            return [b, a];
-        }} lineWidth={20} stroke={Solarized.cyan} lineDash={[50, 30]}/>
-    </>
+                return [b, a];
+            }} lineWidth={20} stroke={Solarized.cyan} lineDash={[50, 30]}/>
+        </>
     )
 
     ta().moveToBottom()
@@ -251,6 +265,50 @@ export default makeScene2D(function* (view) {
             taText().text('').text('Trusted Authority', 1),
             taText().opacity(0).opacity(1, 1),
         ),
+        delay(0.25,
+            mobile().resetPin(),
+        )
+    )
+
+    yield* waitFor(1);
+
+    const sendNumbers = PIN.map(() => createRef<Txt>())
+    const sendSuccess = createRef<Node>();
+    const sendSuccessImg = createRef<Img>();
+
+    view.add(
+        <>
+            {
+                sendNumbers.map((ref, i) => <Txt fontSize={70} fontWeight={700} position={line().points()[1].add(new Vector2(-50, -50))} ref={ref} fill={Solarized.cyan} text={`${PIN[i]}`} zIndex={-1}/>)
+            }
+            <Node ref={sendSuccess} cache position={line().points()[0].add(new Vector2(100, 90))} zIndex={-1}>
+                <Img ref={sendSuccessImg} width={90} src={thumbs_up}/>
+                <Rect size={() => Math.max(sendSuccessImg().width(), sendSuccessImg().height()) * 5}
+                      rotation={image().rotation}
+                      fill={Solarized.cyan}
+                      compositeOperation={'source-in'}
+                />
+            </Node>
+        </>
+    )
+
+    yield* all(
+        delay(
+            0.15,
+            all(
+                ...sendNumbers.map(
+                    (ref, i) => delay(
+                        i * 0.11,
+                        ref().position(line().points()[0].add(new Vector2(100, -50)), 1, linear)
+                    )
+                )
+            )
+        ),
+        delay(
+            1.75,
+            sendSuccess().position(line().points()[1].add(new Vector2(-50, 90)), 1, linear)
+        ),
+        mobile().inputPin(PIN, 0.11, 0.7),
     )
 
     yield* waitFor(1);

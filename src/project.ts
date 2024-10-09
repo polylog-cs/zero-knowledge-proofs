@@ -6,5 +6,5 @@ import mario from "./scenes/mario?scene";
 
 export default makeProject({
   experimentalFeatures: true,
-  scenes: [lock, phone, mario],
+  scenes: [phone],
 });
