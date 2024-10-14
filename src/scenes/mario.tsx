@@ -21,7 +21,6 @@ import mario_jump from '../assets/SMB/jump.png';
 import block from '../assets/SMB/block.png';
 import cloud_big from '../assets/SMB/cloud_big.png';
 import cloud_small from '../assets/SMB/cloud_small.png';
-import bush from '../assets/SMB/bush.png';
 
 import chroma from 'chroma-js'
 
@@ -111,10 +110,8 @@ export default makeScene2D(function* (view) {
                 mixSignal(1.0, 0.25),
                 distFactor(10.0, 0.75),
                 layout().opacity(0, 0.3),
-                layout().filters.blur(100, 0.25),
                 clouds().opacity(0, 0.3),
-                clouds().filters.blur(100, 0.25),
-                layout().position(new Vector2(0, 500), 0.25),
+                layout().position(new Vector2(0, 1000), 0.25),
                 clouds().position(new Vector2(0, -500), 0.25),
             )
         ),

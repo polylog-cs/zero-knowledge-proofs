@@ -1,4 +1,4 @@
-import {Circle, Img, Layout, Line, makeScene2D, Node, NodeProps, Rect, signal, Txt} from '@motion-canvas/2d';
+import {Circle, Img, Layout, Line, makeScene2D, Node, NodeProps, Rect, Txt} from '@motion-canvas/2d';
 import {
     all,
     chain,
@@ -9,7 +9,8 @@ import {
     linear,
     loop,
     Reference,
-    SimpleSignal, Vector2, waitFor
+    Vector2,
+    waitFor
 } from '@motion-canvas/core';
 import {Solarized} from "../utilities";
 
@@ -83,7 +84,7 @@ export class Mobile extends Layout {
                                     )
                                 }
                             </Rect>
-                            <Txt ref={this.passwordPINText} text={'PIN'} fill={Solarized.cyan} fontWeight={100}/>
+                            <Txt fontFamily={'Fira Sans'} ref={this.passwordPINText} text={'PIN'} fill={Solarized.cyan} fontWeight={700}/>
                         </Layout>
                         <Layout wrap={'wrap'} width={() => this.background().width() * 0.8} justifyContent={'center'}
                                 gap={() => this.background().width() * 0.7 / 16}>
@@ -94,7 +95,7 @@ export class Mobile extends Layout {
                                                    fill={chroma(Solarized.base1).alpha(0.7)} alignItems={'center'}
                                                    justifyContent={'center'}
                                     >
-                                        <Txt text={`${i}`} fill={Solarized.base3} fontWeight={700}></Txt>
+                                        <Txt fontFamily={'Fira Sans'} text={`${i}`} fill={Solarized.base3} fontWeight={700}></Txt>
                                     </Circle>;
                                 })
                             }
@@ -236,7 +237,7 @@ export default makeScene2D(function* (view) {
                               compositeOperation={'source-in'}/>
                     </Node>
                 </Circle>
-                <Txt ref={taText} textAlign={'center'} fontSize={50}/>
+                <Txt fontFamily={'Fira Sans'} ref={taText} textAlign={'center'} fontSize={50}/>
             </Layout>
             <Line ref={line} points={() => {
                 let b = ta().position().add(taCircle().left());
@@ -279,10 +280,10 @@ export default makeScene2D(function* (view) {
     view.add(
         <>
             {
-                sendNumbers.map((ref, i) => <Txt fontSize={70} fontWeight={700} position={line().points()[1].add(new Vector2(-50, -50))} ref={ref} fill={Solarized.cyan} text={`${PIN[i]}`} zIndex={-1}/>)
+                sendNumbers.map((ref, i) => <Txt fontFamily={'Fira Sans'} fontSize={70} fontWeight={700} position={line().points()[1].add(new Vector2(-50, -50))} ref={ref} fill={Solarized.cyan} text={`${PIN[i]}`} zIndex={-1}/>)
             }
-            <Node ref={sendSuccess} cache position={line().points()[0].add(new Vector2(100, 90))} zIndex={-1}>
-                <Img ref={sendSuccessImg} width={90} src={thumbs_up}/>
+            <Node ref={sendSuccess} cache position={line().points()[0].add(new Vector2(100, -60))} zIndex={-1}>
+                <Img ref={sendSuccessImg} width={70} src={thumbs_up}/>
                 <Rect size={() => Math.max(sendSuccessImg().width(), sendSuccessImg().height()) * 5}
                       rotation={image().rotation}
                       fill={Solarized.cyan}
@@ -306,7 +307,7 @@ export default makeScene2D(function* (view) {
         ),
         delay(
             1.75,
-            sendSuccess().position(line().points()[1].add(new Vector2(-50, 90)), 1, linear)
+            sendSuccess().position(line().points()[1].add(new Vector2(-50, -60)), 1, linear)
         ),
         mobile().inputPin(PIN, 0.11, 0.7),
     )
