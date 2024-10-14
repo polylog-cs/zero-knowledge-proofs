@@ -1,12 +1,23 @@
-import {Layout, Img, makeScene2D, Node, Rect, Txt, View2D} from '@motion-canvas/2d';
-import {all, createRef, delay, linear, loop, ThreadGenerator, useRandom, Vector2, waitFor} from "@motion-canvas/core";
-import {Solarized, Icon} from "../utilities";
+import {Img, Layout, makeScene2D, Txt, View2D} from '@motion-canvas/2d';
+import {
+    all,
+    createRef,
+    createSignal,
+    delay,
+    linear,
+    loop,
+    ThreadGenerator,
+    useRandom,
+    Vector2,
+    waitFor
+} from "@motion-canvas/core";
+import {Icon, Solarized} from "../utilities";
 
 import gear from '../assets/icons/gear-solid.svg';
-import checkmark from '../assets/icons/check-solid.svg';
 
-import student from '../assets/images/student.png';
-import teacher from '../assets/images/teacher.png';
+import studentImage from '../assets/images/student.png';
+import teacherImage from '../assets/images/teacher.png';
+import {openOutputPath} from "@motion-canvas/ui";
 
 
 export function* solve(view: View2D, object: Txt, solveAttempts: number = 10, solveTime: number = 0.1): ThreadGenerator {
@@ -16,17 +27,21 @@ export function* solve(view: View2D, object: Txt, solveAttempts: number = 10, so
 
     const icon = createRef<Icon>();
 
-    view.add(
-        <Icon ref={icon} path={gear} color={Solarized.base02} position={object.position}/>
-    )
+    let opacityScaleSignal = createSignal(0);
+
+    view.add(<Icon ref={icon} path={gear} color={Solarized.base02} zIndex={-1}
+                   opacity={() => opacityScaleSignal() * object.opacity() * 0.25}
+                   scale={() => object.scale().mul(opacityScaleSignal())}
+    />)
+
+    icon().absolutePosition(object.absolutePosition)
 
     yield loop(() => icon().rotation(0).rotation(360, 1, linear))
 
     let gearDuration = solveTime * solveAttempts;
 
     yield* all(
-        icon().opacity(0).opacity(0.25, gearDuration),
-        icon().scale(0).scale(1, gearDuration),
+        opacityScaleSignal(1, gearDuration),
         delay(
             gearDuration / 2,
             all(
@@ -41,10 +56,7 @@ export function* solve(view: View2D, object: Txt, solveAttempts: number = 10, so
                 }),
                 delay(
                     gearDuration / 2,
-                    all(
-                        icon().opacity(0, gearDuration),
-                        icon().scale(0, gearDuration),
-                    )
+                    opacityScaleSignal(0, gearDuration),
                 )
             )
         ),
@@ -57,90 +69,140 @@ export function* solve(view: View2D, object: Txt, solveAttempts: number = 10, so
 export default makeScene2D(function* (view) {
     view.fill(Solarized.base2);
 
-    const studentImg = createRef<Img>();
-    const teacherImg = createRef<Img>();
+    const student = createRef<Img>();
+    const teacher = createRef<Img>();
 
     view.add(
         <>
-            <Img ref={studentImg} x={450} scale={[-1, 1]} y={() => view.height() / 2 - studentImg().height() / 2} layout={false} src={student}/>
-            <Img ref={teacherImg} x={-450} scale={[-1, 1]} y={() => view.height() / 2 - teacherImg().height() / 2} layout={false} src={teacher}/>
+            <Img ref={student} x={450} scale={[-1, 1]} y={() => view.height() / 2 - student().height() / 2}
+                 layout={false} src={studentImage}/>
+            <Img ref={teacher} x={-450} scale={[-1, 1]} y={() => view.height() / 2 - teacher().height() / 2}
+                 layout={false} src={teacherImage}/>
         </>
     )
 
     yield* all(
-        studentImg().opacity(0).opacity(1, 1),
-        studentImg().width(0).width(300, 1),
-        teacherImg().opacity(0).opacity(1, 1),
-        teacherImg().width(0).width(400, 1),
+        student().opacity(0).opacity(1, 1),
+        student().width(0).width(300, 1),
+        teacher().opacity(0).opacity(1, 1),
+        teacher().width(0).width(400, 1),
     )
 
-    const text = createRef<Txt>();
-
+    const challenge = createRef<Txt>();
     view.add(
-        <Txt fontSize={70} padding={20} top={teacherImg().top().addY(100)} ref={text} fontFamily={'Fira Sans'} text={'13 + 32'} zIndex={-1}/>
+        <Txt fontSize={70} padding={20} top={teacher().top().addY(100)} ref={challenge} fontFamily={'Fira Sans'}
+             text={'13 + 32'} zIndex={-1}/>
     )
 
     yield* all(
-        text().bottom(teacherImg().top(), 1),
-        text().opacity(0).opacity(1, 1),
-        text().scale(0).scale(1, 1),
+        challenge().bottom(teacher().top(), 1),
+        challenge().opacity(0).opacity(1, 1),
+        challenge().scale(0).scale(1, 1),
     )
 
-    const newText = text().clone()
-    text().opacity(0.25);
-    view.add(newText);
+    // Tom's note: this pattern makes it so that response is also a reference to txt
+    //  just doing challenge().clone() would return a Txt, not Reference<Txt>
+    let response = createRef<Txt>();
+    response(challenge().clone());
+
+    challenge().opacity(0.25);
+    view.add(response());
 
     yield* all(
-        newText.bottom(studentImg().top(), 1),
+        response().bottom(student().top(), 1),
     )
 
-    yield* solve(view, newText);
+    yield* solve(view, response());
 
-    const eq = text().clone().text("=").padding(0).opacity(0);
-    eq.position(eq.position().addX(60))  // random value
-    view.add(eq);
+    const eq = createRef<Txt>();
+    eq(challenge().clone().text("=").padding(0).opacity(0));
+    eq().position(eq().position().addX(60))
+
+    view.add(eq());
 
     yield* all(
-        text().right(eq.left(), 1),
-        newText.left(eq.right(), 1),
+        challenge().right(eq().left(), 1),
+        response().left(eq().right(), 1),
         delay(
             0.5,
             all(
-                text().opacity(1, 1),
-                eq.opacity(1, 1),
+                challenge().opacity(1, 1),
+                eq().opacity(1, 1),
             )
         )
     );
 
-    const layout = createRef<Layout>();
-    const l1 = createRef<Layout>();
-    const l2 = createRef<Layout>();
+    const challengeLayout = createRef<Layout>();
+    const responseLayout = createRef<Layout>();
 
-    view.add(<Layout ref={layout} layout gap={50} direction={'row'}>
-        <Layout direction={'column'} gap={10} alignItems={'end'}>
-            <Txt fontWeight={500} fontFamily={'Fira Sans'} text={'Challenge'} padding={[0, 0, 20, 0]}/>
-            {text().clone().padding(0).fontSize(50)}
+    view.add(<Layout layout gap={80} direction={'row'} top={() => new Vector2(0, -350)}>
+        <Layout ref={challengeLayout} direction={'column'} gap={10} alignItems={'end'}>
+            <Txt fontWeight={500} fontSize={60} fontFamily={'Fira Sans'} text={'Challenge'} padding={[0, 0, 20, 0]} opacity={0}/>
+            {challenge().clone().padding(0).fontSize(50).opacity(0)}
         </Layout>
-        <Layout direction={'column'} gap={10} alignItems={'start'}>
-            <Txt fontWeight={500} fontFamily={'Fira Sans'} text={'Response'} padding={[0, 0, 20, 0]}/>
-            {newText.clone().padding(0).fontSize(50)}
+        <Layout ref={responseLayout} direction={'column'} gap={10} alignItems={'start'}>
+            <Txt fontWeight={500} fontSize={60} fontFamily={'Fira Sans'} text={'Response'} padding={[0, 0, 20, 0]}
+                 opacity={0}/>
+            {response().clone().padding(0).fontSize(50).opacity(0)}
         </Layout>
     </Layout>);
 
-    text().save()
-    newText.save()
-
     yield* all(
-        eq.opacity(0, 0.25),
-        studentImg().position(studentImg().position().addX(100), 1),
-        teacherImg().position(teacherImg().position().addX(-100), 1),
-        text().absolutePosition(layout().children()[0].children()[1].absolutePosition(), 1),
-        text().fontSize(50, 1),
-        newText.absolutePosition(layout().children()[1].children()[1].absolutePosition(), 1),
-        newText.fontSize(50, 1),
+        eq().opacity(0, 0.25),
+        student().position(student().position().addX(100), 1),
+        teacher().position(teacher().position().addX(-100), 1),
+        delay(
+            0.5,
+            all(
+                challengeLayout().children()[0].opacity(1, 1),
+                responseLayout().children()[0].opacity(1, 1),
+            )
+        ),
+        challenge().absolutePosition(challengeLayout().children()[1].absolutePosition(), 1),
+        challenge().fontSize(50, 1),
+        response().absolutePosition(responseLayout().children()[1].absolutePosition(), 1),
+        response().fontSize(50, 1),
     )
 
-    yield* waitFor(1);
+    challenge().remove()
+    response().remove()
+    // TODO: fix warnings
+    challenge(challengeLayout().children()[1]);
+    response(responseLayout().children()[1]);
+    challenge().opacity(1);
+    response().opacity(1);
 
+    let newChallenge = createRef<Txt>();
+    newChallenge(challenge().clone().top(teacher().top().addY(100)).text("52 + 31"));
+
+    challengeLayout().add(newChallenge().clone().opacity(0));
+
+    view.add(newChallenge());
+
+    yield* all(
+        newChallenge().absolutePosition(challengeLayout().children()[2].absolutePosition(), 1),
+        newChallenge().opacity(0).opacity(1, 1),
+        newChallenge().scale(0).scale(1, 1),
+    );
+
+    let newResponse = createRef<Txt>();
+    newResponse(newChallenge().clone());
+    newResponse().top(student().top().addY(100))
+
+    view.add(newResponse())
+
+    responseLayout().add(newResponse().clone().text('31').opacity(0));  // TODO!
+
+    yield* all(
+        solve(view, newResponse()),
+        delay(
+            0.5,
+            all(
+                newResponse().opacity(0).opacity(1, 0.5),
+                newResponse().scale(0).scale(1, 1),
+                newResponse().absolutePosition(responseLayout().children()[2].absolutePosition(), 1)
+            )
+        )
+    );
 });
 
