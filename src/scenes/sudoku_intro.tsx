@@ -19,7 +19,7 @@ export default makeScene2D(function* (view) {
     view.add(sudoku.getLayout());
 
     // Fill in non-clue cells with initial blur effect
-    yield* sudoku.fillInNonClues(10);
+    yield* sudoku.fillInNonClues(8);
     
     yield* waitFor(1);
 
@@ -28,7 +28,7 @@ export default makeScene2D(function* (view) {
 
     yield* waitFor(1);
 
-    yield* sudoku.blur_nonClues(10);
+    yield* sudoku.blur_nonClues(8);
 
     yield* waitFor(3);
 });

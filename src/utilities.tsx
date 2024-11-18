@@ -236,12 +236,12 @@ export class Sudoku {
                 if (this.clues[row][col] === 0) { // Only animate if it's not a clue
                     cell.blurSignal(blurValue); // Set initial blur value
                     return all(
-                        cell.textRef().text(`${this.solution[row][col]}`, 0.5),
+                        cell.textRef().text(`${this.solution[row][col]}`, 0),
                         cell.textRef().opacity(1, 0.5),
                         //cell.blurSignal(0, 0.5) // Animate blur from initial value to 0
                     );
                 }
-            }).filter(Boolean) // Filter out undefined values for clue cells
+            }).filter(Boolean).sort(() => Math.random() - 0.5) // Filter out undefined values for clue cells
         );
     }
 
