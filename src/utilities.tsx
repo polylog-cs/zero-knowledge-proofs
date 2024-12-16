@@ -23,6 +23,19 @@ export const Solarized = {
     gray: "#93a1a1", //  base1
 };
 
+export const solarizedPalette = [ 
+    Solarized.red,
+    Solarized.orange,
+    Solarized.yellow,
+    Solarized.green, 
+    Solarized.cyan,
+    Solarized.blue,
+    Solarized.violet,
+    Solarized.magenta,
+    Solarized.gray
+];
+
+
 export const fontSize = 50;
 
 export interface IconProps extends LayoutProps {

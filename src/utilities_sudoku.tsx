@@ -1,7 +1,7 @@
 import {Img, Layout, NodeProps, Rect, Node, LayoutProps, Line, Circle, Txt, blur, Spline} from "@motion-canvas/2d";
 import {Color, createRef, PossibleVector2, Reference, createSignal, all, sequence, Logger, Vector2, waitFor} from "@motion-canvas/core";
 import {Graph} from "./utilities_graph";
-import {Solarized} from "./utilities";
+import {Solarized, solarizedPalette} from "./utilities";
 
 
 
@@ -28,19 +28,6 @@ export const clues = [
     [0, 0, 1, 1, 0, 0, 0, 1, 0],
     [0, 1, 0, 0, 0, 0, 1, 0, 0],
 ];
-
-export const palette = [ // TODO make solarized
-    "#ff0000", // For digit 1
-    "#00ff00", // For digit 2
-    "#0000ff", // For digit 3
-    "#ffff00", // For digit 4
-    "#ff00ff", // For digit 5
-    "#00ffff", // For digit 6
-    "#ffa500", // For digit 7 (orange)
-    "#800080", // For digit 8 (purple)
-    "#808080"  // For digit 9 (gray)
-];
-
 
 
 export class SudokuGraph extends Graph {
