@@ -56,7 +56,7 @@ export class SudokuGraph extends Graph {
                 for (let j = i + 1; j < verts.length; j++) {
                     const v1 = verts[i];
                     const v2 = verts[j];
-                    this.addArc(v1, v2, deviation);
+                    this.addEdge(v1, v2, deviation);
                     newEdges.push([v1, v2]);
                 }
             }
@@ -99,7 +99,7 @@ export class SudokuGraph extends Graph {
                     const skipIndex = clueValue - 1;
                     for (let k = 0; k < 9; k++) {
                         if (k !== skipIndex) {
-                            this.addArc(cellVertex, `clique-${k}`, 0);
+                            this.addEdge(cellVertex, `clique-${k}`);
                             this.crossArcs.push([cellVertex, `clique-${k}`]);
                         }
                     }
@@ -152,7 +152,7 @@ export class SudokuGraph extends Graph {
                     const v2 = boxVertices[j];
                     const pairKey = v1 < v2 ? `${v1},${v2}` : `${v2},${v1}`;
                     if (!existingPairs.has(pairKey)) {
-                        this.addArc(v1, v2, this.arcDeviation / 2);
+                        this.addEdge(v1, v2, this.arcDeviation / 2);
                         this.boxArcs.push([v1, v2]);
                     }
                 }
