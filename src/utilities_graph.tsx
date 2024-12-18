@@ -4,12 +4,54 @@ import { Solarized, logValue } from "./utilities";
 
 const logger = useLogger();
 
-export class Graph {
-    private vertexMap = new Map<string, { ref: ReturnType<typeof createRef<Circle>>; position: [number, number]; }>();
-    private edges: Array<{ from: string; to: string; ref: ReturnType<typeof createRef<Spline>>, deviation: number}> = [];
-    public containerRef = createRef<Layout>();
+// example graph
+const l = 100;
+export const exampleGraphData: {
+    labels: string[];
+    edges: [string, string][]; 
+    positions: [number, number][];
+    sides: boolean[];
+  } = {
+    labels: ["A", "B", "C", "D", "E", "F"],
+    edges: [
+        ["A", "B"],
+        ["B", "C"],
+        ["C", "A"],
+        ["D", "C"],
+        ["E", "C"],
+        ["F", "D"],
+        ["F", "E"]
+    ],
+    positions: [
+        [-l, -l], [l, -l], [0, 0], [-l, l], [l, l], [0, 2 * l]
+    ],
+    sides: [true, true, true, true, false, true, false]
+};
 
-    constructor(public vertexRadius: number = 15) {}
+
+export class Graph {
+    protected vertexMap = new Map<string, { ref: ReturnType<typeof createRef<Circle>>; position: [number, number]; }>();
+    protected edges: Array<{ from: string; to: string; ref: ReturnType<typeof createRef<Spline>>, deviation: number}> = [];
+    public containerRef = createRef<Layout>();
+    protected debugNodes = false;
+
+    constructor(
+        public vertexRadius: number = 15, 
+    ) {}
+
+    initialize( // can't have this in constructor because of in lockable graph addVertex uses locks which is not initialized yet
+        data: {
+            labels: string[],
+            edges: [string, string][],
+            positions: [number, number][]
+    }){
+            for (let i = 0; i < data.labels.length; i++) {
+                this.addVertex(data.labels[i], data.positions[i]);
+            }
+            for (const [from, to] of data.edges) {
+                this.addEdge(from, to);
+            }
+    }
 
     addVertex(label: string, position: [number, number]) {
         const ref = createRef<Circle>();
@@ -26,6 +68,22 @@ export class Graph {
         this.edges.push({ from: fromLabel, to: toLabel, ref, deviation });
     }
 
+    protected createVertexNode(label: string) {
+        const vertexData = this.vertexMap.get(label);   
+        return (
+            <Circle
+                key={label}
+                ref={vertexData.ref}
+                size={this.vertexRadius}
+                fill={Solarized.gray}
+                opacity={0}
+                position={vertexData.position}
+            >
+             {this.debugNodes && <Txt text={label} fontSize={24} fill="black" />}
+            </Circle>
+        );
+    }
+    
     getGraphLayout() {
         const layout = (<Layout ref={this.containerRef} layout={false}>
                 {this.edges.map((edge, i) => {
@@ -44,32 +102,13 @@ export class Graph {
                         />
                     );
                 })}
-                {[...this.vertexMap.entries()].map(([label, vertex]) => (
-                    <Circle
-                        key={label}
-                        ref={vertex.ref}
-                        size={this.vertexRadius}
-                        fill={Solarized.gray}
-                        opacity={0}
-                        position={vertex.position}
-                    >
-                    </Circle>
-                ))} 
-            </Layout>) as Layout; //<Txt text={label} fontSize={24} fill="black" />
+                {[...this.vertexMap.entries()].map(([label, _]) =>
+                    this.createVertexNode(label)
+                )}
+            </Layout>) as Layout; 
         return layout;
     }
 
-    *fadeIn(duration: number) {
-        const vertexAnimations = [...this.vertexMap.values()].map(v => v.ref().opacity(1, duration));
-        const edgeAnimations = this.edges.map(e => e.ref().opacity(1, duration));
-        yield* all(...vertexAnimations, ...edgeAnimations);
-    }
-
-    *fadeOut(duration: number) {
-        const vertexAnimations = [...this.vertexMap.values()].map(v => v.ref().opacity(0, duration));
-        const edgeAnimations = this.edges.map(e => e.ref().opacity(0, duration));
-        yield* all(...vertexAnimations, ...edgeAnimations);
-    }
 
     *moveVertex(label: string, newPosition: [number, number], duration: number) {
         const vertex = this.vertexMap.get(label);
@@ -93,10 +132,7 @@ export class Graph {
         }
     }
 
-    /**
-     * Sequentially fade in vertices (all or a subset) one by one.
-     */
-    *fadeInSequential(initialDelay: number, duration: number, vertexKeys?: string[]) {
+    *fadeVerticesSequential(initialDelay: number, duration: number, vertexKeys?: string[], newOpacity: number = 1) {
         let vertices;
     
         if (vertexKeys && vertexKeys.length > 0) {
@@ -108,23 +144,13 @@ export class Graph {
             vertices = [...this.vertexMap.values()].map(v => v.ref());
         }
     
-        const edges = (vertexKeys && vertexKeys.length > 0) 
-            ? [] 
-            : this.edges.map(e => e.ref());
-    
-        const allNodes = [...vertices, ...edges];
-    
         yield* sequence(
             initialDelay,
-            ...allNodes.map(node => node.opacity(1, duration))
+            ...vertices.map(node => node.opacity(newOpacity, duration))
         );
     }
 
-    /**
-     * Sequentially fade in edges one by one. If edgePairs is provided, only fade in those edges.
-     * edgePairs should be an array of [fromLabel, toLabel] pairs.
-     */
-    *fadeInEdgesSequential(
+    *fadeEdgesSequential(
         initialDelay: number,
         duration: number,
         edgePairs?: [string, string][],
@@ -157,12 +183,25 @@ export class Graph {
             ...nodesToFade.map(node => node.opacity(newOpacity, duration))
         );
     }
-    
+
+    *fadeIn(duration: number) {
+        yield* all(
+            this.fadeVerticesSequential(0, duration, [], 1),
+            this.fadeEdgesSequential(0, duration, [], 1)
+        );
+    }
+
+    *fadeOut(duration: number) {
+        yield* all(
+            this.fadeVerticesSequential(0, duration, [], 0),
+            this.fadeEdgesSequential(0, duration, [], 0)
+        );
+    }
 }
 
 
 
-function generateArcPoints(
+export function generateArcPoints(
     start: Vector2,
     end: Vector2,
     deviation: number,

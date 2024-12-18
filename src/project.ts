@@ -15,8 +15,8 @@ import "./global.css";
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
-    //test,
-    sudoku_reduction,
+    test,
+    //sudoku_reduction,
     //sudoku_coloring,
     // sudoku_intro,
     // lock,

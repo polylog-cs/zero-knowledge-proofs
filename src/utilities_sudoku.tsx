@@ -178,7 +178,7 @@ export class SudokuGraph extends Graph {
         return vertices;
     }
 
-    *colorSolution(solution: number[][], colors: string[] = palette) {
+    *colorSolution(solution: number[][], colors: string[] = solarizedPalette) {
 
         const cliqueAnims: Array<Generator> = [];
         for (let d = 0; d < 9; d++) {

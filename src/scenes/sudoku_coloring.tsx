@@ -1,7 +1,7 @@
 import { Circle, Txt, Line, Node, Layout, makeScene2D } from '@motion-canvas/2d';
 import { createRef, createSignal, useLogger, all, sequence, waitFor, Vector2 } from '@motion-canvas/core';
 import { Solarized, Graph, Sudoku, gridSize, cellSize, solution, clues, fontSize } from "../utilities";
-
+import { exampleLabels, exampleEdges } from "../utilities_graph";
 
 
 
@@ -26,26 +26,14 @@ export default makeScene2D(function* (view) {
         
     yield* sudokuLayoutRef().position.x(-view.size().x / 6, 1);
 
-    // initialize the graph
-    const labels = ["A", "B", "C", "D", "E", "F"];
-    for (const label of labels) {
+
+    for (const label of exampleLabels) {
         graph.addVertex(label);
     }
-    const edges = [
-        [0, 1],
-        [1, 2],
-        [2, 0],
-        [3, 2],
-        [4, 2],
-        [5, 3],
-        [5, 4]
-    ];
-    edges.forEach(([from, to]) => graph.addEdge(from, to));
 
-    const l = 100;
-    const positions: Array<[number, number]> = [
-        [-l, -l], [l, -l], [0, 0], [-l, l], [l, l], [0, 2 * l]
-    ];
+    exampleEdges.forEach(([from, to]) => graph.addEdge(from, to));
+
+
 
 
 
@@ -57,7 +45,7 @@ export default makeScene2D(function* (view) {
     view.add(
         <Node ref = {graphLayoutRef} position = {[view.size().x/6, 0]}>  
             <Txt ref = {graphTitleRef} text = "Graph Coloring" fontSize = {fontSize} />
-            {graph.getNode(positions)}
+            {graph.getNode(examplePositions)}
         </Node>
     )
     graphTitleRef().position.y(sudokuTitleRef().position.y());
