@@ -4,6 +4,7 @@ import {LockableGraph} from "../utilities_lockable_graph";
 import {Graph, exampleGraphData} from "../utilities_graph";
 import { Solarized,  logPosition } from "../utilities";
 import {next_to} from "../utilities_moving";
+import { ProtocolScene } from "../utilities_protocol";
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
@@ -11,23 +12,17 @@ export default makeScene2D(function* (view) {
   
   yield* waitFor(1);
 
-  const g = new LockableGraph(50);
-  g.initialize(exampleGraphData);
-  view.add(g.getGraphLayout());
-  yield* g.fadeIn(1);
+  const scene = new ProtocolScene(view);
 
-  const rect = createRef<Rect>();
-  view.add(
-    <Rect
-      ref={rect}
-      width={100}
-      height={100}
-      fill={Solarized.base3}
-      position={[0, 0]}
-    />
-  );
+  // Add participants
+  yield* scene.addProver();
+  yield* scene.addVerifier();
 
-  yield* next_to(rect(), g.containerRef(), 'right', 50, 1);
-  yield* waitFor(3);
+  // Create a graph in the center
+  yield* scene.createGraph(exampleGraphData, 'center');
+
+  yield* scene.basicProtocol(1);
+  yield* waitFor(5);
+
 
 });

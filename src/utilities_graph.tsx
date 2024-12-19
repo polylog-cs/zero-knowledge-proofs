@@ -4,6 +4,14 @@ import { Solarized, logValue } from "./utilities";
 
 const logger = useLogger();
 
+export interface GraphData {
+  labels: string[];
+  edges: [string, string][];
+  positions: [number, number][];
+  sides?: boolean[];
+  colors?: number[];
+}
+
 // example graph
 const l = 100;
 export const exampleGraphData: {
@@ -11,6 +19,7 @@ export const exampleGraphData: {
     edges: [string, string][]; 
     positions: [number, number][];
     sides: boolean[];
+    colors: number[];
   } = {
     labels: ["A", "B", "C", "D", "E", "F"],
     edges: [
@@ -25,7 +34,8 @@ export const exampleGraphData: {
     positions: [
         [-l, -l], [l, -l], [0, 0], [-l, l], [l, l], [0, 2 * l]
     ],
-    sides: [true, true, true, true, false, true, false]
+    sides: [true, true, true, true, false, true, false],
+    colors: [0, 1, 2, 0, 1, 2]
 };
 
 

@@ -1,7 +1,18 @@
 import {Node} from "@motion-canvas/2d";
-import {Vector2} from "@motion-canvas/core";
+import {Vector2, all} from "@motion-canvas/core";
+
+// Assuming a known frame size. Replace these with actual values or computations.
+const frameWidth = 1920;
+const frameHeight = 1080;
+
+// Frame edges assuming center at (0,0)
+const frameLeft = -frameWidth / 2;
+const frameRight = frameWidth / 2;
+const frameTop = -frameHeight / 2;
+const frameBottom = frameHeight / 2;
 
 type Direction = 'left' | 'right' | 'up' | 'down';
+type Corner = 'UL' | 'UR' | 'DL' | 'DR';
 
 // Helper to get node edges from the cached bounding box
 function getNodeEdges(node: Node) {
@@ -19,17 +30,17 @@ function getNodeEdges(node: Node) {
 }
 
 /**
- * Move the node to a given position or node's position.
+ * Move the node to a given position or another node's position.
  * If duration > 0, animate; otherwise, apply immediately.
  */
-export function move_to(node: Node, newPos: Vector2 | Node, duration: number = 0) {
+export function moveTo(node: Node, newPos: Vector2 | Node, duration: number = 0) {
     const finalPos = newPos instanceof Node ? newPos.position() : newPos;
 
     if (duration <= 0) {
         node.position(finalPos);
-        return (function*(){})();
+        return (function* () { })();
     } else {
-        return (function*(){
+        return (function* () {
             yield* node.position(finalPos, duration);
         })();
     }
@@ -45,9 +56,9 @@ export function shift(node: Node, offset: Vector2, duration: number = 0) {
 
     if (duration <= 0) {
         node.position(finalPos);
-        return (function*(){})();
+        return (function* () { })();
     } else {
-        return (function*(){
+        return (function* () {
             yield* node.position(finalPos, duration);
         })();
     }
@@ -57,7 +68,7 @@ export function shift(node: Node, offset: Vector2, duration: number = 0) {
  * Align this node to another node along a particular direction.
  * If duration > 0, animate; otherwise, immediate.
  */
-export function align_to(node: Node, other: Node, direction: Direction, duration: number = 0) {
+export function alignTo(node: Node, other: Node, direction: Direction, duration: number = 0) {
     const n = getNodeEdges(node);
     const o = getNodeEdges(other);
 
@@ -80,9 +91,9 @@ export function align_to(node: Node, other: Node, direction: Direction, duration
 
     if (duration <= 0) {
         node.position(finalPos);
-        return (function*(){})();
+        return (function* () { })();
     } else {
-        return (function*(){
+        return (function* () {
             yield* node.position(finalPos, duration);
         })();
     }
@@ -92,7 +103,7 @@ export function align_to(node: Node, other: Node, direction: Direction, duration
  * Place node next to another node along a given direction with a buffer.
  * If duration > 0, animate; otherwise, immediate.
  */
-export function next_to(node: Node, other: Node, direction: Direction, buff: number = 0, duration: number = 0) {
+export function nextTo(node: Node, other: Node, direction: Direction, buff: number = 0, duration: number = 0) {
     const n = getNodeEdges(node);
     const o = getNodeEdges(other);
 
@@ -115,10 +126,96 @@ export function next_to(node: Node, other: Node, direction: Direction, buff: num
 
     if (duration <= 0) {
         node.position(finalPos);
-        return (function*(){})();
+        return (function* () { })();
     } else {
-        return (function*(){
+        return (function* () {
             yield* node.position(finalPos, duration);
+        })();
+    }
+}
+
+/**
+ * Move the node to the given edge of the frame.
+ * direction: 'left'|'right'|'up'|'down'
+ * buff: optional padding from the edge
+ * duration: if >0, animate
+ */
+export function toEdge(node: Node, direction: 'left' | 'right' | 'up' | 'down', buff: number = 0, duration: number = 0) {
+    const n = getNodeEdges(node);
+    let finalPos = node.position();
+
+    switch (direction) {
+        case 'left':
+            finalPos = new Vector2(frameLeft + n.width / 2 + buff, finalPos.y);
+            break;
+        case 'right':
+            finalPos = new Vector2(frameRight - n.width / 2 - buff, finalPos.y);
+            break;
+        case 'up':
+            finalPos = new Vector2(finalPos.x, frameTop + n.height / 2 + buff);
+            break;
+        case 'down':
+            finalPos = new Vector2(finalPos.x, frameBottom - n.height / 2 - buff);
+            break;
+    }
+
+    if (duration <= 0) {
+        node.position(finalPos);
+        return (function* () { })();
+    } else {
+        return (function* () {
+            yield* node.position(finalPos, duration);
+        })();
+    }
+}
+
+/**
+ * Move the node to a given corner of the frame.
+ * corner: 'top_left'|'top_right'|'bottom_left'|'bottom_right'
+ * buffX, buffY: optional padding from the edges in X and Y directions
+ * duration: if >0, animate
+ *
+ * Implemented by using toEdge() twice.
+ */
+export function toCorner(
+    node: Node,
+    corner: Corner,
+    buffX: number = 0,
+    buffY: number = 0,
+    duration: number = 0
+) {
+    let horizontalDirection: 'left' | 'right';
+    let verticalDirection: 'up' | 'down';
+
+    switch (corner) {
+        case 'UL':
+            horizontalDirection = 'left';
+            verticalDirection = 'up';
+            break;
+        case 'UR':
+            horizontalDirection = 'right';
+            verticalDirection = 'up';
+            break;
+        case 'DL':
+            horizontalDirection = 'left';
+            verticalDirection = 'down';
+            break;
+        case 'DR':
+            horizontalDirection = 'right';
+            verticalDirection = 'down';
+            break;
+    }
+
+    if (duration <= 0) {
+        toEdge(node, horizontalDirection, buffX, 0);
+        toEdge(node, verticalDirection, buffY, 0);
+        return (function* () { })();
+    } else {
+        return (function* () {
+            yield* all(
+                toEdge(node, horizontalDirection, buffX, duration),
+                toEdge(node, verticalDirection, buffY, duration),
+            );
         })();
     }
 }
