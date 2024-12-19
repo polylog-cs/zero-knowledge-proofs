@@ -1,11 +1,13 @@
 import {Node} from "@motion-canvas/2d";
 import {Vector2, all} from "@motion-canvas/core";
+import {logValue, logPosition} from "./utilities";
+
+// all functions use absolute positions
 
 // Assuming a known frame size. Replace these with actual values or computations.
 const frameWidth = 1920;
 const frameHeight = 1080;
 
-// Frame edges assuming center at (0,0)
 const frameLeft = -frameWidth / 2;
 const frameRight = frameWidth / 2;
 const frameTop = -frameHeight / 2;
@@ -18,10 +20,10 @@ type Corner = 'UL' | 'UR' | 'DL' | 'DR';
 function getNodeEdges(node: Node) {
     // cacheBBox returns {x, y, width, height}
     const bbox = node.cacheBBox();
-    const left = bbox.x;
-    const right = bbox.x + bbox.width;
-    const top = bbox.y;
-    const bottom = bbox.y + bbox.height;
+    const left = bbox.x + node.absolutePosition().x;
+    const right = bbox.x + bbox.width + node.absolutePosition().x;
+    const top = bbox.y + node.absolutePosition().y;
+    const bottom = bbox.y + bbox.height + node.absolutePosition().y;
 
     const centerX = (left + right) / 2;
     const centerY = (top + bottom) / 2;
@@ -34,14 +36,14 @@ function getNodeEdges(node: Node) {
  * If duration > 0, animate; otherwise, apply immediately.
  */
 export function moveTo(node: Node, newPos: Vector2 | Node, duration: number = 0) {
-    const finalPos = newPos instanceof Node ? newPos.position() : newPos;
+    const finalPos = newPos instanceof Node ? newPos.absolutePosition() : newPos;
 
     if (duration <= 0) {
-        node.position(finalPos);
+        node.absolutePosition(finalPos);
         return (function* () { })();
     } else {
         return (function* () {
-            yield* node.position(finalPos, duration);
+            yield* node.absolutePosition(finalPos, duration);
         })();
     }
 }
@@ -51,63 +53,29 @@ export function moveTo(node: Node, newPos: Vector2 | Node, duration: number = 0)
  * If duration > 0, animate; otherwise, immediate.
  */
 export function shift(node: Node, offset: Vector2, duration: number = 0) {
-    const currentPos = node.position();
+    const currentPos = node.absolutePosition();
     const finalPos = currentPos.add(offset);
 
     if (duration <= 0) {
-        node.position(finalPos);
+        node.absolutePosition(finalPos);
         return (function* () { })();
     } else {
         return (function* () {
-            yield* node.position(finalPos, duration);
+            yield* node.absolutePosition(finalPos, duration);
         })();
     }
 }
 
-/**
- * Align this node to another node along a particular direction.
- * If duration > 0, animate; otherwise, immediate.
- */
-export function alignTo(node: Node, other: Node, direction: Direction, duration: number = 0) {
-    const n = getNodeEdges(node);
-    const o = getNodeEdges(other);
-
-    let finalPos = node.position();
-
-    switch (direction) {
-        case 'left':
-            finalPos = new Vector2(o.left + n.width / 2, finalPos.y);
-            break;
-        case 'right':
-            finalPos = new Vector2(o.right - n.width / 2, finalPos.y);
-            break;
-        case 'up':
-            finalPos = new Vector2(finalPos.x, o.top + n.height / 2);
-            break;
-        case 'down':
-            finalPos = new Vector2(finalPos.x, o.bottom - n.height / 2);
-            break;
-    }
-
-    if (duration <= 0) {
-        node.position(finalPos);
-        return (function* () { })();
-    } else {
-        return (function* () {
-            yield* node.position(finalPos, duration);
-        })();
-    }
-}
 
 /**
  * Place node next to another node along a given direction with a buffer.
  * If duration > 0, animate; otherwise, immediate.
  */
-export function nextTo(node: Node, other: Node, direction: Direction, buff: number = 0, duration: number = 0) {
+export function alignTo(node: Node, other: Node, direction: Direction, buff: number = 0, duration: number = 0) {
     const n = getNodeEdges(node);
     const o = getNodeEdges(other);
 
-    let finalPos = node.position();
+    let finalPos = node.absolutePosition();
 
     switch (direction) {
         case 'left':
@@ -125,11 +93,43 @@ export function nextTo(node: Node, other: Node, direction: Direction, buff: numb
     }
 
     if (duration <= 0) {
-        node.position(finalPos);
+        node.absolutePosition(finalPos);
         return (function* () { })();
     } else {
         return (function* () {
-            yield* node.position(finalPos, duration);
+            yield* node.absolutePosition(finalPos, duration);
+        })();
+    }
+}
+
+export function nextTo(node: Node, other: Node, direction: Direction, buff: number = 0, duration: number = 0) {
+    const n = getNodeEdges(node);
+    const o = getNodeEdges(other);
+
+    let finalPos = node.absolutePosition();
+    let otherPos = other.absolutePosition();
+
+    switch (direction) {
+        case 'left':
+            finalPos = new Vector2(o.left - buff - n.width / 2, otherPos.y);
+            break;
+        case 'right':
+            finalPos = new Vector2(o.right + buff + n.width / 2, otherPos.y);
+            break;
+        case 'up':
+            finalPos = new Vector2(otherPos.x, o.top - buff - n.height / 2);
+            break;
+        case 'down':
+            finalPos = new Vector2(otherPos.x, o.bottom + buff + n.height / 2);
+            break;
+    }
+
+    if (duration <= 0) {
+        node.absolutePosition(finalPos);
+        return (function* () { })();
+    } else {
+        return (function* () {
+            yield* node.absolutePosition(finalPos, duration);
         })();
     }
 }
@@ -142,7 +142,7 @@ export function nextTo(node: Node, other: Node, direction: Direction, buff: numb
  */
 export function toEdge(node: Node, direction: 'left' | 'right' | 'up' | 'down', buff: number = 0, duration: number = 0) {
     const n = getNodeEdges(node);
-    let finalPos = node.position();
+    let finalPos = node.absolutePosition();
 
     switch (direction) {
         case 'left':
@@ -160,11 +160,11 @@ export function toEdge(node: Node, direction: 'left' | 'right' | 'up' | 'down', 
     }
 
     if (duration <= 0) {
-        node.position(finalPos);
+        node.absolutePosition(finalPos);
         return (function* () { })();
     } else {
         return (function* () {
-            yield* node.position(finalPos, duration);
+            yield* node.absolutePosition(finalPos, duration);
         })();
     }
 }

@@ -3,7 +3,6 @@ import { useLogger, waitFor, createRef, Vector2 } from "@motion-canvas/core";
 import {LockableGraph} from "../utilities_lockable_graph";
 import {Graph, exampleGraphData} from "../utilities_graph";
 import { Solarized,  logPosition } from "../utilities";
-import {next_to} from "../utilities_moving";
 import { ProtocolScene } from "../utilities_protocol";
 
 export default makeScene2D(function* (view) {

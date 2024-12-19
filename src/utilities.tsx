@@ -1,5 +1,5 @@
 import {Img, Layout, NodeProps, Rect, Node, LayoutProps, Line, Circle, Txt, blur, Spline} from "@motion-canvas/2d";
-import {Color, createRef, PossibleVector2, Reference, createSignal, all, sequence, Logger, Vector2, waitFor} from "@motion-canvas/core";
+import {Color, createRef, PossibleVector2, Reference, createSignal, all, sequence, Logger, useLogger, Vector2, waitFor} from "@motion-canvas/core";
 
 export const Solarized = {
     base03: "#002b36",
@@ -20,6 +20,7 @@ export const Solarized = {
     green: "#859900",
 
     background: "#eee8d5", // base2
+    text: "#93a1a1",
     gray: "#93a1a1", //  base1
 };
 
@@ -95,30 +96,32 @@ export function addVectors(v1: [number, number], v2: [number, number]): [number,
   
 
 
-  // Logs an array with an optional message
-export function logArray(logger: Logger, arr: unknown[], message: string = '') {
+export function logArray(arr: unknown[], message: string = '') {
+    const logger = useLogger();
     const prefix = message ? `${message}: ` : '';
     logger.info(`${prefix}${JSON.stringify(arr)}`);
 }
 
-// Logs a pair (tuple of two elements) with an optional message
-export function logPair(logger: Logger, pair: [unknown, unknown], message: string = '') {
+export function logPair(pair: [unknown, unknown], message: string = '') {
+    const logger = useLogger();
     const prefix = message ? `${message}: ` : '';
     logger.info(`${prefix}(${JSON.stringify(pair[0])}, ${JSON.stringify(pair[1])})`);
 }
 
-export function logPosition(logger: Logger, position: Vector2, message: string = '') {
+export function logPosition(position: Vector2, message: string = '') {
+    const logger = useLogger();
     const prefix = message ? `${message}: ` : '';
     logger.info(`${prefix}(${JSON.stringify(position.x)}, ${JSON.stringify(position.y)})`);
 }
 
-// Logs any object or value with an optional message
-export function logValue(logger: Logger, value: unknown, message: string = '') {
+export function logValue(value: unknown, message: string = '') {
+    const logger = useLogger();
     const prefix = message ? `${message}: ` : '';
     logger.info(`${prefix}${JSON.stringify(value)}`);
 }
-// Logs a labeled object, where the label is a string and the object is anything.
-export function logLabeled(logger: Logger, label: string, value: unknown) {
+
+export function logLabeled(label: string, value: unknown) {
+    const logger = useLogger();
     logger.info(`${label}: ${JSON.stringify(value)}`);
 }
 

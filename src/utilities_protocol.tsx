@@ -1,27 +1,26 @@
-import {Node, Layout, Img, makeScene2D} from '@motion-canvas/2d';
+import {Node, Layout, Img, Txt, makeScene2D, Rect} from '@motion-canvas/2d';
 import {createRef, Vector2, waitFor, all} from '@motion-canvas/core';
 import {LockableGraph} from './utilities_lockable_graph'; 
 import {nextTo, moveTo} from './utilities_moving';
 import {exampleGraphData, GraphData} from './utilities_graph'; 
-
-
+import { Solarized, logPosition } from './utilities';
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
 
-
 export class ProtocolScene {
-    // References to main nodes
     public proverRef = createRef<Img>();
     public verifierRef = createRef<Img>();
     public graphRef = createRef<LockableGraph>();
     public containerRef = createRef<Layout>();
 
-    // Positions or layout decisions
     private proverPosition = new Vector2(-600, 0);
     private verifierPosition = new Vector2(600, 0);
     private centerPosition = new Vector2(0,0);
-
     private graphBuffer = 50;
+
+    // Text references for prover and verifier
+    private proverTextRef = createRef<Txt>();
+    private verifierTextRef = createRef<Txt>();
 
     constructor(private view: Layout) {
         view.add(
@@ -30,40 +29,72 @@ export class ProtocolScene {
     }
 
     /**
-     * Add the prover image on the left side of the scene.
-     * @param path The image file path
+     * Add a participant image (prover or verifier).
+     * @param which 'prover' or 'verifier'
+     * @param path optional custom image path
      */
-    public *addProver(path: string = proverImage) {
-        this.containerRef().add(
-                <Img
-                  ref={this.proverRef}
-                  src={path}
-                  position={this.proverPosition}
-                  opacity={0}
-                />
-            );
-            yield* this.proverRef().opacity(1, 1);
-        }
+    public *addParticipant(which: 'prover'|'verifier', path?: string) {
+        const ref = (which === 'prover') ? this.proverRef : this.verifierRef;
+        const defaultPath = (which === 'prover') ? proverImage : verifierImage;
+        const position = (which === 'prover') ? this.proverPosition : this.verifierPosition;
 
-    /**
-     * Add the verifier image on the right side of the scene.
-     * @param path The image file path
-     */
-    public *addVerifier(path: string = verifierImage) {
         this.containerRef().add(
             <Img
-              ref={this.verifierRef}
-              src={path}
-              position={this.verifierPosition}
+              ref={ref}
+              src={path ?? defaultPath}
+              position={position}
               opacity={0}
             />
         );
-        yield* this.verifierRef().opacity(1, 1);
+        yield* ref().opacity(1, 1);
+    }
+
+    /**
+     * Add text next to either prover or verifier.
+     * The text will appear next to their image.
+     */
+    public *addText(which: 'prover'|'verifier', text: string) {
+        const targetRef = (which === 'prover') ? this.proverRef : this.verifierRef;
+        const textRef = (which === 'prover') ? this.proverTextRef : this.verifierTextRef;
+
+        this.containerRef().add(
+            <Txt
+              ref={textRef}
+              text={text}
+              opacity={0}
+              fontSize={40}
+              fill={Solarized.text}
+            />
+        );
+
+        nextTo(textRef(), targetRef(), 'up', 50, 0);
+
+        yield* textRef().opacity(1, 0.5);
+        yield* waitFor(0.5);
+    }
+
+    /**
+     * Remove the previously added text from either prover or verifier.
+     */
+    public *removeText(which: 'prover'|'verifier'|'both') {
+        if(which == 'both'){
+            yield* all(
+                this.removeText('prover'),
+                this.removeText('verifier')
+            )
+        }
+        else{
+            const textRef = (which === 'prover') ? this.proverTextRef : this.verifierTextRef;
+            if (textRef() === undefined) {
+                return;
+            }
+            yield* textRef().opacity(0, 1);
+            textRef().remove();    
+        }
     }
 
     /**
      * Create a LockableGraph from data and fade it in at the center (or near prover/verifier).
-     * @param data Graph data (labels, edges, positions, etc.)
      */
     public *createGraph(data: GraphData, initialPosition: 'center' | 'prover' | 'verifier' = 'center') {
         const g = new LockableGraph(50);
@@ -84,7 +115,6 @@ export class ProtocolScene {
                 break;
         }
 
-        this.graphRef = createRef<LockableGraph>();
         this.graphRef = () => g;
 
         // Fade in
@@ -93,7 +123,6 @@ export class ProtocolScene {
 
     /**
      * Sends the graph to a target location: 'center', 'prover', or 'verifier'.
-     * Uses next_to or move_to from our helpers.
      */
     public *sendGraph(target: 'center' | 'prover' | 'verifier', duration: number = 1) {
         const g = this.graphRef();
@@ -102,18 +131,16 @@ export class ProtocolScene {
 
         switch(target) {
             case 'center':
-                break;
+                yield* moveTo(g.containerRef(), finalPos, duration);
+                return;
             case 'prover':
-                yield* nextTo(g.containerRef(), this.proverRef(), 'left', this.graphBuffer, duration);
+                yield* nextTo(g.containerRef(), this.proverRef(), 'right', this.graphBuffer, duration);
                 return;
             case 'verifier':
-                yield* nextTo(g.containerRef(), this.verifierRef(), 'right', this.graphBuffer, duration);
+                yield* nextTo(g.containerRef(), this.verifierRef(), 'left', this.graphBuffer, duration);
                 return;
         }
-
-        yield* moveTo(g.containerRef(), finalPos, duration);
     }
-
 
     public *shufflingColors(unlock: boolean = true){
         if (unlock) {
