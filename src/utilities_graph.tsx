@@ -20,6 +20,7 @@ export const exampleGraphData: {
     positions: [number, number][];
     sides: boolean[];
     colors: number[];
+    vertexDirs: [number, number][];
   } = {
     labels: ["A", "B", "C", "D", "E", "F"],
     edges: [
@@ -35,7 +36,8 @@ export const exampleGraphData: {
         [-l, -l], [l, -l], [0, 0], [-l, l], [l, l], [0, 2 * l]
     ],
     sides: [true, true, true, true, false, true, false],
-    colors: [0, 1, 2, 0, 1, 2]
+    colors: [0, 1, 2, 0, 1, 2],
+    vertexDirs: [[-1, -2], [1, -2], [-1, 0], [-1, 0], [1, 0], [-1, 2]]
 };
 
 
@@ -75,7 +77,8 @@ export class Graph {
     
     addEdge(fromLabel: string, toLabel: string, deviation: number = 0) {
         const ref = createRef<Spline>();
-        this.edges.push({ from: fromLabel, to: toLabel, ref, deviation });
+        const [from, to] = fromLabel < toLabel ? [fromLabel, toLabel] : [toLabel, fromLabel];
+        this.edges.push({ from, to, ref, deviation });
     }
 
     protected createVertexNode(label: string) {

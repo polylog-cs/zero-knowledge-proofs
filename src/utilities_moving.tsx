@@ -79,16 +79,16 @@ export function alignTo(node: Node, other: Node, direction: Direction, buff: num
 
     switch (direction) {
         case 'left':
-            finalPos = new Vector2(o.left - buff - n.width / 2, finalPos.y);
+            finalPos = new Vector2(o.left + buff + n.width / 2, finalPos.y);
             break;
         case 'right':
-            finalPos = new Vector2(o.right + buff + n.width / 2, finalPos.y);
+            finalPos = new Vector2(o.right - buff - n.width / 2, finalPos.y);
             break;
         case 'up':
-            finalPos = new Vector2(finalPos.x, o.top - buff - n.height / 2);
+            finalPos = new Vector2(finalPos.x, o.top + buff + n.height / 2);
             break;
         case 'down':
-            finalPos = new Vector2(finalPos.x, o.bottom + buff + n.height / 2);
+            finalPos = new Vector2(finalPos.x, o.bottom - buff - n.height / 2);
             break;
     }
 
@@ -108,7 +108,7 @@ export function nextTo(node: Node, other: Node, direction: Direction, buff: numb
 
     let finalPos = node.absolutePosition();
     let otherPos = other.absolutePosition();
-
+    
     switch (direction) {
         case 'left':
             finalPos = new Vector2(o.left - buff - n.width / 2, otherPos.y);

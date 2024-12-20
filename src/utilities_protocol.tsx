@@ -1,7 +1,7 @@
 import {Node, Layout, Img, Txt, makeScene2D, Rect} from '@motion-canvas/2d';
 import {createRef, Vector2, waitFor, all} from '@motion-canvas/core';
 import {LockableGraph} from './utilities_lockable_graph'; 
-import {nextTo, moveTo} from './utilities_moving';
+import {nextTo, moveTo, alignTo, shift} from './utilities_moving';
 import {exampleGraphData, GraphData} from './utilities_graph'; 
 import { Solarized, logPosition } from './utilities';
 import proverImage from './assets/images/prover.png';
@@ -18,9 +18,9 @@ export class ProtocolScene {
     private centerPosition = new Vector2(0,0);
     private graphBuffer = 50;
 
-    // Text references for prover and verifier
-    private proverTextRef = createRef<Txt>();
-    private verifierTextRef = createRef<Txt>();
+    // Arrays to store multiple text lines for prover and verifier
+    private proverTexts: ReturnType<typeof createRef<Txt>>[] = [];
+    private verifierTexts: ReturnType<typeof createRef<Txt>>[] = [];
 
     constructor(private view: Layout) {
         view.add(
@@ -30,8 +30,6 @@ export class ProtocolScene {
 
     /**
      * Add a participant image (prover or verifier).
-     * @param which 'prover' or 'verifier'
-     * @param path optional custom image path
      */
     public *addParticipant(which: 'prover'|'verifier', path?: string) {
         const ref = (which === 'prover') ? this.proverRef : this.verifierRef;
@@ -50,31 +48,52 @@ export class ProtocolScene {
     }
 
     /**
-     * Add text next to either prover or verifier.
-     * The text will appear next to their image.
+     * Add a line of text above a participant. 
+     * Each new call shifts existing lines up and places the new line below them.
+     * For prover: align left.
+     * For verifier: align right.
      */
-    public *addText(which: 'prover'|'verifier', text: string) {
-        const targetRef = (which === 'prover') ? this.proverRef : this.verifierRef;
-        const textRef = (which === 'prover') ? this.proverTextRef : this.verifierTextRef;
+    public *addText(which: 'prover'|'verifier', text: string, removeCurrent: boolean = false) {
+        const lineHeight = 50;
+        const isProver = (which === 'prover');
+        const targetRef = isProver ? this.proverRef : this.verifierRef;
+        const textsArray = isProver ? this.proverTexts : this.verifierTexts;
 
-        this.containerRef().add(
-            <Txt
-              ref={textRef}
-              text={text}
-              opacity={0}
-              fontSize={40}
-              fill={Solarized.text}
-            />
+        if (removeCurrent && textsArray.length > 0) {
+            this.removeText(which);
+        }
+
+        yield* all(
+            ...textsArray.map(
+                (t, _) => shift(t(), new Vector2(0, -100), 0.5)
+            )
         );
 
-        nextTo(textRef(), targetRef(), 'up', 50, 0);
+        const newTextRef = createRef<Txt>();
+        this.containerRef().add(
+            <Txt
+                ref={newTextRef}
+                text={text}
+                fontSize={40}
+                fill={Solarized.text}
+                opacity={0}
+            />
+        );
+        const pos = isProver ? 'left' : 'right';
+        alignTo(newTextRef(), targetRef(), pos, 0);
+        nextTo(newTextRef(), targetRef(), 'up', 10);
 
-        yield* textRef().opacity(1, 0.5);
+        // Fade in new line
+        yield* newTextRef().opacity(1, 0.5);
         yield* waitFor(0.5);
+
+        // Add new line to array
+        textsArray.push(newTextRef);
     }
 
     /**
-     * Remove the previously added text from either prover or verifier.
+     * Remove all text from a participant or both.
+     * Fades out and removes all lines.
      */
     public *removeText(which: 'prover'|'verifier'|'both') {
         if(which == 'both'){
@@ -82,21 +101,20 @@ export class ProtocolScene {
                 this.removeText('prover'),
                 this.removeText('verifier')
             )
-        }
-        else{
-            const textRef = (which === 'prover') ? this.proverTextRef : this.verifierTextRef;
-            if (textRef() === undefined) {
-                return;
-            }
-            yield* textRef().opacity(0, 1);
-            textRef().remove();    
+        } else {
+            const textsArray = (which === 'prover') ? this.proverTexts : this.verifierTexts;
+            if (textsArray.length === 0) return;
+
+            yield* all(...textsArray.map(tr => tr().opacity(0, 0.5)));
+            textsArray.forEach(tr => tr().remove());
+            textsArray.length = 0;
         }
     }
 
     /**
      * Create a LockableGraph from data and fade it in at the center (or near prover/verifier).
      */
-    public *createGraph(data: GraphData, initialPosition: 'center' | 'prover' | 'verifier' = 'center') {
+    public *createGraph(data: GraphData, initialPosition: 'center' | 'prover' | 'verifier' = 'center', opacity: number = 1) {
         const g = new LockableGraph(50);
         g.initialize(data); 
         const graphLayout = g.getGraphLayout();
@@ -108,16 +126,14 @@ export class ProtocolScene {
                 g.containerRef().position(this.centerPosition);
                 break;
             case 'prover':
-                g.containerRef().position(this.proverPosition.add(new Vector2(100,0))); 
+                nextTo(g.containerRef(), this.proverRef(), 'right', 50);
                 break;
             case 'verifier':
-                g.containerRef().position(this.verifierPosition.add(new Vector2(-100,0)));
-                break;
+                nextTo(g.containerRef(), this.verifierRef(), 'left', 50);
         }
 
         this.graphRef = () => g;
-
-        // Fade in
+        g.containerRef().opacity(opacity);
         yield* g.fadeIn(1);
     }
 
