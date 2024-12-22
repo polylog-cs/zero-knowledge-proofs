@@ -75,6 +75,7 @@ export class ProtocolScene {
                 ref={newTextRef}
                 text={text}
                 fontSize={40}
+				fontFamily="Fira Sans, Noto Color Emoji"
                 fill={Solarized.text}
                 opacity={0}
             />
