@@ -12,22 +12,19 @@ import sudoku_reduction from "./scenes/sudoku_reduction?scene";
 import building_protocol from "./scenes/building_protocol?scene";
 import discussion1 from "./scenes/discussion1";
 
-
 import "./global.css";
 
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
     discussion1,
-    //building_protocol,
+    building_protocol,
     //test,
-    //sudoku_reduction,
-    //sudoku_coloring,
-    // sudoku_intro,
-    // lock,
-    // phone,
-    // teacher,
-    // mario,
-    // phone_trust,
+    sudoku_reduction,
+    lock,
+    phone,
+    teacher,
+    mario,
+    phone_trust,
   ],
 });
