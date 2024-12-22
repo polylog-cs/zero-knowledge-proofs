@@ -75,11 +75,11 @@ export class Lock extends Node {
                       }}
                 />
                 <Circle ref={this.lockTop} startAngle={180} endAngle={0} position={this.top().bottom}
-                        fill={Solarized.cyan}
+                        fill={Solarized.base1}
                         lineWidth={() => lw() / 2} stroke={() => chroma(this.lockTop().fill().toString()).darken(0.3)} size={() => w() * 0.5}
                         opacity={this.top().opacity} zIndex={2}/>
                 <Circle ref={this.lockBottom} startAngle={0} endAngle={180} position={this.bottom().top}
-                        fill={Solarized.cyan}
+                        fill={Solarized.base1}
                         lineWidth={() => lw() / 2} stroke={() => chroma(this.lockTop().fill().toString()).darken(0.3)} size={() => w() * 0.5}
                         opacity={this.bottom().opacity} zIndex={2}/>
             </>
