@@ -35,8 +35,8 @@ export const exampleGraphData: {
     positions: [
         [-l, -l], [l, -l], [0, 0], [-l, l], [l, l], [0, 2 * l]
     ],
-    sides: [true, true, false, true, false, true, true],
-    colors: [0, 1, 2, 0, 1, 2],
+    sides: [true, true, true, true, false, true, false],
+    colors: [0, 1, 2, 1, 0, 2],
     vertexDirs: [[-1, -2], [1, -2], [-1, 0], [-1, 0], [1, 0], [-1, 2]]
 };
 

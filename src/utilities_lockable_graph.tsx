@@ -1,7 +1,8 @@
-import {Node, Layout, Circle, Line, Spline} from "@motion-canvas/2d";
+import {Node, Layout, Circle, Line, Spline, Txt} from "@motion-canvas/2d";
 import {createRef, all, sequence, waitFor, useLogger} from "@motion-canvas/core";
 import {Lock} from "./utilities_lock"; 
 import {Graph} from "./utilities_graph"; 
+import {Finger} from "./utilities_finger"; 
 import {Solarized, shuffleArray, logPosition} from "./utilities"; 
 import {Vector2} from "@motion-canvas/core";
 
@@ -16,7 +17,7 @@ export class LockableGraph extends Graph {
     private edgeSides: boolean[] = [];
 
     // Instead of a single arrowRef, we store multiple arrows
-    private arrows: ReturnType<typeof createRef<Line>>[] = [];
+    private arrows: ReturnType<typeof createRef<Finger>>[] = [];
 
     public challengeEdge: [string, string] = ["", ""];
     
@@ -123,26 +124,16 @@ export class LockableGraph extends Graph {
         const startPos = new Vector2(fromVertex.position);
         const endPos = new Vector2(toVertex.position);
         const mid = startPos.add(endPos).scale(0.5);
-        const dir = endPos.sub(startPos);
-        let perp = dir.perpendicular;
-        if (!fromLeft) {
-            perp = perp.scale(-1);
-        }
-        perp = perp.normalized.scale(arrowLength);
+        let degrees = endPos.sub(startPos).degrees + (fromLeft ? 90 : 270);
 
-        const arrowStart = mid.add(perp);
-        const arrowEnd = mid;
-
-        const arrowRef = createRef<Line>();
+        const arrowRef = createRef<Finger>();
         const arrowNode = (
-            <Line
-                ref={arrowRef}
-                points={[arrowStart, arrowEnd]}
-                stroke={Solarized.blue}
-                lineWidth={4}
-                opacity={0}
-                arrowSize={10}
-                endArrow
+			<Finger
+				position={mid}
+				rotation={degrees}
+				padding={.2}
+				scale={arrowLength}
+				ref={arrowRef}
             />
         );
 
@@ -159,29 +150,21 @@ export class LockableGraph extends Graph {
     /**
      * Point an arrow at the given vertex.
      */
-    *pointAtVertex(vertexLabel: string, duration: number = 1, keep: boolean = false, arrowLength: number = 80, buff: number = 50) {
+    *pointAtVertex(vertexLabel: string, duration: number = 1, keep: boolean = false, arrowLength: number = 80, buff: number = .5) {
         const vertexData = this.vertexMap.get(vertexLabel);
         if (!vertexData) return;
 
         const position = new Vector2(vertexData.position);
-        let direction = this.vertexDirections.get(vertexLabel);
-        if (!direction) {
-            direction = new Vector2([arrowLength, 0]);
-        }
+        let direction = this.vertexDirections.get(vertexLabel)?.degrees ?? 0;
 
-        const arrowStart = position.add(direction.normalized.scale(arrowLength + buff));
-        const arrowEnd = position.add(direction.normalized.scale(buff));
-
-        const arrowRef = createRef<Line>();
+        const arrowRef = createRef<Finger>();
         const arrowNode = (
-            <Line
-                ref={arrowRef}
-                points={[arrowStart, arrowEnd]}
-                stroke={Solarized.blue}
-                lineWidth={4}
-                opacity={0}
-                arrowSize={10}
-                endArrow
+			<Finger
+				position={position}
+				rotation={direction}
+				padding={buff}
+				scale={arrowLength}
+				ref={arrowRef}
             />
         );
 
@@ -201,7 +184,7 @@ export class LockableGraph extends Graph {
      * Remove specified arrows or all if none specified.
      * Fade them out and remove from scene and array.
      */
-    *removeArrows(duration: number = 0.5, specificArrows?: ReturnType<typeof createRef<Line>>[]) {
+    *removeArrows(duration: number = 0.5, specificArrows?: ReturnType<typeof createRef<Finger>>[]) {
         const toRemove = specificArrows ?? this.arrows;
 
         const fadeOuts = toRemove.map(ref => ref().opacity(0, duration));
