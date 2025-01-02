@@ -52,7 +52,9 @@ export class Mobile extends Layout {
   private readonly passwordPINText = createRef<Txt>();
 
   private readonly passwordSection = createRef<Layout>();
-  private readonly passwordCircles = Array.from({ length: 10 }, () => createRef<Circle>());
+  private readonly passwordCircles = Array.from({ length: 10 }, () =>
+    createRef<Circle>(),
+  );
 
   public constructor(props?: MobileProps) {
     super({ ...props });
@@ -209,7 +211,11 @@ export class Mobile extends Layout {
     );
   }
 
-  public *inputPin(pin: Array<number>, click_duration: number = 0.5, success_delay: number = 0) {
+  public *inputPin(
+    pin: Array<number>,
+    click_duration: number = 0.5,
+    success_delay: number = 0,
+  ) {
     this.passwordTextPins.forEach((ref) => ref().save());
 
     let origColor = this.passwordCircles[0]().fill();
@@ -312,7 +318,12 @@ export default makeScene2D(function* (view) {
             }}
           ></Circle>
           <Node cache>
-            <Img ref={image} layout={false} width={() => taCircle().width() / 2} src={user_tie} />
+            <Img
+              ref={image}
+              layout={false}
+              width={() => taCircle().width() / 2}
+              src={user_tie}
+            />
             <Rect
               layout={false}
               size={() => Math.max(image().width(), image().height()) * 5}
@@ -412,11 +423,17 @@ export default makeScene2D(function* (view) {
       0.15,
       all(
         ...sendNumbers.map((ref, i) =>
-          delay(i * 0.11, ref().position(line().points()[0].add(new Vector2(100, -50)), 1, linear)),
+          delay(
+            i * 0.11,
+            ref().position(line().points()[0].add(new Vector2(100, -50)), 1, linear),
+          ),
         ),
       ),
     ),
-    delay(1.75, sendSuccess().position(line().points()[1].add(new Vector2(-50, -60)), 1, linear)),
+    delay(
+      1.75,
+      sendSuccess().position(line().points()[1].add(new Vector2(-50, -60)), 1, linear),
+    ),
     mobile().inputPin(PIN, 0.11, 0.7),
   );
 

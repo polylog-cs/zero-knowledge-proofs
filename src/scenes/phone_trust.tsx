@@ -55,12 +55,7 @@ export class Badge extends Layout {
 
     this.add(
       <>
-        <Circle
-          ref={this.circle}
-          stroke={Solarized.base02}
-          lineWidth={20}
-          size={300}
-        >
+        <Circle ref={this.circle} stroke={Solarized.base02} lineWidth={20} size={300}>
           <Circle
             layout={false}
             size={() => this.circle().width() - 20}
@@ -86,13 +81,11 @@ export class Badge extends Layout {
             />
             <Rect
               layout={false}
-              size={() =>
-                Math.max(this.image().width(), this.image().height()) * 5
-              }
+              size={() => Math.max(this.image().width(), this.image().height()) * 5}
               rotation={this.image().rotation}
               fill={Solarized.base02}
               compositeOperation={'source-in'}
-              opacity={props.monochromatic ?? false ? 1 : 0}
+              opacity={(props.monochromatic ?? false) ? 1 : 0}
             />
           </Node>
         </Circle>
@@ -103,7 +96,7 @@ export class Badge extends Layout {
           fontSize={50}
           text={props.text}
         />
-      </>
+      </>,
     );
   }
 }
@@ -134,9 +127,7 @@ export default makeScene2D(function* (view) {
         ref={lineSilent}
         points={() => {
           let b = prover().position().add(prover().circle().right().addX(20));
-          let a = authority()
-            .position()
-            .add(authority().circle().left().addX(-20));
+          let a = authority().position().add(authority().circle().left().addX(-20));
 
           return [b, a];
         }}
@@ -156,12 +147,8 @@ export default makeScene2D(function* (view) {
       <Line
         ref={lineHonest}
         points={() => {
-          let b = verifier()
-            .position()
-            .add(verifier().circle().left().addX(-20));
-          let a = authority()
-            .position()
-            .add(authority().circle().right().addX(20));
+          let b = verifier().position().add(verifier().circle().left().addX(-20));
+          let a = authority().position().add(authority().circle().right().addX(20));
 
           return [b, a];
         }}
@@ -178,7 +165,7 @@ export default makeScene2D(function* (view) {
         text="🤝"
         fontSize={100}
       />
-    </>
+    </>,
   );
 
   yield* waitFor(1);

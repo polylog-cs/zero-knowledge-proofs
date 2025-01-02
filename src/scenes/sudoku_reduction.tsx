@@ -81,7 +81,13 @@ export default makeScene2D(function* (view) {
       x={-400}
     >
       {Array.from({ length: 9 }, (_, i) => (
-        <Txt key={`digit-${i}`} text={(i + 1).toString()} fontSize={40} fill="black" opacity={0} />
+        <Txt
+          key={`digit-${i}`}
+          text={(i + 1).toString()}
+          fontSize={40}
+          fill="black"
+          opacity={0}
+        />
       ))}
     </Layout>
   );
@@ -129,7 +135,9 @@ export default makeScene2D(function* (view) {
 
   const exampleCell = [0, 4];
 
-  const rect = sudokuLayout.children()[exampleCell[0]].children()[exampleCell[1]] as Rect;
+  const rect = sudokuLayout.children()[exampleCell[0]].children()[
+    exampleCell[1]
+  ] as Rect;
 
   yield* indicate(rect);
   yield* waitFor(1);
@@ -154,7 +162,9 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1);
 
   const fromVertex = graph.getVertex(`(${exampleCell[0]},${exampleCell[1]})`);
-  const toVertex = graph.getVertex(`clique-${solution[exampleCell[0]][exampleCell[1]] - 1}`);
+  const toVertex = graph.getVertex(
+    `clique-${solution[exampleCell[0]][exampleCell[1]] - 1}`,
+  );
   const nonExistingEdge = (
     <Spline
       stroke={Solarized.red}

@@ -1,5 +1,12 @@
 import { makeScene2D, Spline, Rect } from '@motion-canvas/2d';
-import { useLogger, waitFor, createRef, Vector2, all, sequence } from '@motion-canvas/core';
+import {
+  useLogger,
+  waitFor,
+  createRef,
+  Vector2,
+  all,
+  sequence,
+} from '@motion-canvas/core';
 import { LockableGraph } from '../utilities_lockable_graph';
 import { Graph, exampleGraphData } from '../utilities_graph';
 import { Solarized, logPosition } from '../utilities';
@@ -55,7 +62,9 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().unlockVertices();
 
   revealedEdge = ['C', 'F'];
-  nonRevealedVertices = exampleGraphData.labels.filter((label) => !revealedEdge.includes(label));
+  nonRevealedVertices = exampleGraphData.labels.filter(
+    (label) => !revealedEdge.includes(label),
+  );
 
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
   yield* scene.sendGraph('verifier');
@@ -71,7 +80,10 @@ export default makeScene2D(function* (view) {
   yield* all(scene.graphRef().unlockVertices(), scene.sendGraph('prover'));
   yield* scene.graphRef().containerRef().opacity(1, 1);
 
-  yield* all(scene.addText('prover', '1. Lock the colors'), scene.graphRef().lockVertices());
+  yield* all(
+    scene.addText('prover', '1. Lock the colors'),
+    scene.graphRef().lockVertices(),
+  );
 
   yield* scene.sendGraph('verifier');
 

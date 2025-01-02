@@ -46,7 +46,11 @@ export class ProtocolScene {
    * For prover: align left.
    * For verifier: align right.
    */
-  public *addText(which: 'prover' | 'verifier', text: string, removeCurrent: boolean = false) {
+  public *addText(
+    which: 'prover' | 'verifier',
+    text: string,
+    removeCurrent: boolean = false,
+  ) {
     const lineHeight = 50;
     const isProver = which === 'prover';
     const targetRef = isProver ? this.proverRef : this.verifierRef;
@@ -155,10 +159,22 @@ export class ProtocolScene {
         yield* moveTo(g.containerRef(), finalPos, duration);
         return;
       case 'prover':
-        yield* nextTo(g.containerRef(), this.proverRef(), 'right', this.graphBuffer, duration);
+        yield* nextTo(
+          g.containerRef(),
+          this.proverRef(),
+          'right',
+          this.graphBuffer,
+          duration,
+        );
         return;
       case 'verifier':
-        yield* nextTo(g.containerRef(), this.verifierRef(), 'left', this.graphBuffer, duration);
+        yield* nextTo(
+          g.containerRef(),
+          this.verifierRef(),
+          'left',
+          this.graphBuffer,
+          duration,
+        );
         return;
     }
   }

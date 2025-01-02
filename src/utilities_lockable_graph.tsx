@@ -117,7 +117,8 @@ export class LockableGraph extends Graph {
     const [fromLabel, toLabel] = edgePair;
     const edge = this.edges.find(
       (e) =>
-        (e.from === fromLabel && e.to === toLabel) || (e.from === toLabel && e.to === fromLabel),
+        (e.from === fromLabel && e.to === toLabel) ||
+        (e.from === toLabel && e.to === fromLabel),
     );
     if (!edge) return;
 
@@ -131,7 +132,13 @@ export class LockableGraph extends Graph {
 
     const arrowRef = createRef<Finger>();
     const arrowNode = (
-      <Finger position={mid} rotation={degrees} padding={0.2} scale={arrowLength} ref={arrowRef} />
+      <Finger
+        position={mid}
+        rotation={degrees}
+        padding={0.2}
+        scale={arrowLength}
+        ref={arrowRef}
+      />
     );
 
     this.arrows.push(arrowRef);
@@ -186,7 +193,10 @@ export class LockableGraph extends Graph {
    * Remove specified arrows or all if none specified.
    * Fade them out and remove from scene and array.
    */
-  *removeArrows(duration: number = 0.5, specificArrows?: ReturnType<typeof createRef<Finger>>[]) {
+  *removeArrows(
+    duration: number = 0.5,
+    specificArrows?: ReturnType<typeof createRef<Finger>>[],
+  ) {
     const toRemove = specificArrows ?? this.arrows;
 
     const fadeOuts = toRemove.map((ref) => ref().opacity(0, duration));
@@ -216,7 +226,8 @@ export class LockableGraph extends Graph {
 
     let [finFrom, finTo] = ['', ''];
     if (finalEdge != undefined) {
-      [finFrom, finTo] = finalEdge[0] < finalEdge[1] ? finalEdge : [finalEdge[1], finalEdge[0]];
+      [finFrom, finTo] =
+        finalEdge[0] < finalEdge[1] ? finalEdge : [finalEdge[1], finalEdge[0]];
     }
 
     let lastEdge: (typeof this.edges)[0] | null = null;
@@ -225,10 +236,12 @@ export class LockableGraph extends Graph {
       if (finalEdge != undefined && i == k - 1) {
         availableEdges = this.edges.filter((e) => e.from === finFrom && e.to === finTo);
       }
-      const chosenEdge = availableEdges[Math.floor(Math.random() * availableEdges.length)];
+      const chosenEdge =
+        availableEdges[Math.floor(Math.random() * availableEdges.length)];
       const index = this.edges.indexOf(chosenEdge);
 
-      const side = index >= 0 && index < this.edgeSides.length ? this.edgeSides[index] : true;
+      const side =
+        index >= 0 && index < this.edgeSides.length ? this.edgeSides[index] : true;
 
       yield* this.pointAtEdge(
         [chosenEdge.from, chosenEdge.to],

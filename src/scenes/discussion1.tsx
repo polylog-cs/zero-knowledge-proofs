@@ -1,5 +1,12 @@
 import { makeScene2D, Spline, Rect } from '@motion-canvas/2d';
-import { useLogger, waitFor, createRef, Vector2, all, sequence } from '@motion-canvas/core';
+import {
+  useLogger,
+  waitFor,
+  createRef,
+  Vector2,
+  all,
+  sequence,
+} from '@motion-canvas/core';
 import { LockableGraph } from '../utilities_lockable_graph';
 import { Graph, exampleGraphData } from '../utilities_graph';
 import { Solarized, logPosition } from '../utilities';
@@ -33,7 +40,10 @@ export default makeScene2D(function* (view) {
     ['E', 0],
     ['F', 0],
   ]);
-  yield* all(scene.graphRef().applyColors(0, 0, improperColoring), scene.sendGraph('prover', 0));
+  yield* all(
+    scene.graphRef().applyColors(0, 0, improperColoring),
+    scene.sendGraph('prover', 0),
+  );
 
   yield* scene.fadeInGraph(1);
 

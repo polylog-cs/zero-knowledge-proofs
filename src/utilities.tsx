@@ -90,7 +90,10 @@ export class Icon extends Layout {
   }
 }
 
-export function addVectors(v1: [number, number], v2: [number, number]): [number, number] {
+export function addVectors(
+  v1: [number, number],
+  v2: [number, number],
+): [number, number] {
   return [v1[0] + v2[0], v1[1] + v2[1]];
 }
 
@@ -130,7 +133,9 @@ export function logPair(pair: [unknown, unknown], message: string = '') {
 export function logPosition(position: Vector2, message: string = '') {
   const logger = useLogger();
   const prefix = message ? `${message}: ` : '';
-  logger.info(`${prefix}(${JSON.stringify(position.x)}, ${JSON.stringify(position.y)})`);
+  logger.info(
+    `${prefix}(${JSON.stringify(position.x)}, ${JSON.stringify(position.y)})`,
+  );
 }
 
 export function logValue(value: unknown, message: string = '') {

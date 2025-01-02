@@ -105,7 +105,8 @@ export class SudokuGraph extends Graph {
     // 2) Add the 9 clique vertices arranged in a circle
     for (let i = 0; i < 9; i++) {
       const angle = (2 * Math.PI * i) / 9;
-      const x = 3.5 * (this.gap + this.vertexRadius) + this.cliqueRadius * Math.cos(angle);
+      const x =
+        3.5 * (this.gap + this.vertexRadius) + this.cliqueRadius * Math.cos(angle);
       const y = this.cliqueShift + this.cliqueRadius * Math.sin(angle);
 
       this.addVertex(`clique-${i}`, [x, y]);
@@ -252,7 +253,12 @@ export class Sudoku {
   solution: number[][];
   clues: number[][];
 
-  constructor(gridSize: number, cellSize: number, solution: number[][], clues: number[][]) {
+  constructor(
+    gridSize: number,
+    cellSize: number,
+    solution: number[][],
+    clues: number[][],
+  ) {
     this.gridSize = gridSize;
     this.cellSize = cellSize;
     this.solution = solution;
@@ -270,7 +276,13 @@ export class Sudoku {
   // Method to build and return the Sudoku grid layout
   getLayout() {
     return (
-      <Layout layout direction="column" gap={0} alignItems="center" ref={this.layoutRef}>
+      <Layout
+        layout
+        direction="column"
+        gap={0}
+        alignItems="center"
+        ref={this.layoutRef}
+      >
         {this.solution.map((row, i) => (
           <Layout key={`row${i}`} direction="row" gap={0}>
             {row.map((value, j) => (

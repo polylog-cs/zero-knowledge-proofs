@@ -31,7 +31,13 @@ export default makeScene2D(function* (view) {
   const sudokuTitleRef = createRef<Txt>();
   const sudokuLayoutRef = createRef<Layout>();
   view.add(
-    <Layout ref={sudokuLayoutRef} direction="column" alignItems="center" gap={100} layout>
+    <Layout
+      ref={sudokuLayoutRef}
+      direction="column"
+      alignItems="center"
+      gap={100}
+      layout
+    >
       <Txt ref={sudokuTitleRef} text="Sudoku" fontSize={fontSize} />
       {sudoku.getLayout()}
     </Layout>,
@@ -62,7 +68,9 @@ export default makeScene2D(function* (view) {
   const coloring = [0, 1, 2, 0, 1, 2];
   yield* sequence(
     0.3,
-    ...graph.vertices.map((vertex, i) => vertex.ref().fill(graph.palette[coloring[i]], 0.5)),
+    ...graph.vertices.map((vertex, i) =>
+      vertex.ref().fill(graph.palette[coloring[i]], 0.5),
+    ),
   );
 
   // highlight one vertex, change its color

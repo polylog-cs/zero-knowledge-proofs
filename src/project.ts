@@ -11,7 +11,7 @@ import mario from './scenes/mario?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
 import building_protocol from './scenes/building_protocol?scene';
 import discussion1 from './scenes/discussion1';
-import rotation from './scenes/rotation';
+import rotation from './scenes/rotation?scene';
 
 import './global.css';
 

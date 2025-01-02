@@ -210,7 +210,10 @@ export default makeScene2D(function* (view) {
   view.add(newChallenge());
 
   yield* all(
-    newChallenge().absolutePosition(challengeLayout().children()[2].absolutePosition(), 1),
+    newChallenge().absolutePosition(
+      challengeLayout().children()[2].absolutePosition(),
+      1,
+    ),
     newChallenge().opacity(0).opacity(1, 1),
     newChallenge().scale(0).scale(1, 1),
   );
@@ -230,7 +233,10 @@ export default makeScene2D(function* (view) {
       all(
         newResponse().opacity(0).opacity(1, 0.5),
         newResponse().scale(0).scale(1, 1),
-        newResponse().absolutePosition(responseLayout().children()[2].absolutePosition(), 1),
+        newResponse().absolutePosition(
+          responseLayout().children()[2].absolutePosition(),
+          1,
+        ),
       ),
     ),
   );

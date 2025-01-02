@@ -28,7 +28,16 @@ function getNodeEdges(node: Node) {
   const centerX = (left + right) / 2;
   const centerY = (top + bottom) / 2;
 
-  return { left, right, top, bottom, centerX, centerY, width: bbox.width, height: bbox.height };
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    centerX,
+    centerY,
+    width: bbox.width,
+    height: bbox.height,
+  };
 }
 
 /**

@@ -96,7 +96,8 @@ export class Graph {
 
   addEdge(fromLabel: string, toLabel: string, deviation: number = 0) {
     const ref = createRef<Spline>();
-    const [from, to] = fromLabel < toLabel ? [fromLabel, toLabel] : [toLabel, fromLabel];
+    const [from, to] =
+      fromLabel < toLabel ? [fromLabel, toLabel] : [toLabel, fromLabel];
     this.edges.push({ from, to, ref, deviation });
   }
 
@@ -139,7 +140,9 @@ export class Graph {
             />
           );
         })}
-        {[...this.vertexMap.entries()].map(([label, _]) => this.createVertexNode(label))}
+        {[...this.vertexMap.entries()].map(([label, _]) =>
+          this.createVertexNode(label),
+        )}
       </Layout>
     ) as Layout;
     return layout;
@@ -184,7 +187,10 @@ export class Graph {
       vertices = [...this.vertexMap.values()].map((v) => v.ref());
     }
 
-    yield* sequence(initialDelay, ...vertices.map((node) => node.opacity(newOpacity, duration)));
+    yield* sequence(
+      initialDelay,
+      ...vertices.map((node) => node.opacity(newOpacity, duration)),
+    );
   }
 
   *fadeEdgesSequential(
@@ -213,7 +219,10 @@ export class Graph {
       nodesToFade = [...this.edges.map((e) => e.ref())];
     }
 
-    yield* sequence(initialDelay, ...nodesToFade.map((node) => node.opacity(newOpacity, duration)));
+    yield* sequence(
+      initialDelay,
+      ...nodesToFade.map((node) => node.opacity(newOpacity, duration)),
+    );
   }
 
   *fadeIn(duration: number) {
@@ -231,7 +240,11 @@ export class Graph {
   }
 }
 
-export function generateArcPoints(start: Vector2, end: Vector2, deviation: number): Vector2[] {
+export function generateArcPoints(
+  start: Vector2,
+  end: Vector2,
+  deviation: number,
+): Vector2[] {
   const mid = start.add(end).scale(0.5);
   const perp = end.sub(start).normalized.perpendicular;
   const third = mid.add(perp.scale(deviation));
