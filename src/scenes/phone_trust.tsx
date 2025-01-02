@@ -9,7 +9,7 @@ import {
   LayoutProps,
   Rect,
   Txt,
-} from "@motion-canvas/2d";
+} from '@motion-canvas/2d';
 import {
   all,
   chain,
@@ -22,17 +22,17 @@ import {
   Reference,
   Vector2,
   waitFor,
-} from "@motion-canvas/core";
-import { Solarized } from "../utilities";
+} from '@motion-canvas/core';
+import { Solarized } from '../utilities';
 
-import android_logo from "../assets/icons/android-brands-solid.svg";
-import user_tie from "../assets/icons/user-tie-solid.svg";
-import vasek1 from "../assets/images/vasek.png";
-import vasek2 from "../assets/images/vasek2.png";
+import android_logo from '../assets/icons/android-brands-solid.svg';
+import user_tie from '../assets/icons/user-tie-solid.svg';
+import vasek1 from '../assets/images/vasek.png';
+import vasek2 from '../assets/images/vasek2.png';
 
-import gradientShader from "../shaders/gradient2.glsl";
+import gradientShader from '../shaders/gradient2.glsl';
 
-import chroma from "chroma-js";
+import chroma from 'chroma-js';
 
 export interface BadgeProps extends LayoutProps {
   image: string;
@@ -49,8 +49,8 @@ export class Badge extends Layout {
   public constructor(props?: BadgeProps) {
     props.layout = true;
     props.gap = 50;
-    props.alignItems = "center";
-    props.direction = "column";
+    props.alignItems = 'center';
+    props.direction = 'column';
     super({ ...props });
 
     this.add(
@@ -68,7 +68,7 @@ export class Badge extends Layout {
             shaders={{
               fragment: gradientShader,
               uniforms: {
-                mixColor: chroma("white")
+                mixColor: chroma('white')
                   .rgba()
                   .map((i) => i / 256),
                 mixStrength: 8,
@@ -91,19 +91,19 @@ export class Badge extends Layout {
               }
               rotation={this.image().rotation}
               fill={Solarized.base02}
-              compositeOperation={"source-in"}
+              compositeOperation={'source-in'}
               opacity={props.monochromatic ?? false ? 1 : 0}
             />
           </Node>
         </Circle>
         <Txt
-          fontFamily={"Fira Sans"}
+          fontFamily={'Fira Sans'}
           ref={this.text}
-          textAlign={"center"}
+          textAlign={'center'}
           fontSize={50}
           text={props.text}
         />
-      </>,
+      </>
     );
   }
 }
@@ -119,7 +119,7 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <>
-      <Layout layout gap={400} alignItems={"center"} direction={"row"}>
+      <Layout layout gap={400} alignItems={'center'} direction={'row'}>
         <Badge ref={prover} image={vasek1} text="prover" />
         <Badge
           ref={authority}
@@ -178,7 +178,7 @@ export default makeScene2D(function* (view) {
         text="🤝"
         fontSize={100}
       />
-    </>,
+    </>
   );
 
   yield* waitFor(1);
