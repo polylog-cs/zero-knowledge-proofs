@@ -231,9 +231,9 @@ export class LockableGraph extends Graph {
         
         let lastEdge: (typeof this.edges)[0] | null = null;
         for (let i = 0; i < k; i++) {
-            const availableEdges = this.edges.filter(e => e !== lastEdge);
+            let availableEdges = this.edges.filter(e => e !== lastEdge);
             if(finalEdge != undefined && i == k-1){
-                const availableEdges = this.edges.filter(e => e.from === finFrom && e.to === finTo);
+                availableEdges = this.edges.filter(e => e.from === finFrom && e.to === finTo);
             }
             const chosenEdge = availableEdges[Math.floor(Math.random() * availableEdges.length)];
             const index = this.edges.indexOf(chosenEdge);

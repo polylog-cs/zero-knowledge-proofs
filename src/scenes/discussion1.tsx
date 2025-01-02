@@ -20,22 +20,56 @@ export default makeScene2D(function* (view) {
   yield* scene.createGraph(exampleGraphData, 'verifier', 0);
   yield* scene.graphRef().applyColors();
   yield* scene.graphRef().lockVertices();
-  yield* scene.graphRef().containerRef().opacity(1, 1);
+  yield* scene.fadeInGraph(1);
 
   yield* scene.graphRef().pointAtRandomEdges(10, 1, 50, ['A', 'B']);
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
-  yield* all(
-    scene.graphRef().removeArrows(),
-    scene.graphRef().unlockVertices(),
-    scene.graphRef().containerRef().opacity(0, 1),
-  )
-  // improper coloring example
+  yield* scene.fadeOutGraph(1);
 
-  const improperColoring: Map<string, number> = new Map([['A', 0], ['B', 1], ['C', 0], ['D', 2], ['E', 0], ['F', 1]]);
-  yield* scene.graphRef().applyColors(1, 0.2, improperColoring);
+  // improper coloring example
+  const improperColoring: Map<string, number> = new Map([['A', 0], ['B', 1], ['C', 2], ['D', 1], ['E', 0], ['F', 0]]);
+  yield* all(
+    scene.graphRef().applyColors(0, 0, improperColoring),
+    scene.sendGraph('prover', 0)
+  );
+
+  yield* scene.fadeInGraph(1);
   
+  yield* scene.graphRef().pointAtEdge(['E', 'F'], true, 1, false);
   
+  yield* scene.graphRef().lockVertices();
+  yield* scene.sendGraph('verifier', 1);
+
+  yield* scene.graphRef().pointAtRandomEdges(6, 1, 50, ['E', 'F']);
+
+  yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
+
+  yield* all(
+    scene.addText('prover', "😅"),
+    scene.addText('verifier', "😮/🤨/‼️"),
+  )
+  yield* all(
+    scene.fadeOutGraph(1),
+    scene.removeText('both'),
+  );
+
+  // evidence from seeing different colors
+
+
+  yield* all(
+    scene.graphRef().applyColors(0, 0, improperColoring),
+    scene.sendGraph('prover', 0),
+    scene.graphRef().lockVertices(),
+  );
+
+  yield* scene.fadeInGraph(1);
+  yield* scene.sendGraph('verifier', 1);
+  
+  yield* scene.challenge();
+
+  yield* scene.fadeOutGraph(1);
+
   yield* waitFor(5);
 
 });

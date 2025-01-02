@@ -134,7 +134,21 @@ export class ProtocolScene {
 
         this.graphRef = () => g;
         g.containerRef().opacity(opacity);
-        yield* g.fadeIn(1);
+        yield* g.fadeIn(0);
+    }
+
+    //fade out the graph and reset it; if we want to use it next time, we use fadeInGraph()
+    public *fadeOutGraph(duration: number = 1){
+        yield* all(
+            this.graphRef().removeArrows(),
+            this.graphRef().unlockVertices(),
+            this.graphRef().containerRef().opacity(0, 1),
+          )
+        yield* this.sendGraph('center', 0);
+    }
+
+    public *fadeInGraph(duration: number = 1){
+        yield* this.graphRef().containerRef().opacity(1, 1);
     }
 
     /**
@@ -177,7 +191,11 @@ export class ProtocolScene {
         yield* this.graphRef().unlockVertices(this.graphRef().challengeEdge);
         yield* waitFor(0.5);
 
-        yield* this.graphRef().removeArrow();
+        yield* this.addText('verifier', "✅", true);
+        yield* waitFor(1);
+        yield* this.removeText('verifier');
+
+        yield* this.graphRef().removeArrows();
     }
 
     public *oneRound(firstRound: boolean = false){
