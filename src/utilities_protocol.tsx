@@ -10,14 +10,16 @@ import {
 
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
-import { ParticipantKind } from './components/participant';
+import {
+  ParticipantKind,
+  PROVER_POSITION,
+  VERIFIER_POSITION,
+} from './components/participant';
 import { FONT_FAMILY, logPosition, Solarized } from './utilities';
 import { exampleGraphData, GraphData } from './utilities_graph';
 import { LockableGraph } from './utilities_lockable_graph';
 import { alignTo, moveTo, nextTo, shift } from './utilities_moving';
 
-const PROVER_POSITION = new Vector2(-600, 0);
-const VERIFIER_POSITION = new Vector2(600, 0);
 const CENTER_POSITION = new Vector2(0, 0);
 const GRAPH_BUFFER = 50;
 
