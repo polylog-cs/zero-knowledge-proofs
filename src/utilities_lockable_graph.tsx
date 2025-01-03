@@ -220,7 +220,7 @@ export class LockableGraph extends Graph {
 
   *pointAtRandomEdges(
     finalEdge?: [string, string],
-    k: number = 10,
+    k: number = 20,
     totalDuration: number = 3,
     arrowLength: number = 50
   ) {
@@ -228,8 +228,8 @@ export class LockableGraph extends Graph {
       throw new Error('Graph must have at least 2 edges to point at random edges.');
     }
 
-    // TODO: make this non-linear, switching faster at the beginning
-    const getTimeAt = (i: number) => (i / k) * totalDuration;
+    const timingExponent = 1.7; // 1 = linear, >1 = quicker at the beginning
+    const getTimeAt = (i: number) => (i / k) ** timingExponent * totalDuration;
 
     let lastEdge: (typeof this.edges)[0] | null = null;
     for (let i = 0; i < k; i++) {

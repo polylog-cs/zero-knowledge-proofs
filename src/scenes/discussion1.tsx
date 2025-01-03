@@ -16,8 +16,6 @@ export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   const logger = useLogger();
 
-  yield* waitFor(1);
-
   const scene = new ProtocolScene(view);
 
   yield* all(scene.addParticipant('prover'), scene.addParticipant('verifier'));
