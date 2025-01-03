@@ -10,6 +10,7 @@ import {
 
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
+import { ParticipantKind } from './components/participant';
 import { FONT_FAMILY, logPosition, Solarized } from './utilities';
 import { exampleGraphData, GraphData } from './utilities_graph';
 import { LockableGraph } from './utilities_lockable_graph';
@@ -20,8 +21,7 @@ const VERIFIER_POSITION = new Vector2(600, 0);
 const CENTER_POSITION = new Vector2(0, 0);
 const GRAPH_BUFFER = 50;
 
-export type Participant = 'prover' | 'verifier';
-export type GraphPosition = Participant | 'center';
+export type GraphPosition = ParticipantKind | 'center';
 
 export class ProtocolScene {
   public proverRef = createRef<Img>();
@@ -50,7 +50,7 @@ export class ProtocolScene {
   /**
    * Add a participant image (prover or verifier).
    */
-  private *addParticipant(which: Participant, path?: string) {
+  private *addParticipant(which: ParticipantKind, path?: string) {
     const ref = which === 'prover' ? this.proverRef : this.verifierRef;
     const defaultPath = which === 'prover' ? proverImage : verifierImage;
     const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
@@ -67,7 +67,11 @@ export class ProtocolScene {
    * For prover: align left.
    * For verifier: align right.
    */
-  public *addText(which: Participant, text: string, removeCurrent: boolean = false) {
+  public *addText(
+    which: ParticipantKind,
+    text: string,
+    removeCurrent: boolean = false,
+  ) {
     const lineHeight = 50;
     const isProver = which === 'prover';
     const targetRef = isProver ? this.proverRef : this.verifierRef;
@@ -106,7 +110,7 @@ export class ProtocolScene {
    * Remove all text from a participant or both.
    * Fades out and removes all lines.
    */
-  public *removeText(which: Participant | 'both'): ThreadGenerator {
+  public *removeText(which: ParticipantKind | 'both'): ThreadGenerator {
     if (which == 'both') {
       yield* all(this.removeText('prover'), this.removeText('verifier'));
     } else {
@@ -166,7 +170,7 @@ export class ProtocolScene {
   /**
    * Sends the graph to a target location: 'center', 'prover', or 'verifier'.
    */
-  public *sendGraph(target: 'center' | Participant, duration: number = 1) {
+  public *sendGraph(target: 'center' | ParticipantKind, duration: number = 1) {
     const g = this.graphRef();
     if (!g) return;
     let finalPos = CENTER_POSITION;

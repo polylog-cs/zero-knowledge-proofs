@@ -23,6 +23,7 @@ export default makeProject({
     discussion1,
     building_protocol_1,
     building_protocol_2,
+    commitments,
     //test,
     sudoku_reduction,
     lock,
