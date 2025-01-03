@@ -37,9 +37,10 @@ export default makeScene2D(function* (view) {
       ></Participant>
       <Circle
         ref={circle}
+        key="circleToHide"
         size={200}
         fill={Solarized.red}
-        zIndex={0}
+        zIndex={-1}
         position={PROVER_POSITION.addX(350)}
       />
       <Lock ref={lock} object={circle()} />
@@ -65,24 +66,71 @@ export default makeScene2D(function* (view) {
 
   nextTo(commitText(), circle(), 'down', 100);
 
+  //// Lock
   yield* waitFor(1);
   yield* all(lock().lock(), commitText().opacity(1, 1));
   yield* circle().position(VERIFIER_POSITION.addX(-350), 1);
 
+  //// Unlock
   nextTo(revealText(), circle(), 'down', 100);
 
-  nextTo(key(), prover(), 'right', 20);
-  yield* key().opacity(1, 0.5);
+  const passKey = function* () {
+    nextTo(key(), prover(), 'right', 20);
+    key().rotation(0);
+    yield* key().opacity(1, 0.5);
+    yield* all(
+      key().rotation(180, 1),
+      key().position.x(verifier().position().x - 150, 1),
+      key().position.y(-150, 0.5).to(0, 0.5),
+    );
+  };
+
+  const unlockUsingKey = function* () {
+    yield* all(key().position.add([-50, 0], 1), key().opacity(0, 1), lock().unlock());
+  };
+
+  yield* passKey();
+  yield* all(revealText().opacity(1, 1), unlockUsingKey());
+  yield* waitFor(1);
+
+  //// Peeking is not allowed
   yield* all(
-    key().rotation(180, 1),
-    key().position.x(verifier().position().x - 150, 1),
-    key().position.y(-150, 0.5).to(0, 0.5),
+    circle().position([0, 0], 1),
+    lock().lock(),
+    commitText().opacity(0, 1),
+    revealText().opacity(0, 1),
   );
+  yield* waitFor(1);
+  // The circle must not be a child of the lock so that it doesn't inherit the opacity.
+  // We want the lock to become see-through.
+  circle().reparent(view);
+  yield* circle().opacity(1, 0);
+
+  yield* all(lock().opacity(0.5, 1));
+  verifier().expression('looking');
+  yield* waitFor(1);
+  verifier().expression('neutral');
+
+  //// The color cannot be changed
   yield* all(
-    revealText().opacity(1, 1),
-    key().position.add([-50, 0], 1),
-    key().opacity(0, 1),
-    lock().unlock(),
+    lock().unlock(0.5),
+    circle().opacity(1, 1),
+    circle().position(PROVER_POSITION.addX(350), 1),
   );
-  yield* waitFor(3);
+  lock().opacity(1);
+  yield* waitFor(1);
+
+  // Pass to verifier
+  prover().expression('thinking');
+  yield* lock().lock();
+  yield* circle().position(VERIFIER_POSITION.addX(-350), 1);
+  yield* waitFor(1);
+
+  // Open with a different color
+  yield* passKey();
+  circle().fill(Solarized.green);
+  yield* unlockUsingKey();
+  prover().expression('embarrassed');
+  verifier().expression('thinking');
+  yield* waitFor(1);
 });

@@ -2,7 +2,7 @@ import { makeProject } from '@motion-canvas/core';
 
 import building_protocol_1 from './scenes/building_protocol_1?scene';
 import building_protocol_2 from './scenes/building_protocol_2?scene';
-import commitments from './scenes/commitments?scene';
+import commitments_1 from './scenes/commitments_1?scene';
 import discussion1 from './scenes/discussion1?scene';
 import lock from './scenes/lock?scene';
 import mario from './scenes/mario?scene';
@@ -23,7 +23,7 @@ export default makeProject({
     discussion1,
     building_protocol_1,
     building_protocol_2,
-    commitments,
+    commitments_1,
     //test,
     sudoku_reduction,
     lock,

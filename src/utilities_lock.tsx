@@ -44,6 +44,7 @@ export class Lock extends Node {
       <>
         <Rect
           ref={this.background}
+          key="background"
           width={w}
           height={() => h() * this.openScale()}
           fill={Solarized.base02}
@@ -56,6 +57,7 @@ export class Lock extends Node {
         />
         <Rect
           ref={this.top}
+          key="top"
           width={w}
           height={() => h() / 2}
           fill={Solarized.base00}
@@ -74,6 +76,7 @@ export class Lock extends Node {
         />
         <Rect
           ref={this.bottom}
+          key="bottom"
           width={w}
           height={() => h() / 2}
           fill={Solarized.base00}
@@ -92,6 +95,7 @@ export class Lock extends Node {
         />
         <Circle
           ref={this.lockTop}
+          key="lockTop"
           startAngle={180}
           endAngle={0}
           position={this.top().bottom}
@@ -104,6 +108,7 @@ export class Lock extends Node {
         />
         <Circle
           ref={this.lockBottom}
+          key="lockBottom"
           startAngle={0}
           endAngle={180}
           position={this.bottom().top}
@@ -121,7 +126,9 @@ export class Lock extends Node {
   public *lock(duration: number = 1.5) {
     let t = duration / 3;
 
-    this.add(this.object);
+    if (!this.children().includes(this.object)) {
+      this.add(this.object);
+    }
 
     yield* all(
       this.background().scale(1, t * 2),
