@@ -1,32 +1,33 @@
 import {
+  blur,
+  Circle,
   Img,
   Layout,
-  NodeProps,
-  Rect,
-  Node,
   LayoutProps,
   Line,
-  Circle,
-  Txt,
-  blur,
+  Node,
+  NodeProps,
+  Rect,
   Spline,
+  Txt,
 } from '@motion-canvas/2d';
 import {
+  all,
   Color,
   createRef,
+  createSignal,
+  Logger,
   PossibleVector2,
   Reference,
-  createSignal,
-  all,
   sequence,
-  Logger,
-  Vector2,
-  waitFor,
   Signal,
   ThreadGenerator,
+  Vector2,
+  waitFor,
 } from '@motion-canvas/core';
-import { Graph } from './utilities_graph';
+
 import { FONT_FAMILY, Solarized, solarizedPalette } from './utilities';
+import { Graph } from './utilities_graph';
 
 export const solution = [
   [8, 1, 2, 7, 5, 3, 6, 4, 9],

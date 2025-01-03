@@ -11,13 +11,12 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { FONT_FAMILY, Icon, Solarized } from '../utilities';
+import { openOutputPath } from '@motion-canvas/ui';
 
 import gear from '../assets/icons/gear-solid.svg';
-
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
-import { openOutputPath } from '@motion-canvas/ui';
+import { FONT_FAMILY, Icon, Solarized } from '../utilities';
 
 export function* solve(
   view: View2D,

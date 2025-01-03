@@ -1,18 +1,19 @@
-import { Node, Layout, Img, Txt, makeScene2D, Rect, View2D } from '@motion-canvas/2d';
+import { Img, Layout, makeScene2D, Node, Rect, Txt, View2D } from '@motion-canvas/2d';
 import {
+  all,
   createRef,
+  Reference,
+  ThreadGenerator,
   Vector2,
   waitFor,
-  all,
-  ThreadGenerator,
-  Reference,
 } from '@motion-canvas/core';
-import { LockableGraph } from './utilities_lockable_graph';
-import { nextTo, moveTo, alignTo, shift } from './utilities_moving';
-import { exampleGraphData, GraphData } from './utilities_graph';
-import { FONT_FAMILY, Solarized, logPosition } from './utilities';
+
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
+import { FONT_FAMILY, logPosition, Solarized } from './utilities';
+import { exampleGraphData, GraphData } from './utilities_graph';
+import { LockableGraph } from './utilities_lockable_graph';
+import { alignTo, moveTo, nextTo, shift } from './utilities_moving';
 
 const PROVER_POSITION = new Vector2(-600, 0);
 const VERIFIER_POSITION = new Vector2(600, 0);

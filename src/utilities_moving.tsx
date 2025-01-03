@@ -1,6 +1,7 @@
 import { Node } from '@motion-canvas/2d';
-import { Vector2, all } from '@motion-canvas/core';
-import { logValue, logPosition } from './utilities';
+import { all, Vector2 } from '@motion-canvas/core';
+
+import { logPosition, logValue } from './utilities';
 
 // all functions use absolute positions
 

@@ -1,13 +1,14 @@
-import { Layout, Line, Circle, Txt, Spline, Shape } from '@motion-canvas/2d';
+import { Circle, Layout, Line, Shape, Spline, Txt } from '@motion-canvas/2d';
 import {
-  createRef,
   all,
-  sequence,
-  Vector2,
-  useLogger,
+  createRef,
   Reference,
+  sequence,
+  useLogger,
+  Vector2,
 } from '@motion-canvas/core';
-import { Solarized, logValue } from './utilities';
+
+import { logValue, Solarized } from './utilities';
 
 const logger = useLogger();
 

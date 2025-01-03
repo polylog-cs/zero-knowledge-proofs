@@ -9,11 +9,11 @@ import {
   SimpleSignal,
   waitFor,
 } from '@motion-canvas/core';
-import { Solarized } from '../utilities';
-import { Lock } from '../utilities_lock';
 import chroma from 'chroma-js';
 
 import gradientShader from '../shaders/gradient.glsl';
+import { Solarized } from '../utilities';
+import { Lock } from '../utilities_lock';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);

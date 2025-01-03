@@ -1,24 +1,25 @@
-import { Circle, Txt, Line, Node, Layout, makeScene2D } from '@motion-canvas/2d';
+import { Circle, Layout, Line, makeScene2D, Node, Txt } from '@motion-canvas/2d';
 import {
+  all,
   createRef,
   createSignal,
-  useLogger,
-  all,
   sequence,
-  waitFor,
+  useLogger,
   Vector2,
+  waitFor,
 } from '@motion-canvas/core';
+
 import {
-  Solarized,
-  Graph,
-  Sudoku,
-  gridSize,
   cellSize,
-  solution,
   clues,
   fontSize,
+  Graph,
+  gridSize,
+  Solarized,
+  solution,
+  Sudoku,
 } from '../utilities';
-import { exampleLabels, exampleEdges } from '../utilities_graph';
+import { exampleEdges, exampleLabels } from '../utilities_graph';
 
 export default makeScene2D(function* (view) {
   const logger = useLogger();

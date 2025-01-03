@@ -1,17 +1,25 @@
-import { makeScene2D, Path, Spline } from '@motion-canvas/2d';
-import { Layout, Txt, Rect, Circle } from '@motion-canvas/2d';
+import {
+  Circle,
+  Layout,
+  makeScene2D,
+  Path,
+  Rect,
+  Spline,
+  Txt,
+} from '@motion-canvas/2d';
 import { createRef, createSignal, useLogger, Vector2 } from '@motion-canvas/core';
 import { all, sequence, waitFor } from '@motion-canvas/core/lib/flow';
+
 import {
-  Solarized,
   indicate,
   logPair,
-  logValue,
   logPosition,
+  logValue,
+  Solarized,
   solarizedPalette,
 } from '../utilities';
 import { generateArcPoints } from '../utilities_graph';
-import { Sudoku, SudokuGraph, solution, clues } from '../utilities_sudoku';
+import { clues, solution, Sudoku, SudokuGraph } from '../utilities_sudoku';
 
 export default makeScene2D(function* (view) {
   const logger = useLogger();

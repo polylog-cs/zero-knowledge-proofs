@@ -2,11 +2,11 @@ import {
   Circle,
   Img,
   Layout,
+  LayoutProps,
   Line,
   makeScene2D,
   Node,
   NodeProps,
-  LayoutProps,
   Rect,
   Txt,
 } from '@motion-canvas/2d';
@@ -23,16 +23,14 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { FONT_FAMILY, Solarized } from '../utilities';
+import chroma from 'chroma-js';
 
 import android_logo from '../assets/icons/android-brands-solid.svg';
 import user_tie from '../assets/icons/user-tie-solid.svg';
 import vasek1 from '../assets/images/vasek.png';
 import vasek2 from '../assets/images/vasek2.png';
-
 import gradientShader from '../shaders/gradient2.glsl';
-
-import chroma from 'chroma-js';
+import { FONT_FAMILY, Solarized } from '../utilities';
 
 export interface BadgeProps extends LayoutProps {
   image: string;
@@ -85,7 +83,7 @@ export class Badge extends Layout {
               rotation={this.image().rotation}
               fill={Solarized.base02}
               compositeOperation={'source-in'}
-              opacity={props.monochromatic ?? false ? 1 : 0}
+              opacity={(props.monochromatic ?? false) ? 1 : 0}
             />
           </Node>
         </Circle>

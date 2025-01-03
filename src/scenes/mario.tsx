@@ -1,5 +1,4 @@
-import { Circle, Node, Rect, Img, Layout, makeScene2D } from '@motion-canvas/2d';
-import { Solarized } from '../utilities';
+import { Circle, Img, Layout, makeScene2D, Node, Rect } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -13,19 +12,18 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
+import chroma from 'chroma-js';
 
+import block from '../assets/SMB/block.png';
+import cloud_big from '../assets/SMB/cloud_big.png';
+import cloud_small from '../assets/SMB/cloud_small.png';
+import mario_jump from '../assets/SMB/jump.png';
 import mario_run_1 from '../assets/SMB/run1.png';
 import mario_run_2 from '../assets/SMB/run2.png';
 import mario_run_3 from '../assets/SMB/run3.png';
 import mario_run_4 from '../assets/SMB/run4.png';
-import mario_jump from '../assets/SMB/jump.png';
-import block from '../assets/SMB/block.png';
-import cloud_big from '../assets/SMB/cloud_big.png';
-import cloud_small from '../assets/SMB/cloud_small.png';
-
-import chroma from 'chroma-js';
-
 import gradientShader from '../shaders/gradient2.glsl';
+import { Solarized } from '../utilities';
 
 export default makeScene2D(function* (view) {
   let image = createRef<Img>();

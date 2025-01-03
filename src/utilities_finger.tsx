@@ -1,6 +1,7 @@
-import { Txt, Node, NodeProps } from '@motion-canvas/2d';
-import { useLogger, waitFor, createRef, Vector2 } from '@motion-canvas/core';
-import { Solarized, logPosition } from './utilities';
+import { Node, NodeProps, Txt } from '@motion-canvas/2d';
+import { createRef, useLogger, Vector2, waitFor } from '@motion-canvas/core';
+
+import { logPosition, Solarized } from './utilities';
 
 export interface FingerProps extends NodeProps {
   padding?: number;

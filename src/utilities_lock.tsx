@@ -9,12 +9,10 @@ import {
   SimpleSignal,
   waitFor,
 } from '@motion-canvas/core';
-
-import { Solarized } from './utilities';
-
 import chroma from 'chroma-js';
 
 import gradientShader from './shaders/gradient.glsl';
+import { Solarized } from './utilities';
 
 export interface LockProps extends NodeProps {
   object?: Layout;

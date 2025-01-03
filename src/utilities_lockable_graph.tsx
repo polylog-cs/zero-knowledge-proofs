@@ -1,18 +1,19 @@
-import { Node, Layout, Circle, Line, Spline, Txt } from '@motion-canvas/2d';
+import { Circle, Layout, Line, Node, Spline, Txt } from '@motion-canvas/2d';
 import {
-  createRef,
   all,
-  sequence,
-  waitFor,
-  useLogger,
-  ThreadGenerator,
+  createRef,
   Reference,
+  sequence,
+  ThreadGenerator,
+  useLogger,
+  Vector2,
+  waitFor,
 } from '@motion-canvas/core';
-import { Lock } from './utilities_lock';
-import { Graph, GraphData } from './utilities_graph';
+
+import { logPosition, shuffleArray, Solarized } from './utilities';
 import { Finger } from './utilities_finger';
-import { Solarized, shuffleArray, logPosition } from './utilities';
-import { Vector2 } from '@motion-canvas/core';
+import { Graph, GraphData } from './utilities_graph';
+import { Lock } from './utilities_lock';
 
 export class LockableGraph extends Graph {
   public locks = new Map<string, Reference<Lock>>();

@@ -22,14 +22,12 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { FONT_FAMILY, Solarized } from '../utilities';
-
-import user_tie from '../assets/icons/user-tie-solid.svg';
-import thumbs_up from '../assets/icons/thumbs-up-solid.svg';
-
-import gradientShader from '../shaders/gradient2.glsl';
-
 import chroma from 'chroma-js';
+
+import thumbs_up from '../assets/icons/thumbs-up-solid.svg';
+import user_tie from '../assets/icons/user-tie-solid.svg';
+import gradientShader from '../shaders/gradient2.glsl';
+import { FONT_FAMILY, Solarized } from '../utilities';
 
 export interface MobileProps extends NodeProps {
   pinLength: number;
