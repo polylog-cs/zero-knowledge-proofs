@@ -213,7 +213,7 @@ export class LockableGraph extends Graph {
     if (!specificArrows) {
       this.arrows = [];
     } else {
-      // Remove only those specified from the arrows a rray
+      // Remove only those specified from the arrows array
       this.arrows = this.arrows.filter((ar) => !toRemove.includes(ar));
     }
   }
