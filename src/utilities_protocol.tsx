@@ -1,9 +1,9 @@
-import { Node, Layout, Img, Txt, makeScene2D, Rect } from '@motion-canvas/2d';
+import { Node, Layout, Img, Txt, makeScene2D, Rect, View2D } from '@motion-canvas/2d';
 import { createRef, Vector2, waitFor, all, ThreadGenerator } from '@motion-canvas/core';
 import { LockableGraph } from './utilities_lockable_graph';
 import { nextTo, moveTo, alignTo, shift } from './utilities_moving';
 import { exampleGraphData, GraphData } from './utilities_graph';
-import { Solarized, logPosition } from './utilities';
+import { FONT_FAMILY, Solarized, logPosition } from './utilities';
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
 
@@ -13,6 +13,7 @@ const CENTER_POSITION = new Vector2(0, 0);
 const GRAPH_BUFFER = 50;
 
 export type Participant = 'prover' | 'verifier';
+export type GraphPosition = Participant | 'center';
 
 export class ProtocolScene {
   public proverRef = createRef<Img>();
@@ -24,14 +25,24 @@ export class ProtocolScene {
   private proverTexts: ReturnType<typeof createRef<Txt>>[] = [];
   private verifierTexts: ReturnType<typeof createRef<Txt>>[] = [];
 
-  constructor(private view: Layout) {
+  constructor(private view: View2D) {
     view.add(<Layout ref={this.containerRef} layout={false} />);
+  }
+
+  public *setup(graphPosition: GraphPosition = 'center', locked: boolean = false) {
+    yield* all(this.addParticipant('prover'), this.addParticipant('verifier'));
+    yield* this.createGraph(graphPosition, 0);
+    yield* this.graphRef().applyColors(0, 0);
+    if (locked) {
+      yield* this.graphRef().lockVertices();
+    }
+    yield* this.fadeInGraph(1);
   }
 
   /**
    * Add a participant image (prover or verifier).
    */
-  public *addParticipant(which: Participant, path?: string) {
+  private *addParticipant(which: Participant, path?: string) {
     const ref = which === 'prover' ? this.proverRef : this.verifierRef;
     const defaultPath = which === 'prover' ? proverImage : verifierImage;
     const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
@@ -66,7 +77,7 @@ export class ProtocolScene {
         ref={newTextRef}
         text={text}
         fontSize={40}
-        fontFamily="Fira Sans, Noto Color Emoji"
+        fontFamily={FONT_FAMILY}
         fill={Solarized.text}
         opacity={0}
       />,
@@ -104,9 +115,9 @@ export class ProtocolScene {
    * Create a LockableGraph from data and fade it in at the center (or near prover/verifier).
    */
   public *createGraph(
-    data: GraphData,
-    initialPosition: 'center' | Participant = 'center',
+    initialPosition: GraphPosition = 'center',
     opacity: number = 1,
+    data: GraphData = exampleGraphData,
   ) {
     const g = new LockableGraph(50);
     g.initialize(data);
@@ -136,7 +147,7 @@ export class ProtocolScene {
       this.graphRef().removeArrows(),
       this.graphRef().containerRef().opacity(0, 1),
     );
-    yield this.graphRef().unlockVertices();
+    yield* this.graphRef().unlockVertices([], 0);
     yield* this.sendGraph('center', 0);
   }
 

@@ -228,8 +228,9 @@ export class LockableGraph extends Graph {
       throw new Error('Graph must have at least 2 edges to point at random edges.');
     }
 
-    const timingExponent = 1.7; // 1 = linear, >1 = quicker at the beginning
-    const getTimeAt = (i: number) => (i / k) ** timingExponent * totalDuration;
+    const timingExponent = 2; // 1 = linear, >1 = quicker at the beginning
+    const getTimeFractionAt = (i: number) => (0.5 + i / k) ** timingExponent;
+    const totalNormalizedTime = getTimeFractionAt(k) - getTimeFractionAt(0);
 
     let lastEdge: (typeof this.edges)[0] | null = null;
     for (let i = 0; i < k; i++) {
@@ -244,7 +245,8 @@ export class LockableGraph extends Graph {
       const side =
         index >= 0 && index < this.edgeSides.length ? this.edgeSides[index] : true;
 
-      const duration = getTimeAt(i + 1) - getTimeAt(i);
+      const normalizedDuration = getTimeFractionAt(i + 1) - getTimeFractionAt(i);
+      const duration = (normalizedDuration * totalDuration) / totalNormalizedTime;
 
       yield* this.pointAtEdge(
         [chosenEdge.from, chosenEdge.to],

@@ -18,9 +18,8 @@ export default makeScene2D(function* (view) {
 
   const scene = new ProtocolScene(view);
 
-  yield* all(scene.addParticipant('prover'), scene.addParticipant('verifier'));
-  yield* scene.createGraph(exampleGraphData, 'verifier', 0);
-  yield* scene.graphRef().applyColors();
+  yield* scene.setup('verifier', true);
+
   yield* scene.graphRef().lockVertices();
   yield* scene.fadeInGraph(1);
 

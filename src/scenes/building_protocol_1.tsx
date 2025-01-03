@@ -16,14 +16,8 @@ export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   const logger = useLogger();
 
-  yield* waitFor(1);
-
   const scene = new ProtocolScene(view);
-
-  yield* all(scene.addParticipant('prover'), scene.addParticipant('verifier'));
-
-  // Create a graph in the center + trash talks
-  yield* scene.createGraph(exampleGraphData, 'center');
+  yield* scene.setup();
 
   yield* scene.addText('prover', 'I can color this');
   yield* scene.addText('verifier', 'Oh yeah?');
@@ -72,34 +66,6 @@ export default makeScene2D(function* (view) {
   yield* scene.addText('verifier', '👀');
 
   yield* all(scene.graphRef().containerRef().opacity(0, 1), scene.removeText('both'));
-
-  yield* waitFor(5);
-
-  // predel, ted zacneme vysvetlovat protokol
-
-  yield* all(scene.graphRef().unlockVertices(), scene.sendGraph('prover'));
-  yield* scene.graphRef().containerRef().opacity(1, 1);
-
-  yield* all(
-    scene.addText('prover', '1. Lock the colors'),
-    scene.graphRef().lockVertices(),
-  );
-
-  yield* scene.sendGraph('verifier');
-
-  const challengeEdge: [string, string] = ['A', 'B'];
-  yield* all(
-    scene.addText('verifier', '2. Challenge an edge'),
-    scene.graphRef().pointAtEdge(challengeEdge, true, 1, false),
-  );
-
-  yield* all(
-    scene.addText('prover', '3. Reveal the colors'),
-    scene.graphRef().unlockVertices(challengeEdge),
-    scene.graphRef().removeArrows(),
-  );
-
-  yield* all(scene.addText('verifier', '4. Check the colors'));
 
   yield* waitFor(5);
 });

@@ -22,14 +22,7 @@ export interface GraphData {
 
 // example graph
 const l = 100;
-export const exampleGraphData: {
-  labels: string[];
-  edges: [string, string][];
-  positions: [number, number][];
-  sides: boolean[];
-  colors: number[];
-  vertexDirs: [number, number][];
-} = {
+export const exampleGraphData: GraphData = {
   labels: ['A', 'B', 'C', 'D', 'E', 'F'],
   edges: [
     ['A', 'B'],
