@@ -44,7 +44,7 @@ export const Solarized = {
   green: '#859900',
 
   background: '#eee8d5', // base2
-  text: '#93a1a1',
+  text: '#93a1a1', //  base1
   gray: '#93a1a1', //  base1
 };
 
@@ -57,7 +57,7 @@ export const solarizedPalette = [
   Solarized.blue,
   Solarized.violet,
   Solarized.magenta,
-  Solarized.gray,
+  '#3ecea0', // We've run out of solarized :(
 ];
 
 export const fontSize = 50;

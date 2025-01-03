@@ -1,5 +1,12 @@
 import { Node, Layout, Img, Txt, makeScene2D, Rect, View2D } from '@motion-canvas/2d';
-import { createRef, Vector2, waitFor, all, ThreadGenerator } from '@motion-canvas/core';
+import {
+  createRef,
+  Vector2,
+  waitFor,
+  all,
+  ThreadGenerator,
+  Reference,
+} from '@motion-canvas/core';
 import { LockableGraph } from './utilities_lockable_graph';
 import { nextTo, moveTo, alignTo, shift } from './utilities_moving';
 import { exampleGraphData, GraphData } from './utilities_graph';
@@ -22,8 +29,8 @@ export class ProtocolScene {
   public containerRef = createRef<Layout>();
 
   // Arrays to store multiple text lines for prover and verifier
-  private proverTexts: ReturnType<typeof createRef<Txt>>[] = [];
-  private verifierTexts: ReturnType<typeof createRef<Txt>>[] = [];
+  private proverTexts: Reference<Txt>[] = [];
+  private verifierTexts: Reference<Txt>[] = [];
 
   constructor(private view: View2D) {
     view.add(<Layout ref={this.containerRef} layout={false} />);

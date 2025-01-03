@@ -100,10 +100,6 @@ export default makeScene2D(function* (view) {
   // 6) Fade out the swatch and the digits
   yield* all(swatchRef().opacity(0, 0.5), digitsRef().opacity(0, 0.5));
 
-  const base_vertex = graph.getVertex('(0,0)');
-  const first_row = graph.getRowVertices(0);
-  const first_column = graph.getColumnVertices(0);
-
   const arr = [
     Array.from({ length: 8 }, (_, i) => [0, i + 1]),
     Array.from({ length: 8 }, (_, i) => [i + 1, 0]),

@@ -22,9 +22,11 @@ import {
   Logger,
   Vector2,
   waitFor,
+  Signal,
+  ThreadGenerator,
 } from '@motion-canvas/core';
 import { Graph } from './utilities_graph';
-import { Solarized, solarizedPalette } from './utilities';
+import { FONT_FAMILY, Solarized, solarizedPalette } from './utilities';
 
 export const solution = [
   [8, 1, 2, 7, 5, 3, 6, 4, 9],
@@ -205,7 +207,7 @@ export class SudokuGraph extends Graph {
   }
 
   *colorSolution(solution: number[][], colors: string[] = solarizedPalette) {
-    const cliqueAnims: Array<Generator> = [];
+    const cliqueAnims: Array<ThreadGenerator> = [];
     for (let d = 0; d < 9; d++) {
       cliqueAnims.push(this.getVertex(`clique-${d}`).fill(colors[d], 0.5));
     }
@@ -214,7 +216,7 @@ export class SudokuGraph extends Graph {
     // Now, for each digit 1 through 9, color all Sudoku vertices with that digit
     for (let d = 1; d <= 9; d++) {
       const color = colors[d - 1];
-      const colorAnimations: Array<Generator> = [];
+      const colorAnimations: Array<ThreadGenerator> = [];
 
       // Find all vertices that correspond to cells with digit d
       for (let i = 0; i < 9; i++) {
@@ -244,8 +246,8 @@ export class Sudoku {
   layoutRef = createRef<Layout>();
   cells: Array<
     Array<{
-      textRef: ReturnType<typeof createRef<Txt>>;
-      blurSignal: ReturnType<typeof createSignal>;
+      textRef: Reference<Txt>;
+      blurSignal: Signal<number, number>;
     }>
   >;
   gridSize: number;
@@ -290,19 +292,19 @@ export class Sudoku {
                 key={`cell${i}${j}`}
                 width={this.cellSize}
                 height={this.cellSize}
-                stroke="black"
+                stroke={Solarized.gray}
                 lineWidth={2}
                 alignItems="center"
                 justifyContent="center"
                 opacity={1}
-                fill={Solarized.base2}
               >
                 <Txt
                   ref={this.cells[i][j].textRef}
                   fontSize={48}
-                  fill="black"
+                  fill={Solarized.gray}
                   opacity={this.clues[i][j] === 1 ? 1 : 0} // Show only clues initially
                   text={this.clues[i][j] === 1 ? `${value}` : ''}
+                  fontFamily={FONT_FAMILY}
                   //filters={[blur(this.cells[i][j].blurSignal)]} // Apply blur filter
                 />
               </Rect>
