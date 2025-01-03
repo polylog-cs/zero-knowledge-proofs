@@ -11,7 +11,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { Icon, Solarized } from '../utilities';
+import { FONT_FAMILY, Icon, Solarized } from '../utilities';
 
 import gear from '../assets/icons/gear-solid.svg';
 
@@ -111,7 +111,7 @@ export default makeScene2D(function* (view) {
       padding={20}
       top={teacher().top().addY(100)}
       ref={challenge}
-      fontFamily={'Fira Sans'}
+      fontFamily={FONT_FAMILY}
       text={'13 + 32'}
       zIndex={-1}
     />,
@@ -156,7 +156,7 @@ export default makeScene2D(function* (view) {
         <Txt
           fontWeight={500}
           fontSize={60}
-          fontFamily={'Fira Sans'}
+          fontFamily={FONT_FAMILY}
           text={'Challenge'}
           padding={[0, 0, 20, 0]}
           opacity={0}
@@ -167,7 +167,7 @@ export default makeScene2D(function* (view) {
         <Txt
           fontWeight={500}
           fontSize={60}
-          fontFamily={'Fira Sans'}
+          fontFamily={FONT_FAMILY}
           text={'Response'}
           padding={[0, 0, 20, 0]}
           opacity={0}

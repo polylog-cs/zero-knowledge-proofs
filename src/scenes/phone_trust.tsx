@@ -23,7 +23,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { Solarized } from '../utilities';
+import { FONT_FAMILY, Solarized } from '../utilities';
 
 import android_logo from '../assets/icons/android-brands-solid.svg';
 import user_tie from '../assets/icons/user-tie-solid.svg';
@@ -85,12 +85,12 @@ export class Badge extends Layout {
               rotation={this.image().rotation}
               fill={Solarized.base02}
               compositeOperation={'source-in'}
-              opacity={(props.monochromatic ?? false) ? 1 : 0}
+              opacity={props.monochromatic ?? false ? 1 : 0}
             />
           </Node>
         </Circle>
         <Txt
-          fontFamily={'Fira Sans'}
+          fontFamily={FONT_FAMILY}
           ref={this.text}
           textAlign={'center'}
           fontSize={50}

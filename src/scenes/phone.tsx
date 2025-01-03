@@ -22,7 +22,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { Solarized } from '../utilities';
+import { FONT_FAMILY, Solarized } from '../utilities';
 
 import user_tie from '../assets/icons/user-tie-solid.svg';
 import thumbs_up from '../assets/icons/thumbs-up-solid.svg';
@@ -138,7 +138,7 @@ export class Mobile extends Layout {
                 ))}
               </Rect>
               <Txt
-                fontFamily={'Fira Sans'}
+                fontFamily={FONT_FAMILY}
                 ref={this.passwordPINText}
                 text={'PIN'}
                 fill={Solarized.cyan}
@@ -161,7 +161,7 @@ export class Mobile extends Layout {
                     justifyContent={'center'}
                   >
                     <Txt
-                      fontFamily={'Fira Sans'}
+                      fontFamily={FONT_FAMILY}
                       text={`${i}`}
                       fill={Solarized.base3}
                       fontWeight={700}
@@ -333,7 +333,7 @@ export default makeScene2D(function* (view) {
             />
           </Node>
         </Circle>
-        <Txt fontFamily={'Fira Sans'} ref={taText} textAlign={'center'} fontSize={50} />
+        <Txt fontFamily={FONT_FAMILY} ref={taText} textAlign={'center'} fontSize={50} />
       </Layout>
       <Line
         ref={line}
@@ -391,7 +391,7 @@ export default makeScene2D(function* (view) {
     <>
       {sendNumbers.map((ref, i) => (
         <Txt
-          fontFamily={'Fira Sans'}
+          fontFamily={FONT_FAMILY}
           fontSize={70}
           fontWeight={700}
           position={line().points()[1].add(new Vector2(-50, -50))}
