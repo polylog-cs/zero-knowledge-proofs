@@ -9,8 +9,9 @@ import phone_trust from './scenes/phone_trust?scene';
 import teacher from './scenes/teacher?scene';
 import mario from './scenes/mario?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
-import building_protocol from './scenes/building_protocol?scene';
-import discussion1 from './scenes/discussion1';
+import building_protocol_1 from './scenes/building_protocol_1?scene';
+import building_protocol_2 from './scenes/building_protocol_2?scene';
+import discussion1 from './scenes/discussion1?scene';
 import rotation from './scenes/rotation?scene';
 
 import './global.css';
@@ -19,7 +20,8 @@ export default makeProject({
   experimentalFeatures: true,
   scenes: [
     discussion1,
-    building_protocol,
+    building_protocol_1,
+    building_protocol_2,
     //test,
     sudoku_reduction,
     lock,

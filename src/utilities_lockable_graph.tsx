@@ -1,13 +1,21 @@
 import { Node, Layout, Circle, Line, Spline, Txt } from '@motion-canvas/2d';
-import { createRef, all, sequence, waitFor, useLogger } from '@motion-canvas/core';
+import {
+  createRef,
+  all,
+  sequence,
+  waitFor,
+  useLogger,
+  ThreadGenerator,
+  Reference,
+} from '@motion-canvas/core';
 import { Lock } from './utilities_lock';
-import { Graph } from './utilities_graph';
+import { Graph, GraphData } from './utilities_graph';
 import { Finger } from './utilities_finger';
 import { Solarized, shuffleArray, logPosition } from './utilities';
 import { Vector2 } from '@motion-canvas/core';
 
 export class LockableGraph extends Graph {
-  public locks = new Map<string, ReturnType<typeof createRef<Lock>>>();
+  public locks = new Map<string, Reference<Lock>>();
 
   // colors
   private palette = [Solarized.blue, Solarized.red, Solarized.green];
@@ -17,20 +25,13 @@ export class LockableGraph extends Graph {
   private edgeSides: boolean[] = [];
 
   // Instead of a single arrowRef, we store multiple arrows
-  private arrows: ReturnType<typeof createRef<Finger>>[] = [];
+  private arrows: Reference<Finger>[] = [];
 
   public challengeEdge: [string, string] = ['', ''];
 
   private vertexDirections = new Map<string, Vector2>();
 
-  override initialize(data: {
-    labels: string[];
-    edges: [string, string][];
-    positions: [number, number][];
-    sides: boolean[];
-    colors: number[];
-    vertexDirs?: [number, number][];
-  }) {
+  override initialize(data: GraphData) {
     super.initialize({
       labels: data.labels,
       edges: data.edges,
@@ -77,7 +78,7 @@ export class LockableGraph extends Graph {
   }
 
   *lockVertices(vertices: string[] = [], duration: number = 1.5) {
-    const animations: Generator[] = [];
+    const animations: ThreadGenerator[] = [];
     if (vertices.length === 0) {
       vertices = [...this.vertexMap.keys()];
     }
@@ -91,7 +92,7 @@ export class LockableGraph extends Graph {
   }
 
   *unlockVertices(vertices: string[] = [], duration: number = 1.5) {
-    const animations: Generator[] = [];
+    const animations: ThreadGenerator[] = [];
     if (vertices.length === 0) {
       vertices = [...this.vertexMap.keys()];
     }
@@ -114,13 +115,7 @@ export class LockableGraph extends Graph {
     keep: boolean = false,
     arrowLength: number = 50,
   ) {
-    const [fromLabel, toLabel] = edgePair;
-    const edge = this.edges.find(
-      (e) =>
-        (e.from === fromLabel && e.to === toLabel) ||
-        (e.from === toLabel && e.to === fromLabel),
-    );
-    if (!edge) return;
+    const edge = this.getEdge(edgePair);
 
     const fromVertex = this.vertexMap.get(edge.from);
     const toVertex = this.vertexMap.get(edge.to);
@@ -149,6 +144,18 @@ export class LockableGraph extends Graph {
     if (!keep) {
       yield* this.removeArrows(duration / 10, [arrowRef]);
     }
+  }
+
+  getEdge(edgePair: [string, string]) {
+    const edge = this.edges.find(
+      (e) =>
+        (e.from === edgePair[0] && e.to === edgePair[1]) ||
+        (e.from === edgePair[1] && e.to === edgePair[0]),
+    );
+    if (!edge) {
+      throw new Error(`Edge ${edgePair} not found. Available edges: ${this.edges}`);
+    }
+    return edge;
   }
 
   /**
@@ -193,10 +200,7 @@ export class LockableGraph extends Graph {
    * Remove specified arrows or all if none specified.
    * Fade them out and remove from scene and array.
    */
-  *removeArrows(
-    duration: number = 0.5,
-    specificArrows?: ReturnType<typeof createRef<Finger>>[],
-  ) {
+  *removeArrows(duration: number = 0.5, specificArrows?: Reference<Finger>[]) {
     const toRemove = specificArrows ?? this.arrows;
 
     const fadeOuts = toRemove.map((ref) => ref().opacity(0, duration));
@@ -215,26 +219,24 @@ export class LockableGraph extends Graph {
   }
 
   *pointAtRandomEdges(
-    k: number,
-    duration: number = 1,
-    arrowLength: number = 50,
     finalEdge?: [string, string],
+    k: number = 20,
+    totalDuration: number = 3,
+    arrowLength: number = 50,
   ) {
     if (this.edges.length <= 1) {
-      return;
+      throw new Error('Graph must have at least 2 edges to point at random edges.');
     }
 
-    let [finFrom, finTo] = ['', ''];
-    if (finalEdge != undefined) {
-      [finFrom, finTo] =
-        finalEdge[0] < finalEdge[1] ? finalEdge : [finalEdge[1], finalEdge[0]];
-    }
+    const timingExponent = 2; // 1 = linear, >1 = quicker at the beginning
+    const getTimeFractionAt = (i: number) => (0.5 + i / k) ** timingExponent;
+    const totalNormalizedTime = getTimeFractionAt(k) - getTimeFractionAt(0);
 
     let lastEdge: (typeof this.edges)[0] | null = null;
     for (let i = 0; i < k; i++) {
       let availableEdges = this.edges.filter((e) => e !== lastEdge);
       if (finalEdge != undefined && i == k - 1) {
-        availableEdges = this.edges.filter((e) => e.from === finFrom && e.to === finTo);
+        availableEdges = [this.getEdge(finalEdge)];
       }
       const chosenEdge =
         availableEdges[Math.floor(Math.random() * availableEdges.length)];
@@ -242,6 +244,9 @@ export class LockableGraph extends Graph {
 
       const side =
         index >= 0 && index < this.edgeSides.length ? this.edgeSides[index] : true;
+
+      const normalizedDuration = getTimeFractionAt(i + 1) - getTimeFractionAt(i);
+      const duration = (normalizedDuration * totalDuration) / totalNormalizedTime;
 
       yield* this.pointAtEdge(
         [chosenEdge.from, chosenEdge.to],
@@ -265,7 +270,7 @@ export class LockableGraph extends Graph {
       this.currentColors = newColors;
     }
 
-    const anims: Generator[] = [];
+    const anims: ThreadGenerator[] = [];
     for (const [label, cIndex] of this.currentColors.entries()) {
       const vertexData = this.vertexMap.get(label);
       if (!vertexData) continue;
@@ -287,12 +292,12 @@ export class LockableGraph extends Graph {
     const oldPalette = [...this.palette];
     do {
       shuffleArray(this.palette);
-    } while (this.arraysEqual(this.palette, oldPalette));
+    } while (arraysEqual(this.palette, oldPalette));
 
     yield* this.applyColors(durationPerVertex, stepDelay);
   }
+}
 
-  private arraysEqual(a: string[], b: string[]): boolean {
-    return a.length === b.length && a.every((value, index) => value === b[index]);
-  }
+function arraysEqual(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
 }

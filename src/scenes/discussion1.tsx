@@ -16,23 +16,20 @@ export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   const logger = useLogger();
 
-  yield* waitFor(1);
-
   const scene = new ProtocolScene(view);
 
-  yield* all(scene.addParticipant('prover'), scene.addParticipant('verifier'));
-  yield* scene.createGraph(exampleGraphData, 'verifier', 0);
-  yield* scene.graphRef().applyColors();
+  yield* scene.setup('verifier', true);
+
   yield* scene.graphRef().lockVertices();
   yield* scene.fadeInGraph(1);
 
-  yield* scene.graphRef().pointAtRandomEdges(10, 1, 50, ['A', 'B']);
+  yield* scene.graphRef().pointAtRandomEdges(['A', 'B']);
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
   yield* scene.fadeOutGraph(1);
 
   // improper coloring example
-  const improperColoring: Map<string, number> = new Map([
+  const improperColoring = new Map([
     ['A', 0],
     ['B', 1],
     ['C', 2],
@@ -52,11 +49,12 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices();
   yield* scene.sendGraph('verifier', 1);
 
-  yield* scene.graphRef().pointAtRandomEdges(6, 1, 50, ['E', 'F']);
+  yield* scene.graphRef().pointAtRandomEdges(['E', 'F']);
 
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
   yield* all(scene.addText('prover', '😅'), scene.addText('verifier', '😮/🤨/‼️'));
+  yield* waitFor(1);
   yield* all(scene.fadeOutGraph(1), scene.removeText('both'));
 
   // evidence from seeing different colors
@@ -74,5 +72,5 @@ export default makeScene2D(function* (view) {
 
   yield* scene.fadeOutGraph(1);
 
-  yield* waitFor(5);
+  yield* waitFor(2);
 });

@@ -1,5 +1,12 @@
-import { Layout, Line, Circle, Txt, Spline } from '@motion-canvas/2d';
-import { createRef, all, sequence, Vector2, useLogger } from '@motion-canvas/core';
+import { Layout, Line, Circle, Txt, Spline, Shape } from '@motion-canvas/2d';
+import {
+  createRef,
+  all,
+  sequence,
+  Vector2,
+  useLogger,
+  Reference,
+} from '@motion-canvas/core';
 import { Solarized, logValue } from './utilities';
 
 const logger = useLogger();
@@ -10,18 +17,12 @@ export interface GraphData {
   positions: [number, number][];
   sides?: boolean[];
   colors?: number[];
+  vertexDirs?: [number, number][];
 }
 
 // example graph
 const l = 100;
-export const exampleGraphData: {
-  labels: string[];
-  edges: [string, string][];
-  positions: [number, number][];
-  sides: boolean[];
-  colors: number[];
-  vertexDirs: [number, number][];
-} = {
+export const exampleGraphData: GraphData = {
   labels: ['A', 'B', 'C', 'D', 'E', 'F'],
   edges: [
     ['A', 'B'],
@@ -55,12 +56,12 @@ export const exampleGraphData: {
 export class Graph {
   protected vertexMap = new Map<
     string,
-    { ref: ReturnType<typeof createRef<Circle>>; position: [number, number] }
+    { ref: Reference<Circle>; position: [number, number] }
   >();
   protected edges: Array<{
     from: string;
     to: string;
-    ref: ReturnType<typeof createRef<Spline>>;
+    ref: Reference<Spline>;
     deviation: number;
   }> = [];
   public containerRef = createRef<Layout>();
@@ -199,7 +200,7 @@ export class Graph {
     edgePairs?: [string, string][],
     newOpacity: number = 1,
   ) {
-    let nodesToFade: Array<ReturnType<typeof createRef>> = [];
+    let nodesToFade: Array<Shape> = [];
 
     if (edgePairs && edgePairs.length > 0) {
       // Process edgePairs in given order

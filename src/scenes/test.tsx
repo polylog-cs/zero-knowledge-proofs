@@ -18,7 +18,7 @@ export default makeScene2D(function* (view) {
   yield* scene.addVerifier();
 
   // Create a graph in the center
-  yield* scene.createGraph(exampleGraphData, 'center');
+  yield* scene.createGraph();
 
   yield* scene.basicProtocol(1);
   yield* waitFor(5);
