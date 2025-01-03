@@ -40,7 +40,7 @@ export default makeScene2D(function* (view) {
   ]);
   yield* all(
     scene.graphRef().applyColors(0, 0, improperColoring),
-    scene.sendGraph('prover', 0)
+    scene.sendGraph('prover', 0),
   );
 
   yield* scene.fadeInGraph(1);
@@ -63,7 +63,7 @@ export default makeScene2D(function* (view) {
   yield* all(
     scene.graphRef().applyColors(0, 0, improperColoring),
     scene.sendGraph('prover', 0),
-    scene.graphRef().lockVertices()
+    scene.graphRef().lockVertices(),
   );
 
   yield* scene.fadeInGraph(1);

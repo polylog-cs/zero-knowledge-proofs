@@ -2,3 +2,4 @@ tabWidth: 2
 useTabs: false
 printWidth: 88 # Like Python's Black
 singleQuote: true
+trailingComma: all

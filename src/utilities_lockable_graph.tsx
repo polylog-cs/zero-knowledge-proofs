@@ -113,7 +113,7 @@ export class LockableGraph extends Graph {
     fromLeft: boolean = true,
     duration: number = 1,
     keep: boolean = false,
-    arrowLength: number = 50
+    arrowLength: number = 50,
   ) {
     const edge = this.getEdge(edgePair);
 
@@ -150,7 +150,7 @@ export class LockableGraph extends Graph {
     const edge = this.edges.find(
       (e) =>
         (e.from === edgePair[0] && e.to === edgePair[1]) ||
-        (e.from === edgePair[1] && e.to === edgePair[0])
+        (e.from === edgePair[1] && e.to === edgePair[0]),
     );
     if (!edge) {
       throw new Error(`Edge ${edgePair} not found. Available edges: ${this.edges}`);
@@ -166,7 +166,7 @@ export class LockableGraph extends Graph {
     duration: number = 1,
     keep: boolean = false,
     arrowLength: number = 80,
-    buff: number = 0.5
+    buff: number = 0.5,
   ) {
     const vertexData = this.vertexMap.get(vertexLabel);
     if (!vertexData) return;
@@ -222,7 +222,7 @@ export class LockableGraph extends Graph {
     finalEdge?: [string, string],
     k: number = 20,
     totalDuration: number = 3,
-    arrowLength: number = 50
+    arrowLength: number = 50,
   ) {
     if (this.edges.length <= 1) {
       throw new Error('Graph must have at least 2 edges to point at random edges.');
@@ -251,7 +251,7 @@ export class LockableGraph extends Graph {
         side,
         duration,
         i === k - 1,
-        arrowLength
+        arrowLength,
       );
       lastEdge = chosenEdge;
     }
@@ -262,7 +262,7 @@ export class LockableGraph extends Graph {
   *applyColors(
     durationPerVertex: number = 0.5,
     stepDelay: number = 0.1,
-    newColors?: Map<string, number>
+    newColors?: Map<string, number>,
   ) {
     if (newColors) {
       this.currentColors = newColors;
@@ -276,7 +276,7 @@ export class LockableGraph extends Graph {
       anims.push(
         (function* () {
           yield* vertexData.ref().fill(targetColor, durationPerVertex);
-        })()
+        })(),
       );
     }
     yield* sequence(stepDelay, ...anims);

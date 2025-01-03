@@ -37,7 +37,7 @@ export class ProtocolScene {
     const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
 
     this.containerRef().add(
-      <Img ref={ref} src={path ?? defaultPath} position={position} opacity={0} />
+      <Img ref={ref} src={path ?? defaultPath} position={position} opacity={0} />,
     );
     yield* ref().opacity(1, 1);
   }
@@ -69,7 +69,7 @@ export class ProtocolScene {
         fontFamily="Fira Sans, Noto Color Emoji"
         fill={Solarized.text}
         opacity={0}
-      />
+      />,
     );
     const pos = isProver ? 'left' : 'right';
     alignTo(newTextRef(), targetRef(), pos, 0);
@@ -106,7 +106,7 @@ export class ProtocolScene {
   public *createGraph(
     data: GraphData,
     initialPosition: 'center' | Participant = 'center',
-    opacity: number = 1
+    opacity: number = 1,
   ) {
     const g = new LockableGraph(50);
     g.initialize(data);
@@ -134,7 +134,7 @@ export class ProtocolScene {
   public *fadeOutGraph(duration: number = 1) {
     yield* all(
       this.graphRef().removeArrows(),
-      this.graphRef().containerRef().opacity(0, 1)
+      this.graphRef().containerRef().opacity(0, 1),
     );
     yield this.graphRef().unlockVertices();
     yield* this.sendGraph('center', 0);
@@ -162,7 +162,7 @@ export class ProtocolScene {
           this.proverRef(),
           'right',
           GRAPH_BUFFER,
-          duration
+          duration,
         );
         return;
       case 'verifier':
@@ -171,7 +171,7 @@ export class ProtocolScene {
           this.verifierRef(),
           'left',
           GRAPH_BUFFER,
-          duration
+          duration,
         );
         return;
     }

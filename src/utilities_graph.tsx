@@ -82,7 +82,7 @@ export class Graph {
       labels: string[];
       edges: [string, string][];
       positions: [number, number][];
-    }
+    },
   ) {
     for (let i = 0; i < data.labels.length; i++) {
       this.addVertex(data.labels[i], data.positions[i]);
@@ -143,13 +143,13 @@ export class Graph {
               points={generateArcPoints(
                 new Vector2(fromVertex.position),
                 new Vector2(toVertex.position),
-                edge.deviation
+                edge.deviation,
               )}
             />
           );
         })}
         {[...this.vertexMap.entries()].map(([label, _]) =>
-          this.createVertexNode(label)
+          this.createVertexNode(label),
         )}
       </Layout>
     ) as Layout;
@@ -182,7 +182,7 @@ export class Graph {
     initialDelay: number,
     duration: number,
     vertexKeys?: string[],
-    newOpacity: number = 1
+    newOpacity: number = 1,
   ) {
     let vertices;
 
@@ -197,7 +197,7 @@ export class Graph {
 
     yield* sequence(
       initialDelay,
-      ...vertices.map((node) => node.opacity(newOpacity, duration))
+      ...vertices.map((node) => node.opacity(newOpacity, duration)),
     );
   }
 
@@ -205,7 +205,7 @@ export class Graph {
     initialDelay: number,
     duration: number,
     edgePairs?: [string, string][],
-    newOpacity: number = 1
+    newOpacity: number = 1,
   ) {
     let nodesToFade: Array<Shape> = [];
 
@@ -214,7 +214,7 @@ export class Graph {
       for (const [u, v] of edgePairs) {
         // Find an edge or arc matching this pair
         const edge = this.edges.find(
-          (e) => (e.from === u && e.to === v) || (e.from === v && e.to === u)
+          (e) => (e.from === u && e.to === v) || (e.from === v && e.to === u),
         );
         if (edge) {
           nodesToFade.push(edge.ref());
@@ -229,21 +229,21 @@ export class Graph {
 
     yield* sequence(
       initialDelay,
-      ...nodesToFade.map((node) => node.opacity(newOpacity, duration))
+      ...nodesToFade.map((node) => node.opacity(newOpacity, duration)),
     );
   }
 
   *fadeIn(duration: number) {
     yield* all(
       this.fadeVerticesSequential(0, duration, [], 1),
-      this.fadeEdgesSequential(0, duration, [], 1)
+      this.fadeEdgesSequential(0, duration, [], 1),
     );
   }
 
   *fadeOut(duration: number) {
     yield* all(
       this.fadeVerticesSequential(0, duration, [], 0),
-      this.fadeEdgesSequential(0, duration, [], 0)
+      this.fadeEdgesSequential(0, duration, [], 0),
     );
   }
 }
@@ -251,7 +251,7 @@ export class Graph {
 export function generateArcPoints(
   start: Vector2,
   end: Vector2,
-  deviation: number
+  deviation: number,
 ): Vector2[] {
   const mid = start.add(end).scale(0.5);
   const perp = end.sub(start).normalized.perpendicular;
