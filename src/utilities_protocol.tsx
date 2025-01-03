@@ -1,5 +1,5 @@
 import { Node, Layout, Img, Txt, makeScene2D, Rect } from '@motion-canvas/2d';
-import { createRef, Vector2, waitFor, all } from '@motion-canvas/core';
+import { createRef, Vector2, waitFor, all, ThreadGenerator } from '@motion-canvas/core';
 import { LockableGraph } from './utilities_lockable_graph';
 import { nextTo, moveTo, alignTo, shift } from './utilities_moving';
 import { exampleGraphData, GraphData } from './utilities_graph';
@@ -7,16 +7,18 @@ import { Solarized, logPosition } from './utilities';
 import proverImage from './assets/images/prover.png';
 import verifierImage from './assets/images/verifier.png';
 
+const PROVER_POSITION = new Vector2(-600, 0);
+const VERIFIER_POSITION = new Vector2(600, 0);
+const CENTER_POSITION = new Vector2(0, 0);
+const GRAPH_BUFFER = 50;
+
+export type Participant = 'prover' | 'verifier';
+
 export class ProtocolScene {
   public proverRef = createRef<Img>();
   public verifierRef = createRef<Img>();
   public graphRef = createRef<LockableGraph>();
   public containerRef = createRef<Layout>();
-
-  private proverPosition = new Vector2(-600, 0);
-  private verifierPosition = new Vector2(600, 0);
-  private centerPosition = new Vector2(0, 0);
-  private graphBuffer = 50;
 
   // Arrays to store multiple text lines for prover and verifier
   private proverTexts: ReturnType<typeof createRef<Txt>>[] = [];
@@ -29,13 +31,13 @@ export class ProtocolScene {
   /**
    * Add a participant image (prover or verifier).
    */
-  public *addParticipant(which: 'prover' | 'verifier', path?: string) {
+  public *addParticipant(which: Participant, path?: string) {
     const ref = which === 'prover' ? this.proverRef : this.verifierRef;
     const defaultPath = which === 'prover' ? proverImage : verifierImage;
-    const position = which === 'prover' ? this.proverPosition : this.verifierPosition;
+    const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
 
     this.containerRef().add(
-      <Img ref={ref} src={path ?? defaultPath} position={position} opacity={0} />,
+      <Img ref={ref} src={path ?? defaultPath} position={position} opacity={0} />
     );
     yield* ref().opacity(1, 1);
   }
@@ -46,11 +48,7 @@ export class ProtocolScene {
    * For prover: align left.
    * For verifier: align right.
    */
-  public *addText(
-    which: 'prover' | 'verifier',
-    text: string,
-    removeCurrent: boolean = false,
-  ) {
+  public *addText(which: Participant, text: string, removeCurrent: boolean = false) {
     const lineHeight = 50;
     const isProver = which === 'prover';
     const targetRef = isProver ? this.proverRef : this.verifierRef;
@@ -71,7 +69,7 @@ export class ProtocolScene {
         fontFamily="Fira Sans, Noto Color Emoji"
         fill={Solarized.text}
         opacity={0}
-      />,
+      />
     );
     const pos = isProver ? 'left' : 'right';
     alignTo(newTextRef(), targetRef(), pos, 0);
@@ -89,7 +87,7 @@ export class ProtocolScene {
    * Remove all text from a participant or both.
    * Fades out and removes all lines.
    */
-  public *removeText(which: 'prover' | 'verifier' | 'both') {
+  public *removeText(which: Participant | 'both'): ThreadGenerator {
     if (which == 'both') {
       yield* all(this.removeText('prover'), this.removeText('verifier'));
     } else {
@@ -107,8 +105,8 @@ export class ProtocolScene {
    */
   public *createGraph(
     data: GraphData,
-    initialPosition: 'center' | 'prover' | 'verifier' = 'center',
-    opacity: number = 1,
+    initialPosition: 'center' | Participant = 'center',
+    opacity: number = 1
   ) {
     const g = new LockableGraph(50);
     g.initialize(data);
@@ -118,7 +116,7 @@ export class ProtocolScene {
     // Position depending on initialPosition
     switch (initialPosition) {
       case 'center':
-        g.containerRef().position(this.centerPosition);
+        g.containerRef().position(CENTER_POSITION);
         break;
       case 'prover':
         nextTo(g.containerRef(), this.proverRef(), 'right', 50);
@@ -136,9 +134,9 @@ export class ProtocolScene {
   public *fadeOutGraph(duration: number = 1) {
     yield* all(
       this.graphRef().removeArrows(),
-      this.graphRef().unlockVertices(),
-      this.graphRef().containerRef().opacity(0, 1),
+      this.graphRef().containerRef().opacity(0, 1)
     );
+    yield this.graphRef().unlockVertices();
     yield* this.sendGraph('center', 0);
   }
 
@@ -149,10 +147,10 @@ export class ProtocolScene {
   /**
    * Sends the graph to a target location: 'center', 'prover', or 'verifier'.
    */
-  public *sendGraph(target: 'center' | 'prover' | 'verifier', duration: number = 1) {
+  public *sendGraph(target: 'center' | Participant, duration: number = 1) {
     const g = this.graphRef();
     if (!g) return;
-    let finalPos = this.centerPosition;
+    let finalPos = CENTER_POSITION;
 
     switch (target) {
       case 'center':
@@ -163,8 +161,8 @@ export class ProtocolScene {
           g.containerRef(),
           this.proverRef(),
           'right',
-          this.graphBuffer,
-          duration,
+          GRAPH_BUFFER,
+          duration
         );
         return;
       case 'verifier':
@@ -172,8 +170,8 @@ export class ProtocolScene {
           g.containerRef(),
           this.verifierRef(),
           'left',
-          this.graphBuffer,
-          duration,
+          GRAPH_BUFFER,
+          duration
         );
         return;
     }
@@ -192,7 +190,7 @@ export class ProtocolScene {
   }
 
   public *challenge() {
-    yield* this.graphRef().pointAtRandomEdges(5, 0.5);
+    yield* this.graphRef().pointAtRandomEdges();
     yield* waitFor(0.5);
 
     yield* this.graphRef().unlockVertices(this.graphRef().challengeEdge);

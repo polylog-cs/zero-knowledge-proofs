@@ -1,5 +1,12 @@
-import { Layout, Line, Circle, Txt, Spline } from '@motion-canvas/2d';
-import { createRef, all, sequence, Vector2, useLogger } from '@motion-canvas/core';
+import { Layout, Line, Circle, Txt, Spline, Shape } from '@motion-canvas/2d';
+import {
+  createRef,
+  all,
+  sequence,
+  Vector2,
+  useLogger,
+  Reference,
+} from '@motion-canvas/core';
 import { Solarized, logValue } from './utilities';
 
 const logger = useLogger();
@@ -10,6 +17,7 @@ export interface GraphData {
   positions: [number, number][];
   sides?: boolean[];
   colors?: number[];
+  vertexDirs?: [number, number][];
 }
 
 // example graph
@@ -55,12 +63,12 @@ export const exampleGraphData: {
 export class Graph {
   protected vertexMap = new Map<
     string,
-    { ref: ReturnType<typeof createRef<Circle>>; position: [number, number] }
+    { ref: Reference<Circle>; position: [number, number] }
   >();
   protected edges: Array<{
     from: string;
     to: string;
-    ref: ReturnType<typeof createRef<Spline>>;
+    ref: Reference<Spline>;
     deviation: number;
   }> = [];
   public containerRef = createRef<Layout>();
@@ -74,7 +82,7 @@ export class Graph {
       labels: string[];
       edges: [string, string][];
       positions: [number, number][];
-    },
+    }
   ) {
     for (let i = 0; i < data.labels.length; i++) {
       this.addVertex(data.labels[i], data.positions[i]);
@@ -135,13 +143,13 @@ export class Graph {
               points={generateArcPoints(
                 new Vector2(fromVertex.position),
                 new Vector2(toVertex.position),
-                edge.deviation,
+                edge.deviation
               )}
             />
           );
         })}
         {[...this.vertexMap.entries()].map(([label, _]) =>
-          this.createVertexNode(label),
+          this.createVertexNode(label)
         )}
       </Layout>
     ) as Layout;
@@ -174,7 +182,7 @@ export class Graph {
     initialDelay: number,
     duration: number,
     vertexKeys?: string[],
-    newOpacity: number = 1,
+    newOpacity: number = 1
   ) {
     let vertices;
 
@@ -189,7 +197,7 @@ export class Graph {
 
     yield* sequence(
       initialDelay,
-      ...vertices.map((node) => node.opacity(newOpacity, duration)),
+      ...vertices.map((node) => node.opacity(newOpacity, duration))
     );
   }
 
@@ -197,16 +205,16 @@ export class Graph {
     initialDelay: number,
     duration: number,
     edgePairs?: [string, string][],
-    newOpacity: number = 1,
+    newOpacity: number = 1
   ) {
-    let nodesToFade: Array<ReturnType<typeof createRef>> = [];
+    let nodesToFade: Array<Shape> = [];
 
     if (edgePairs && edgePairs.length > 0) {
       // Process edgePairs in given order
       for (const [u, v] of edgePairs) {
         // Find an edge or arc matching this pair
         const edge = this.edges.find(
-          (e) => (e.from === u && e.to === v) || (e.from === v && e.to === u),
+          (e) => (e.from === u && e.to === v) || (e.from === v && e.to === u)
         );
         if (edge) {
           nodesToFade.push(edge.ref());
@@ -221,21 +229,21 @@ export class Graph {
 
     yield* sequence(
       initialDelay,
-      ...nodesToFade.map((node) => node.opacity(newOpacity, duration)),
+      ...nodesToFade.map((node) => node.opacity(newOpacity, duration))
     );
   }
 
   *fadeIn(duration: number) {
     yield* all(
       this.fadeVerticesSequential(0, duration, [], 1),
-      this.fadeEdgesSequential(0, duration, [], 1),
+      this.fadeEdgesSequential(0, duration, [], 1)
     );
   }
 
   *fadeOut(duration: number) {
     yield* all(
       this.fadeVerticesSequential(0, duration, [], 0),
-      this.fadeEdgesSequential(0, duration, [], 0),
+      this.fadeEdgesSequential(0, duration, [], 0)
     );
   }
 }
@@ -243,7 +251,7 @@ export class Graph {
 export function generateArcPoints(
   start: Vector2,
   end: Vector2,
-  deviation: number,
+  deviation: number
 ): Vector2[] {
   const mid = start.add(end).scale(0.5);
   const perp = end.sub(start).normalized.perpendicular;

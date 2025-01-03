@@ -10,7 +10,7 @@ import teacher from './scenes/teacher?scene';
 import mario from './scenes/mario?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
 import building_protocol from './scenes/building_protocol?scene';
-import discussion1 from './scenes/discussion1';
+import discussion1 from './scenes/discussion1?scene';
 import rotation from './scenes/rotation?scene';
 
 import './global.css';

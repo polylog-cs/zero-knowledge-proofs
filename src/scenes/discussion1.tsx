@@ -26,13 +26,13 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices();
   yield* scene.fadeInGraph(1);
 
-  yield* scene.graphRef().pointAtRandomEdges(10, 1, 50, ['A', 'B']);
+  yield* scene.graphRef().pointAtRandomEdges(['A', 'B'], 10, 3, 50);
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
   yield* scene.fadeOutGraph(1);
 
   // improper coloring example
-  const improperColoring: Map<string, number> = new Map([
+  const improperColoring = new Map([
     ['A', 0],
     ['B', 1],
     ['C', 2],
@@ -42,7 +42,7 @@ export default makeScene2D(function* (view) {
   ]);
   yield* all(
     scene.graphRef().applyColors(0, 0, improperColoring),
-    scene.sendGraph('prover', 0),
+    scene.sendGraph('prover', 0)
   );
 
   yield* scene.fadeInGraph(1);
@@ -52,11 +52,12 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices();
   yield* scene.sendGraph('verifier', 1);
 
-  yield* scene.graphRef().pointAtRandomEdges(6, 1, 50, ['E', 'F']);
+  yield* scene.graphRef().pointAtRandomEdges(['E', 'F'], 10, 3, 50);
 
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
   yield* all(scene.addText('prover', '😅'), scene.addText('verifier', '😮/🤨/‼️'));
+  yield* waitFor(1);
   yield* all(scene.fadeOutGraph(1), scene.removeText('both'));
 
   // evidence from seeing different colors
@@ -64,7 +65,7 @@ export default makeScene2D(function* (view) {
   yield* all(
     scene.graphRef().applyColors(0, 0, improperColoring),
     scene.sendGraph('prover', 0),
-    scene.graphRef().lockVertices(),
+    scene.graphRef().lockVertices()
   );
 
   yield* scene.fadeInGraph(1);
@@ -74,5 +75,5 @@ export default makeScene2D(function* (view) {
 
   yield* scene.fadeOutGraph(1);
 
-  yield* waitFor(5);
+  yield* waitFor(2);
 });
