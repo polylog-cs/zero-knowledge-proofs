@@ -66,6 +66,4 @@ export default makeScene2D(function* (view) {
   yield* scene.addText('verifier', '👀');
 
   yield* all(scene.graphRef().containerRef().opacity(0, 1), scene.removeText('both'));
-
-  yield* waitFor(5);
 });
