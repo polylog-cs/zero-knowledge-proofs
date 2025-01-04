@@ -1,4 +1,4 @@
-import { Img, Layout, makeScene2D, Txt, View2D } from '@motion-canvas/2d';
+import { Img, Layout, makeScene2D, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -11,16 +11,16 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { openOutputPath } from '@motion-canvas/ui';
 
 import gear from '../assets/icons/gear-solid.svg';
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
+import { MyTxt } from '../utilities_text';
 
 export function* solve(
   view: View2D,
-  object: Txt,
+  object: MyTxt,
   solveAttempts: number = 10,
   solveTime: number = 0.1,
 ): ThreadGenerator {
@@ -69,6 +69,117 @@ export function* solve(
   icon().remove();
 }
 
+function* addChallengeAndResponse(
+  view,
+  challengeLayout,
+  responseLayout,
+  challenge,
+  teacher,
+  student,
+  responseObject,
+  quick: boolean,
+  gearColor,
+) {
+  const random = useRandom();
+
+  const num1 = random.nextInt(10, 99);
+  const num2 = random.nextInt(10, 99);
+
+  const newChallenge = createRef<MyTxt>();
+  newChallenge(
+    challenge().clone().top(teacher().top().addY(100)).text(`${num1} + ${num2}`),
+  );
+
+  challengeLayout().add(newChallenge().clone().opacity(0));
+  view.add(newChallenge());
+
+  const challengeIndex = challengeLayout().children().length - 1;
+
+  const newResponse = createRef<MyTxt>();
+  newResponse(newChallenge().clone());
+  newResponse().top(student().top().addY(100));
+
+  view.add(newResponse());
+
+  responseLayout().add(
+    responseObject()
+      .clone()
+      .text(`${num1 + num2}`)
+      .opacity(0),
+  );
+
+  const responseIndex = responseLayout().children().length - 1;
+
+  yield* all(
+    all(
+      newChallenge().absolutePosition(
+        challengeLayout().children()[challengeIndex].absolutePosition(),
+        1,
+      ),
+      newChallenge().opacity(0).opacity(1, 1),
+      newChallenge().scale(0).scale(1, 1),
+    ),
+    delay(
+      quick ? 0 : 1,
+      all(
+        solve(view, newResponse(), quick ? 7 : 10),
+        delay(
+          quick ? 0 : 0.25,
+          all(
+            newResponse().opacity(0).opacity(1, 0.5),
+            newResponse().scale(0).scale(1, 1),
+            newResponse().fill(gearColor != null ? gearColor : newResponse().fill(), 1),
+            newResponse().absolutePosition(
+              responseLayout().children()[responseIndex].absolutePosition(),
+              1,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  challengeLayout().children()[challengeIndex].remove();
+  challengeLayout().add(newChallenge());
+
+  responseLayout().children()[responseIndex].remove();
+  responseLayout().add(newResponse());
+}
+
+function* animatePercentage(view, responseLayout, i) {
+  const p = createRef<MyTxt>();
+
+  // Calculate percentage based on the current index
+  const percentage = Math.pow(0.9, i) * 100;
+  const text = `[${percentage.toFixed(i >= 3 ? 1 : 0)}%]`;
+
+  view.add(
+    <MyTxt
+      fontSize={40}
+      padding={20}
+      ref={p}
+      textAlign="center"
+      text={text}
+      fill={Solarized.gray}
+      opacity={0.5}
+      zIndex={-1}
+    />,
+  );
+
+  p().absolutePosition(() => {
+    let response = responseLayout().children()[i];
+    let responseCenter = response.absolutePosition();
+
+    return responseCenter.addX(response.width() / 2).addX(p().width() / 2);
+  });
+
+  yield* all(
+    p().opacity(0).opacity(1, 1),
+    p().scale(0).scale(1, 1),
+    responseLayout().children()[i].fill(Solarized.cyan, 1),
+  );
+}
+
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
 
@@ -96,6 +207,7 @@ export default makeScene2D(function* (view) {
     </>,
   );
 
+  // show teacher and student
   yield* all(
     student().opacity(0).opacity(1, 1),
     student().width(0).width(300, 1),
@@ -103,14 +215,13 @@ export default makeScene2D(function* (view) {
     teacher().width(0).width(400, 1),
   );
 
-  const challenge = createRef<Txt>();
+  const challenge = createRef<MyTxt>();
   view.add(
-    <Txt
+    <MyTxt
       fontSize={70}
       padding={20}
       top={teacher().top().addY(100)}
       ref={challenge}
-      fontFamily={FONT_FAMILY}
       text={'13 + 32'}
       zIndex={-1}
     />,
@@ -124,22 +235,23 @@ export default makeScene2D(function* (view) {
 
   // Tom's note: this pattern makes it so that response is also a reference to txt
   //  just doing challenge().clone() would return a Txt, not Reference<Txt>
-  let response = createRef<Txt>();
+  let response = createRef<MyTxt>();
   response(challenge().clone());
 
   challenge().opacity(0.25);
   view.add(response());
 
+  // send response to student + solve
   yield* all(response().bottom(student().top(), 1));
-
   yield* solve(view, response());
 
-  const eq = createRef<Txt>();
+  const eq = createRef<MyTxt>();
   eq(challenge().clone().text('=').padding(0).opacity(0));
   eq().position(eq().position().addX(60));
 
   view.add(eq());
 
+  // get it back
   yield* all(
     challenge().right(eq().left(), 1),
     response().left(eq().right(), 1),
@@ -152,24 +264,24 @@ export default makeScene2D(function* (view) {
   view.add(
     <Layout layout gap={80} direction={'row'} top={() => new Vector2(0, -350)}>
       <Layout ref={challengeLayout} direction={'column'} gap={10} alignItems={'end'}>
-        <Txt
-          fontWeight={500}
+        <MyTxt
           fontSize={60}
           fontFamily={FONT_FAMILY}
           text={'Challenge'}
           padding={[0, 0, 20, 0]}
           opacity={0}
+          fontWeight={700}
         />
         {challenge().clone().padding(0).fontSize(50).opacity(0)}
       </Layout>
       <Layout ref={responseLayout} direction={'column'} gap={10} alignItems={'start'}>
-        <Txt
-          fontWeight={500}
+        <MyTxt
           fontSize={60}
           fontFamily={FONT_FAMILY}
           text={'Response'}
           padding={[0, 0, 20, 0]}
           opacity={0}
+          fontWeight={700}
         />
         {response().clone().padding(0).fontSize(50).opacity(0)}
       </Layout>
@@ -195,48 +307,62 @@ export default makeScene2D(function* (view) {
 
   challenge().remove();
   response().remove();
-  // TODO: fix warnings
   challenge(challengeLayout().children()[1]);
   response(responseLayout().children()[1]);
   challenge().opacity(1);
   response().opacity(1);
 
-  let newChallenge = createRef<Txt>();
-  newChallenge(challenge().clone().top(teacher().top().addY(100)).text('52 + 31'));
-
-  challengeLayout().add(newChallenge().clone().opacity(0));
-
-  view.add(newChallenge());
-
-  yield* all(
-    newChallenge().absolutePosition(
-      challengeLayout().children()[2].absolutePosition(),
-      1,
-    ),
-    newChallenge().opacity(0).opacity(1, 1),
-    newChallenge().scale(0).scale(1, 1),
+  yield* addChallengeAndResponse(
+    view,
+    challengeLayout,
+    responseLayout,
+    challenge,
+    teacher,
+    student,
+    response,
+    false,
+    null,
   );
 
-  let newResponse = createRef<Txt>();
-  newResponse(newChallenge().clone());
-  newResponse().top(student().top().addY(100));
-
-  view.add(newResponse());
-
-  responseLayout().add(newResponse().clone().text('31').opacity(0)); // TODO!
+  const onlyThisMuch = createRef<MyTxt>();
+  view.add(
+    <MyTxt
+      fontSize={40}
+      padding={20}
+      top={student().top().addY(100)}
+      ref={onlyThisMuch}
+      textAlign="center"
+      text={'I hope the first\nnumber is below 90...'}
+      fontStyle="italic"
+      zIndex={-1}
+    />,
+  );
 
   yield* all(
-    solve(view, newResponse()),
-    delay(
-      0.5,
-      all(
-        newResponse().opacity(0).opacity(1, 0.5),
-        newResponse().scale(0).scale(1, 1),
-        newResponse().absolutePosition(
-          responseLayout().children()[2].absolutePosition(),
-          1,
-        ),
+    onlyThisMuch().bottom(student().top(), 1),
+    onlyThisMuch().opacity(0).opacity(1, 1),
+    onlyThisMuch().scale(0).scale(1, 1),
+  );
+
+  // show probabilities
+  for (let i = 1; i <= 2; i++) {
+    yield* animatePercentage(view, responseLayout, i);
+  }
+
+  for (let i = 3; i < 5; i++) {
+    yield* all(
+      addChallengeAndResponse(
+        view,
+        challengeLayout,
+        responseLayout,
+        challenge,
+        teacher,
+        student,
+        response,
+        true,
+        Solarized.cyan,
       ),
-    ),
-  );
+      delay(0.25, animatePercentage(view, responseLayout, i)),
+    );
+  }
 });
