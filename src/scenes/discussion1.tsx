@@ -8,7 +8,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { MyTxt } from '../utilities_text';
+import { MyTxt, MyLatex } from '../utilities_text';
 import { logPosition, Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { LockableGraph } from '../utilities_lockable_graph';
@@ -48,7 +48,7 @@ export default makeScene2D(function* (view) {
   yield* scene.fadeInGraph(1);
 
   yield* scene.graphRef().pointAtEdge(['E', 'F'], true, 1, false);
-  Txt
+  
   yield* scene.graphRef().lockVertices();
   yield* scene.sendGraph('verifier', 1);
 
@@ -130,12 +130,10 @@ export default makeScene2D(function* (view) {
     const flyingRef = createRef<MyTxt>();
 
     view.add(
-      <MyTxt
+      <MyLatex
         ref={flyingRef}
-        text = {(i==0 ? "6/7" : "* 6/7")}
+        tex = {(i==0 ? "6/7" : "* 6/7")}
         position={scene.verifierRef().absolutePosition().add(new Vector2(-100, -200))}
-        fontSize={30}
-        fill={Solarized.text}
         opacity={0}
       />,
     );
