@@ -1,7 +1,8 @@
-import { makeScene2D, Rect, Spline } from '@motion-canvas/2d';
+import { makeScene2D, Rect, Spline, Txt } from '@motion-canvas/2d';
 import {
   all,
   createRef,
+  Reference,
   sequence,
   useLogger,
   Vector2,
@@ -12,6 +13,7 @@ import { logPosition, Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { LockableGraph } from '../utilities_lockable_graph';
 import { ProtocolScene } from '../utilities_protocol';
+import { alignTo, nextTo } from '../utilities_moving';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
@@ -70,8 +72,97 @@ export default makeScene2D(function* (view) {
   yield* scene.sendGraph('verifier', 1);
 
   yield* scene.challenge();
-
   yield* scene.fadeOutGraph(1);
+
+  const properColors = new Map(
+    exampleGraphData.labels.map((label, index) => [label, exampleGraphData.colors[index]])
+  );
+  yield* all(
+    scene.graphRef().applyColors(0, 0, properColors),
+    scene.sendGraph('prover', 0),
+    scene.graphRef().lockVertices(),
+  );
+
+
+  // getting evidence in each step
+
+
+  const probabilityRef = createRef<Txt>();
+  view.add(
+    <Txt
+      ref={probabilityRef}
+      position={[0, -400]} 
+      text="P(prover fools me | prover cheats)"
+      fontSize={32}
+      fill={Solarized.text}
+    />,
+  );
+  const productContainerRef = createRef<Txt>();
+
+  view.add(
+    <Txt
+      ref={productContainerRef}
+      position={[0, -150]}  
+      text="="            
+      fontSize={30}
+      fill={Solarized.text}
+      opacity = {0}
+    />,
+  );
+  nextTo(productContainerRef(), probabilityRef(), 'down', 10);
+  alignTo(productContainerRef(), probabilityRef(), 'left');
+  yield* productContainerRef().opacity(1, 1);
+  const flyingTextRefs: Array<Reference<Txt>> = [];
+  flyingTextRefs.push(productContainerRef);
+
+  yield* scene.fadeInGraph(1);
+  for (let i = 0; i < 8; i++) {
+    let duration = 1;
+    let shortened = false;
+    if (i >= 3){
+      duration = 0.3;
+      shortened = true;
+    }
+
+    yield* scene.sendGraph('verifier', duration);
+    yield* scene.challenge(true, (shortened? 1 : undefined));
+
+    const flyingRef = createRef<Txt>();
+
+    view.add(
+      <Txt
+        ref={flyingRef}
+        text = {(i==0 ? "6/7" : "* 6/7")}
+        position={scene.verifierRef().absolutePosition()}
+        fontSize={30}
+        fill={Solarized.text}
+        opacity={0}
+      />,
+    );
+    yield* all(
+      flyingRef().opacity(1, 0.5),
+      nextTo(flyingRef(), flyingTextRefs[flyingTextRefs.length - 1](), 'right', 0, 1),
+    )
+    flyingTextRefs.push(flyingRef);
+
+    yield* scene.sendGraph('prover', 1);
+    yield* scene.graphRef().lockVertices();
+    yield* waitFor(0.5);
+  }
+
+  const finalTextRef = createRef<Txt>();
+  view.add(
+    <Txt
+      ref={finalTextRef}
+      text="*...*6/7 = 6/7^100 = 2e-7"
+      position={productContainerRef().absolutePosition()}
+      fontSize={30}
+      fill={Solarized.text}
+      opacity={0}
+    />,
+  );
+  nextTo(finalTextRef(), flyingTextRefs[flyingTextRefs.length-1](), 'right', 0, 0);
+  yield* finalTextRef().opacity(1, 1);
 
   yield* waitFor(2);
 });

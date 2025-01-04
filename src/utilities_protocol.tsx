@@ -214,17 +214,18 @@ export class ProtocolScene {
     yield* waitFor(0.5);
   }
 
-  public *challenge() {
-    yield* this.graphRef().pointAtRandomEdges();
+  public *challenge(noText: boolean = false, numChallenges: number = 20) {
+    yield* this.graphRef().pointAtRandomEdges(undefined, numChallenges);
     yield* waitFor(0.5);
 
     yield* this.graphRef().unlockVertices(this.graphRef().challengeEdge);
     yield* waitFor(0.5);
 
-    yield* this.addText('verifier', '✅', true);
-    yield* waitFor(1);
-    yield* this.removeText('verifier');
-
+    if(!noText) {
+      yield* this.addText('verifier', '✅', true);
+      yield* waitFor(1);
+      yield* this.removeText('verifier');
+      }
     yield* this.graphRef().removeArrows();
   }
 
