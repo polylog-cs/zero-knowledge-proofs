@@ -133,7 +133,7 @@ export default makeScene2D(function* (view) {
       <Txt
         ref={flyingRef}
         text = {(i==0 ? "6/7" : "* 6/7")}
-        position={scene.verifierRef().absolutePosition()}
+        position={scene.verifierRef().absolutePosition().add(new Vector2(-100, -200))}
         fontSize={30}
         fill={Solarized.text}
         opacity={0}
