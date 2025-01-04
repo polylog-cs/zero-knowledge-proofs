@@ -44,8 +44,8 @@ export const Solarized = {
   green: '#859900',
 
   background: '#eee8d5', // base2
-  text: '#586e75', //  base01
-  gray: '#93a1a1', //  base1
+  text: '#657b83', //  base00
+  gray: '#657b83', //  base00
 };
 
 export const solarizedPalette = [

@@ -11,24 +11,36 @@
     "@motion-canvas/2d": "^3.17.1",
     "@motion-canvas/core": "^3.17.0",
     "@motion-canvas/ffmpeg": "^1.1.0",
+    "diff": "^7.0.0",
     "prettier": "^3.4.2"
   },
-  "prettier":
-  {
+  "prettier": {
     "tabWidth": 2,
     "useTabs": false,
     "printWidth": 88,
     "singleQuote": true,
     "trailingComma": "all",
-    "plugins": ["@ianvs/prettier-plugin-sort-imports"],
-    "importOrder": ["<BUILTIN_MODULES>", "", "<THIRD_PARTY_MODULES>", "", "^[.]"],
-    "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"]
-  }
-,
+    "plugins": [
+      "@ianvs/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+      "<BUILTIN_MODULES>",
+      "",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^[.]"
+    ],
+    "importOrderParserPlugins": [
+      "typescript",
+      "jsx",
+      "decorators-legacy"
+    ]
+  },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@motion-canvas/ui": "^3.17.0",
     "@motion-canvas/vite-plugin": "^3.17.0",
+    "@types/diff": "^6.0.0",
     "typescript": "^5.2.2",
     "vite": "^4.0.0"
   }
