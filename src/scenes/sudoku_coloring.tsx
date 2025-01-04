@@ -1,4 +1,4 @@
-import { Circle, Layout, Line, makeScene2D, Node, Txt } from '@motion-canvas/2d';
+import { Circle, Layout, Line, makeScene2D, Node } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -8,6 +8,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
+import { MyTxt } from '../utilities_text';
 
 import {
   cellSize,
@@ -29,7 +30,7 @@ export default makeScene2D(function* (view) {
 
   // fadein sudoku and shift it
   const sudoku = new Sudoku(gridSize, cellSize, solution, clues);
-  const sudokuTitleRef = createRef<Txt>();
+  const sudokuTitleRef = createRef<MyTxt>();
   const sudokuLayoutRef = createRef<Layout>();
   view.add(
     <Layout
@@ -39,7 +40,7 @@ export default makeScene2D(function* (view) {
       gap={100}
       layout
     >
-      <Txt ref={sudokuTitleRef} text="Sudoku" fontSize={fontSize} />
+      <MyTxt ref={sudokuTitleRef} text="Sudoku" fontSize={fontSize} />
       {sudoku.getLayout()}
     </Layout>,
   );
@@ -53,12 +54,12 @@ export default makeScene2D(function* (view) {
   exampleEdges.forEach(([from, to]) => graph.addEdge(from, to));
 
   // Add graph node to the view with the specified positions
-  const graphTitleRef = createRef<Txt>();
+  const graphTitleRef = createRef<MyTxt>();
   const graphLayoutRef = createRef<Layout>();
 
   view.add(
     <Node ref={graphLayoutRef} position={[view.size().x / 6, 0]}>
-      <Txt ref={graphTitleRef} text="Graph Coloring" fontSize={fontSize} />
+      <MyTxt ref={graphTitleRef} text="Graph Coloring" fontSize={fontSize} />
       {graph.getNode(examplePositions)}
     </Node>,
   );

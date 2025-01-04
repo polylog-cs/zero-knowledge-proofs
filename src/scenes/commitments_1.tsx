@@ -1,6 +1,6 @@
-import { Circle, Img, Layout, makeScene2D, Txt } from '@motion-canvas/2d';
+import { Circle, Img, Layout, makeScene2D } from '@motion-canvas/2d';
 import { all, chain, createRef, waitFor } from '@motion-canvas/core';
-
+import { MyTxt } from '../utilities_text';
 import keyImage from '../assets/images/key.png';
 import {
   Participant,
@@ -18,8 +18,8 @@ export default makeScene2D(function* (view) {
   const verifier = createRef<Participant>();
   const lock = createRef<Lock>();
   const circle = createRef<Circle>();
-  const commitText = createRef<Txt>();
-  const revealText = createRef<Txt>();
+  const commitText = createRef<MyTxt>();
+  const revealText = createRef<MyTxt>();
   const key = createRef<Img>();
 
   view.add(
@@ -44,7 +44,7 @@ export default makeScene2D(function* (view) {
         position={PROVER_POSITION.addX(350)}
       />
       <Lock ref={lock} object={circle()} />
-      <Txt
+      <MyTxt
         ref={commitText}
         text={'Commit'}
         fontSize={70}
@@ -52,7 +52,7 @@ export default makeScene2D(function* (view) {
         fill={Solarized.text}
         opacity={0}
       />
-      <Txt
+      <MyTxt
         ref={revealText}
         text={'Reveal'}
         fontSize={70}

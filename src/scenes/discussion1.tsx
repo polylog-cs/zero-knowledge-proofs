@@ -1,4 +1,4 @@
-import { makeScene2D, Rect, Spline, Txt } from '@motion-canvas/2d';
+import { makeScene2D, Rect, Spline } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -8,7 +8,7 @@ import {
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-
+import { MyTxt } from '../utilities_text';
 import { logPosition, Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { LockableGraph } from '../utilities_lockable_graph';
@@ -48,7 +48,7 @@ export default makeScene2D(function* (view) {
   yield* scene.fadeInGraph(1);
 
   yield* scene.graphRef().pointAtEdge(['E', 'F'], true, 1, false);
-
+  Txt
   yield* scene.graphRef().lockVertices();
   yield* scene.sendGraph('verifier', 1);
 
@@ -87,9 +87,9 @@ export default makeScene2D(function* (view) {
   // getting evidence in each step
 
 
-  const probabilityRef = createRef<Txt>();
+  const probabilityRef = createRef<MyTxt>();
   view.add(
-    <Txt
+    <MyTxt
       ref={probabilityRef}
       position={[0, -400]} 
       text="P(prover fools me | prover cheats)"
@@ -97,10 +97,10 @@ export default makeScene2D(function* (view) {
       fill={Solarized.text}
     />,
   );
-  const productContainerRef = createRef<Txt>();
+  const productContainerRef = createRef<MyTxt>();
 
   view.add(
-    <Txt
+    <MyTxt
       ref={productContainerRef}
       position={[0, -150]}  
       text="="            
@@ -112,7 +112,7 @@ export default makeScene2D(function* (view) {
   nextTo(productContainerRef(), probabilityRef(), 'down', 10);
   alignTo(productContainerRef(), probabilityRef(), 'left');
   yield* productContainerRef().opacity(1, 1);
-  const flyingTextRefs: Array<Reference<Txt>> = [];
+  const flyingTextRefs: Array<Reference<MyTxt>> = [];
   flyingTextRefs.push(productContainerRef);
 
   yield* scene.fadeInGraph(1);
@@ -127,10 +127,10 @@ export default makeScene2D(function* (view) {
     yield* scene.sendGraph('verifier', duration);
     yield* scene.challenge(true, (shortened? 1 : undefined));
 
-    const flyingRef = createRef<Txt>();
+    const flyingRef = createRef<MyTxt>();
 
     view.add(
-      <Txt
+      <MyTxt
         ref={flyingRef}
         text = {(i==0 ? "6/7" : "* 6/7")}
         position={scene.verifierRef().absolutePosition().add(new Vector2(-100, -200))}
@@ -150,9 +150,9 @@ export default makeScene2D(function* (view) {
     yield* waitFor(0.5);
   }
 
-  const finalTextRef = createRef<Txt>();
+  const finalTextRef = createRef<MyTxt>();
   view.add(
-    <Txt
+    <MyTxt
       ref={finalTextRef}
       text="*...*6/7 = 6/7^100 = 2e-7"
       position={productContainerRef().absolutePosition()}
@@ -163,6 +163,10 @@ export default makeScene2D(function* (view) {
   );
   nextTo(finalTextRef(), flyingTextRefs[flyingTextRefs.length-1](), 'right', 0, 0);
   yield* finalTextRef().opacity(1, 1);
+  yield* waitFor(1);
+
+  // learning the coloring
+
 
   yield* waitFor(2);
 });
