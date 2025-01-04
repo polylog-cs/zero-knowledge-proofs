@@ -61,7 +61,7 @@ export const solarizedPalette = [
 ];
 
 export const fontSize = 50;
-export const FONT_FAMILY = 'CMU Serif, Noto Color Emoji';
+export const FONT_FAMILY = 'Computer Modern Serif, Noto Color Emoji';
 
 export interface IconProps extends LayoutProps {
   path: string;
