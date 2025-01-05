@@ -24,8 +24,19 @@ export default makeScene2D(function* (view) {
   const verifier = createRef<Participant>();
 
   const color = 'red';
+  const otherColors = ['green', 'blue'];
   const salt = '10101111';
   const hash = '00111000';
+  const otherHashes = [
+    '11110100',
+    '11001111',
+    '01010000',
+    '10110001',
+    '01101000',
+    '11101101',
+    '00100000',
+    '10111011',
+  ];
 
   const textsConfig = [
     {
@@ -102,17 +113,51 @@ export default makeScene2D(function* (view) {
     verifier().position.add([0, shiftY], 1),
   );
 
+  const changeText = function* (textRef: Reference<Txt>, changeTo: string) {
+    const lengthDelta = Math.abs(changeTo.length - textRef().text().length);
+    const time = clamp(lengthDelta * 0.05, 0.5, 1.8);
+
+    yield* textRef().text(changeTo, time, easeInOutQuad, textLerpWithDiff);
+  };
+
+  function* showWhySalt() {
+    // Show why we need the salt
+    yield* all(
+      changeText(textRefs[0], `hash(${color}) = ${otherHashes[0]}`),
+      changeText(textRefs[1], `"My box is ${otherHashes[0]}."`),
+    );
+    yield* waitFor(1);
+    const allColorHashesText =
+      `hash(${color}) = ${otherHashes[0]}\n` +
+      `hash(${otherColors[0]}) = ${otherHashes[1]}\n` +
+      `hash(${otherColors[1]}) = ${otherHashes[2]}`;
+    yield* changeText(textRefs[2], allColorHashesText);
+    yield* waitFor(1);
+    yield* changeText(
+      textRefs[2],
+      allColorHashesText + `\n"I know that ${color} is in the box!"`,
+    );
+    yield* waitFor(1);
+    // Reset to previous state
+    yield* all(
+      changeText(textRefs[0], textsConfig[0].texts[textsConfig[0].texts.length - 1]),
+      changeText(textRefs[1], textsConfig[1].texts[textsConfig[1].texts.length - 1]),
+      changeText(textRefs[2], ''),
+    );
+    yield* waitFor(1);
+  }
+
   for (let i = 0; i < textsConfig.length; i++) {
     const textConfig = textsConfig[i];
     const textRef = textRefs[i];
 
+    if (i === 2) {
+      yield* showWhySalt();
+    }
+
     for (let j = 0; j < textConfig.texts.length; j++) {
       const text = textConfig.texts[j];
-
-      const lengthDelta = text.length - (textConfig.texts[j - 1] || '').length;
-      const time = clamp(lengthDelta * 0.05, 0.5, 3);
-
-      yield* textRef().text(text, time, easeInOutQuad, textLerpWithDiff);
+      yield* changeText(textRef, text);
       yield* waitFor(1);
     }
   }
