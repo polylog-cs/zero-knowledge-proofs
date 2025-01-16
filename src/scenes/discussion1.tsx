@@ -109,7 +109,7 @@ export default makeScene2D(function* (view) {
       opacity = {0}
     />,
   );
-  nextTo(productContainerRef(), probabilityRef(), 'down', 10);
+  nextTo(productContainerRef(), probabilityRef(), 'down', 30);
   alignTo(productContainerRef(), probabilityRef(), 'left');
   yield* productContainerRef().opacity(1, 1);
   const flyingTextRefs: Array<Reference<MyTxt>> = [];
@@ -132,7 +132,7 @@ export default makeScene2D(function* (view) {
     view.add(
       <MyLatex
         ref={flyingRef}
-        tex = {(i==0 ? "6/7" : "* 6/7")}
+        tex = {(i==0 ? "\\frac{6}{7}" : "\\cdot \\, \\frac{6}{7}")}
         position={scene.verifierRef().absolutePosition().add(new Vector2(-100, -200))}
         opacity={0}
       />,
@@ -150,9 +150,9 @@ export default makeScene2D(function* (view) {
 
   const finalTextRef = createRef<MyTxt>();
   view.add(
-    <MyTxt
+    <MyLatex
       ref={finalTextRef}
-      text="*...*6/7 = 6/7^100 = 2e-7"
+      tex= {"\\cdot \\dots \\,  = \\left( \\frac{6}{7} \\right)^{100} = 2\\cdot 10^{-7}"}
       position={productContainerRef().absolutePosition()}
       fontSize={30}
       fill={Solarized.text}
