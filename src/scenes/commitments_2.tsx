@@ -1,4 +1,4 @@
-import { Latex, makeScene2D, Txt } from '@motion-canvas/2d';
+import { Latex, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -128,23 +128,57 @@ export default makeScene2D(function* (view) {
     );
     yield* waitFor(1);
     const allColorHashesText =
+      `hash(${otherColors[1]}) = ${otherHashes[2]}\n` +
       `hash(${color}) = ${otherHashes[0]}\n` +
-      `hash(${otherColors[0]}) = ${otherHashes[1]}\n` +
-      `hash(${otherColors[1]}) = ${otherHashes[2]}`;
+      `hash(${otherColors[0]}) = ${otherHashes[1]}\n`;
     yield* changeText(textRefs[2], allColorHashesText);
     yield* waitFor(1);
-    yield* changeText(
-      textRefs[2],
-      allColorHashesText + `\n"I know that ${color} is in the box!"`,
+
+    const highlights = [createRef<Rect>(), createRef<Rect>()];
+    // textRefs[0]().add(
+    view.add(
+      <>
+        <Rect
+          fill={Solarized.base02}
+          ref={highlights[0]}
+          width={0}
+          height={80}
+          opacity={1}
+          zIndex={-1}
+          position={textRefs[0]().position().addX(-400)}
+        ></Rect>
+        ,
+        <Rect
+          fill={Solarized.base02}
+          ref={highlights[1]}
+          width={0}
+          height={80}
+          opacity={1}
+          zIndex={-1}
+          position={textRefs[2]().right().addX(-320)}
+        ></Rect>
+      </>,
     );
+
+    const expandedWidth = 740;
+    yield* all(
+      highlights[0]().width(expandedWidth, 1),
+      highlights[1]().width(expandedWidth, 1),
+    );
+
     yield* waitFor(1);
     // Reset to previous state
     yield* all(
+      highlights[0]().width(0, 1),
+      highlights[1]().width(0, 1),
       changeText(textRefs[0], textsConfig[0].texts[textsConfig[0].texts.length - 1]),
       changeText(textRefs[1], textsConfig[1].texts[textsConfig[1].texts.length - 1]),
-      changeText(textRefs[2], ''),
+      textRefs[2]().opacity(0, 1),
     );
     yield* waitFor(1);
+
+    textRefs[2]().opacity(1);
+    textRefs[2]().text('');
   }
 
   for (let i = 0; i < textsConfig.length; i++) {
