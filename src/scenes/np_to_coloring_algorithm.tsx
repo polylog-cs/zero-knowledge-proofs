@@ -2,6 +2,7 @@ import { Img, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
 import { all, createRef, linear, useLogger, waitFor } from '@motion-canvas/core';
 
 import super_mario_bros_logo_alpha from '../assets/images/super_mario_bros_logo_alpha.png';
+import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
 import { MyTxt } from '../utilities_text';
 
@@ -13,7 +14,6 @@ const inputs = [
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
 
-  let image = createRef<Img>();
   let inputsText = createRef<MyTxt>();
   let outputTextRect = createRef<Rect>();
   let outputText1 = createRef<MyTxt>();
@@ -21,27 +21,7 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <>
-      <Rect
-        width={550}
-        height={550}
-        fill={Solarized.orange}
-        zIndex={10}
-        layout
-        direction={'column'}
-        alignItems={'center'}
-        justifyContent={'center'}
-        gap={20}
-      >
-        <Img
-          ref={image}
-          src={super_mario_bros_logo_alpha}
-          width={500}
-          smoothing={true}
-        ></Img>
-        <MyTxt fontSize={100} fill={Solarized.base2}>
-          Algorithm
-        </MyTxt>
-      </Rect>
+      <MarioAlgorithm zIndex={10} />
       <MyTxt fontSize={100} ref={inputsText}></MyTxt>
       {/* A rectangle to cover the text in the right half */}
       <Rect
@@ -105,5 +85,5 @@ export default makeScene2D(function* (view) {
     yield* outputTextRect().opacity(0, 1);
   }
 
-  yield* waitFor(5);
+  yield* waitFor(2);
 });
