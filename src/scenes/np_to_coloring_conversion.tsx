@@ -1,4 +1,4 @@
-import { CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
+import { Camera, CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, Reference, Vector2, waitFor } from '@motion-canvas/core';
 
 import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simple.png';
@@ -57,6 +57,8 @@ export default makeScene2D(function* (view) {
         p3={circuitStep().left}
         end={0}
         endArrow
+        zIndex={1}
+        lineCap={'round'}
       />
     </>,
   );
@@ -141,5 +143,22 @@ export default makeScene2D(function* (view) {
 
   yield* all(coloringStep().opacity(1, 1), line3().end(1, 1));
 
-  yield* waitFor(10);
+  yield* waitFor(2);
+
+  const t = 2;
+  yield* all(
+    line1().p3(coloringStep().left, t),
+    algorithmStep().scale(scale1, t),
+    algorithmStep().position([-xGap, 0], t),
+    coloringStep().scale(scale1, t),
+    coloringStep().position([xGap, 0], t),
+    line1().lineWidth(25, t),
+    line1().arrowSize(50, t),
+    // fade out
+    line2().opacity(0, t * 0.5),
+    line3().opacity(0, t * 0.5),
+    circuitStep().opacity(0, t * 0.5),
+    satStep().opacity(0, t * 0.5),
+  );
+  yield* waitFor(5);
 });
