@@ -26,16 +26,16 @@ export default makeScene2D(function* (view) {
   const color = 'red';
   const otherColors = ['green', 'blue'];
   const salt = '10101111';
-  const hash = '00111000';
+  const collisionSalt = '00100000';
+  const hash = '0011...1000';
   const otherHashes = [
-    '11110100',
-    '11001111',
-    '01010000',
-    '10110001',
-    '01101000',
-    '11101101',
-    '00100000',
-    '10111011',
+    '1111...0100',
+    '1100...1111',
+    '0101...0000',
+    '1011...0001',
+    '0110...1000',
+    '1110...1101',
+    '1011...1011',
   ];
 
   const textsConfig = [
@@ -120,6 +120,8 @@ export default makeScene2D(function* (view) {
     yield* textRef().text(changeTo, time, easeInOutQuad, textLerpWithDiff);
   };
 
+  const highlights = [createRef<Rect>(), createRef<Rect>()];
+
   function* showWhySalt() {
     // Show why we need the salt
     yield* all(
@@ -134,7 +136,6 @@ export default makeScene2D(function* (view) {
     yield* changeText(textRefs[2], allColorHashesText);
     yield* waitFor(1);
 
-    const highlights = [createRef<Rect>(), createRef<Rect>()];
     // textRefs[0]().add(
     view.add(
       <>
@@ -168,12 +169,12 @@ export default makeScene2D(function* (view) {
 
     yield* waitFor(1);
     // Reset to previous state
+    yield* all(highlights[0]().width(0, 1), highlights[1]().width(0, 1));
+    yield* waitFor(1);
     yield* all(
-      highlights[0]().width(0, 1),
-      highlights[1]().width(0, 1),
+      textRefs[2]().opacity(0, 1),
       changeText(textRefs[0], textsConfig[0].texts[textsConfig[0].texts.length - 1]),
       changeText(textRefs[1], textsConfig[1].texts[textsConfig[1].texts.length - 1]),
-      textRefs[2]().opacity(0, 1),
     );
     yield* waitFor(1);
 
@@ -195,6 +196,37 @@ export default makeScene2D(function* (view) {
       yield* waitFor(1);
     }
   }
+
+  yield* all(...textRefs.map((r) => changeText(r, '')));
+  yield* waitFor(1);
+
+  yield* all(
+    changeText(textRefs[0], `hash(${color}${salt}) = ${hash}`),
+    changeText(textRefs[1], `hash(${otherColors[0]}${collisionSalt}) = ${hash}`),
+  );
+  yield* waitFor(1);
+
+  const hashHighlightWidth = 380;
+  highlights[0]().position(textRefs[0]().position().addX(95));
+  highlights[1]().position(textRefs[1]().position().addX(160));
+  yield* all(
+    highlights[0]().width(hashHighlightWidth, 1),
+    highlights[1]().width(hashHighlightWidth, 1),
+  );
+  yield* waitFor(1);
+
+  const hardText = createRef<MyTxt>();
+  view.add(
+    <MyTxt
+      ref={hardText}
+      opacity={1}
+      fill={Solarized.red}
+      fontSize={150}
+      y={200}
+    ></MyTxt>,
+  );
+  yield* changeText(hardText, 'Hard!');
+  yield* waitFor(5);
 });
 
 function clamp(value: number, min: number, max: number): number {
