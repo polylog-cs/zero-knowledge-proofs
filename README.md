@@ -26,3 +26,7 @@ If you need to run Prettier manually, you can do so using
 ```
 npx prettier --write src/
 ```
+
+## Sources
+
+Facebook dataset (used as an example graph): https://snap.stanford.edu/data/egonets-Facebook.html
