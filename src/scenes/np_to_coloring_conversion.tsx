@@ -1,6 +1,9 @@
-import { CubicBezier, makeScene2D, Rect } from '@motion-canvas/2d';
+import { CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, Reference, Vector2, waitFor } from '@motion-canvas/core';
 
+import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simple.png';
+import graph_screenshot from '../assets/images/graph_screenshot.png';
+import sat_screenshot from '../assets/images/sat_screenshot.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
 
@@ -25,22 +28,26 @@ export default makeScene2D(function* (view) {
   const xGap = 400;
   const yGap = 250;
   const arrowColor = Solarized.gray;
+  const scale1 = 0.9;
+  const scale2 = 0.6;
 
-  yield* all(algorithmStep().scale(0.75, 1), algorithmStep().position([-xGap, 0], 1));
+  yield* all(algorithmStep().scale(scale1, 1), algorithmStep().position([-xGap, 0], 1));
 
   const line1 = createRef<CubicBezier>();
 
   view.add(
     <>
       <Rect
-        fill={Solarized.cyan}
+        // fill={Solarized.cyan}
         width={squareSize}
         height={squareSize}
-        scale={0.75}
+        scale={scale1}
         x={xGap}
         opacity={0}
         ref={circuitStep}
-      ></Rect>
+      >
+        <Img src={circuit_screenshot_simple} width={squareSize}></Img>
+      </Rect>
       <CubicBezier
         ref={line1}
         lineWidth={15}
@@ -56,14 +63,12 @@ export default makeScene2D(function* (view) {
 
   makeWobbly(line1);
 
-  yield* circuitStep().opacity(1, 1);
-
-  yield* line1().end(1, 1);
+  yield* all(circuitStep().opacity(1, 1), line1().end(1, 1));
   yield* waitFor(1);
   yield* all(
-    algorithmStep().scale(0.5, 1),
+    algorithmStep().scale(scale2, 1),
     algorithmStep().position([-xGap, -yGap], 1),
-    circuitStep().scale(0.5, 1),
+    circuitStep().scale(scale2, 1),
     circuitStep().position([xGap, -yGap], 1),
   );
 
@@ -73,15 +78,17 @@ export default makeScene2D(function* (view) {
   view.add(
     <>
       <Rect
-        fill={Solarized.blue}
+        // fill={Solarized.blue}
         width={squareSize}
         height={squareSize}
-        scale={0.5}
+        scale={scale2}
         x={xGap}
         y={yGap}
         opacity={0}
         ref={satStep}
-      ></Rect>
+      >
+        <Img src={sat_screenshot} width={squareSize}></Img>
+      </Rect>
       <CubicBezier
         ref={line2}
         lineWidth={15}
@@ -96,8 +103,7 @@ export default makeScene2D(function* (view) {
   );
   makeWobbly(line2);
 
-  yield* satStep().opacity(1, 1);
-  yield* line2().end(1, 1);
+  yield* all(satStep().opacity(1, 1), line2().end(1, 1));
   yield* waitFor(1);
 
   // Step 3: SAT to coloring
@@ -107,15 +113,18 @@ export default makeScene2D(function* (view) {
   view.add(
     <>
       <Rect
-        fill={Solarized.magenta}
+        // fill={Solarized.magenta}
         width={squareSize}
         height={squareSize}
-        scale={0.5}
+        scale={scale2}
         x={-xGap}
         y={yGap}
         opacity={0}
         ref={coloringStep}
-      ></Rect>
+      >
+        {/* Hacky to use a screenshot here, but we don't manipulate the graph at all so it's ok. */}
+        <Img src={graph_screenshot} height={squareSize}></Img>
+      </Rect>
       <CubicBezier
         ref={line3}
         lineWidth={15}
@@ -130,8 +139,7 @@ export default makeScene2D(function* (view) {
   );
   makeWobbly(line3);
 
-  yield* coloringStep().opacity(1, 1);
-  yield* line3().end(1, 1);
+  yield* all(coloringStep().opacity(1, 1), line3().end(1, 1));
 
   yield* waitFor(10);
 });
