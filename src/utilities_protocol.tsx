@@ -221,11 +221,11 @@ export class ProtocolScene {
     yield* this.graphRef().unlockVertices(this.graphRef().challengeEdge);
     yield* waitFor(0.5);
 
-    if(!noText) {
+    if (!noText) {
       yield* this.addText('verifier', '✅', true);
       yield* waitFor(1);
       yield* this.removeText('verifier');
-      }
+    }
     yield* this.graphRef().removeArrows();
   }
 

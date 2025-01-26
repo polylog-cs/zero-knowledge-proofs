@@ -170,7 +170,10 @@ function* animatePercentage(view, responseLayout, i) {
     let response = responseLayout().children()[i];
     let responseCenter = response.absolutePosition();
 
-    return responseCenter.addX(response.width() / 2).addX(p().width() / 2);
+    return responseCenter
+      .addX(-response.width() / 2)
+      .addX(-p().width() / 2)
+      .addX(responseLayout().width() * 0.9);
   });
 
   yield* all(
@@ -242,7 +245,7 @@ export default makeScene2D(function* (view) {
   view.add(response());
 
   // send response to student + solve
-  yield* all(response().bottom(student().top(), 1));
+  yield* all(response().bottom(student().top().addY(-15).addX(-30), 1));
   yield* solve(view, response());
 
   const eq = createRef<MyTxt>();
