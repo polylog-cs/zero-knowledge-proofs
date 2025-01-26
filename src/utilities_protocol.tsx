@@ -218,10 +218,24 @@ export class ProtocolScene {
     yield* waitFor(0.5);
   }
 
-  public *challenge(noText: boolean = false, numChallenges: number = 20) {
-    yield* this.graphRef().pointAtRandomEdges(undefined, numChallenges);
-    yield* waitFor(0.5);
+  public *challenge(noText: boolean = false, shortened: boolean = false) {
+    let numChallenges = shortened ? 1 : 20;
+    let pointingDuration = shortened ? 0.5 : 3;
+    yield* this.graphRef().pointAtRandomEdges(
+      undefined,
+      numChallenges,
+      pointingDuration,
+    );
 
+    if (shortened) {
+      yield* all(
+        this.graphRef().unlockVertices(this.graphRef().challengeEdge, 0.5),
+        this.graphRef().removeArrows(0.5),
+      );
+      return;
+    }
+
+    yield* waitFor(0.5);
     yield* this.graphRef().unlockVertices(this.graphRef().challengeEdge);
     yield* waitFor(0.5);
 

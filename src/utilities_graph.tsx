@@ -18,7 +18,6 @@ export interface GraphData {
   labels: string[];
   edges: [string, string][];
   positions: [number, number][];
-  sides?: boolean[];
   colors?: number[];
   vertexDirs?: [number, number][];
 }
@@ -28,13 +27,13 @@ const l = 100;
 export const exampleGraphData: GraphData = {
   labels: ['A', 'B', 'C', 'D', 'E', 'F'],
   edges: [
-    ['A', 'B'],
-    ['B', 'C'],
-    ['C', 'A'],
+    ['B', 'A'],
+    ['C', 'B'],
+    ['A', 'C'],
     ['D', 'C'],
-    ['E', 'C'],
+    ['C', 'E'],
     ['F', 'D'],
-    ['F', 'E'],
+    ['E', 'F'],
   ],
   positions: [
     [-l, -l],
@@ -44,7 +43,6 @@ export const exampleGraphData: GraphData = {
     [l, l],
     [0, 2 * l],
   ],
-  sides: [true, true, true, true, false, true, false],
   colors: [0, 1, 2, 1, 0, 2],
   vertexDirs: [
     [-1, -2],
@@ -74,9 +72,6 @@ export class Graph {
   private palette = [Solarized.blue, Solarized.red, Solarized.green];
   private currentColors = new Map<string, number>();
 
-  // sides array for edges
-  private edgeSides: boolean[] = [];
-
   // Instead of a single arrowRef, we store multiple arrows
   private arrows: Reference<Finger>[] = [];
 
@@ -91,8 +86,6 @@ export class Graph {
     for (let i = 0; i < data.labels.length; i++) {
       this.currentColors.set(data.labels[i], data.colors[i]);
     }
-
-    this.edgeSides = data.sides;
 
     if (data.vertexDirs) {
       for (let i = 0; i < data.labels.length; i++) {
@@ -121,8 +114,7 @@ export class Graph {
 
   addEdge(fromLabel: string, toLabel: string, deviation: number = 0) {
     const ref = createRef<Spline>();
-    const [from, to] =
-      fromLabel < toLabel ? [fromLabel, toLabel] : [toLabel, fromLabel];
+    const [from, to] = [fromLabel, toLabel];
     this.edges.push({ from, to, ref, deviation });
   }
 
@@ -278,6 +270,7 @@ export class Graph {
 
     const fromVertex = this.vertexMap.get(edge.from);
     const toVertex = this.vertexMap.get(edge.to);
+    console.log(edge.from + edge.to);
 
     const startPos = new Vector2(fromVertex.position);
     const endPos = new Vector2(toVertex.position);
@@ -292,17 +285,11 @@ export class Graph {
         padding={0.2}
         scale={arrowLength}
         ref={arrowRef}
+        opacity={0}
       />
     );
 
-    this.arrows.push(arrowRef);
-    this.containerRef().add(arrowRef());
-    yield* arrowRef().opacity(1, duration / 10);
-    yield* waitFor((8 * duration) / 10);
-
-    if (!keep) {
-      yield* this.removeArrows(duration / 10, [arrowRef]);
-    }
+    yield* this.flashArrow(arrowRef, duration, keep);
   }
 
   getEdge(edgePair: [string, string]) {
@@ -341,18 +328,22 @@ export class Graph {
         padding={buff}
         scale={arrowLength}
         ref={arrowRef}
+        opacity={0}
       />
     );
 
+    yield* this.flashArrow(arrowRef, duration, keep);
+  }
+
+  private *flashArrow(arrowRef: Reference<Finger>, duration: number, keep: boolean) {
     this.arrows.push(arrowRef);
     this.containerRef().add(arrowRef());
+    let fadeDuration = Math.min(duration / 4, Math.max(duration / 10, 1));
+    if (duration < 0.3) fadeDuration = 0;
+    yield* arrowRef().opacity(1, keep ? fadeDuration : 2 * fadeDuration);
+    yield* waitFor(duration - 2 * fadeDuration);
 
-    yield* arrowRef().opacity(1, duration / 10);
-    yield* waitFor((8 * duration) / 10);
-
-    if (!keep) {
-      yield* this.removeArrows(duration / 10, [arrowRef]);
-    }
+    if (!keep) yield* this.removeArrows(fadeDuration, [arrowRef]);
   }
 
   /**
@@ -401,15 +392,12 @@ export class Graph {
         availableEdges[Math.floor(Math.random() * availableEdges.length)];
       const index = this.edges.indexOf(chosenEdge);
 
-      const side =
-        index >= 0 && index < this.edgeSides.length ? this.edgeSides[index] : true;
-
       const normalizedDuration = getTimeFractionAt(i + 1) - getTimeFractionAt(i);
       const duration = (normalizedDuration * totalDuration) / totalNormalizedTime;
 
       yield* this.pointAtEdge(
         [chosenEdge.from, chosenEdge.to],
-        side,
+        true,
         duration,
         i === k - 1,
         arrowLength,

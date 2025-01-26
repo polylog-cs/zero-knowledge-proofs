@@ -28,10 +28,10 @@ export default makeScene2D(function* (view) {
 
   yield* scene.sendGraph('verifier');
 
-  const challengeEdge: [string, string] = ['A', 'B'];
+  const challengeEdge: [string, string] = exampleGraphData.edges[0];
   yield* all(
     scene.addText('verifier', '2. Challenge an edge'),
-    scene.graphRef().pointAtEdge(challengeEdge, true, 1, false),
+    scene.graphRef().pointAtEdge(challengeEdge, true, 2, false),
   );
 
   yield* all(
