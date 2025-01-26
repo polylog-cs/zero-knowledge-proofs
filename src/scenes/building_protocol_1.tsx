@@ -18,7 +18,7 @@ export default makeScene2D(function* (view) {
   const logger = useLogger();
 
   const scene = new ProtocolScene(view);
-  yield* scene.setup();
+  yield* scene.setup('center', false, false);
 
   yield* scene.addText('prover', 'I can color this');
   yield* scene.addText('verifier', 'Oh yeah?');

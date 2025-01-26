@@ -39,10 +39,14 @@ export class ProtocolScene {
     view.add(<Layout ref={this.containerRef} layout={false} />);
   }
 
-  public *setup(graphPosition: GraphPosition = 'center', locked: boolean = false) {
+  public *setup(
+    graphPosition: GraphPosition = 'center',
+    locked: boolean = false,
+    colored: boolean = true,
+  ) {
     yield* all(this.addParticipant('prover'), this.addParticipant('verifier'));
     yield* this.createGraph(graphPosition, 0);
-    yield* this.graphRef().applyColors(0, 0);
+    if (colored) yield* this.graphRef().applyColors(0, 0);
     if (locked) {
       yield* this.graphRef().lockVertices();
     }
