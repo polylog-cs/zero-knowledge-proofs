@@ -29,6 +29,8 @@ export class Lock extends Node {
 
   private readonly openScale: SimpleSignal<number> = createSignal(1.5);
 
+  private locked: boolean = false;
+
   public constructor(props?: LockProps) {
     super({ ...props });
 
@@ -142,6 +144,7 @@ export class Lock extends Node {
         ),
       ),
     );
+    this.locked = true;
   }
 
   public *unlock(duration: number = 1.5) {
@@ -155,6 +158,28 @@ export class Lock extends Node {
         this.object.opacity(1, t * 2),
       ),
       delay(t, this.background().scale(0, t * 2)),
+    );
+    this.locked = false;
+  }
+
+  public *seethrough(duration: number = 1) {
+    let opacity = 0.7;
+    if (!this.locked) return;
+    yield* all(
+      this.object.opacity(1, 0),
+      this.background().opacity(0, duration),
+      this.top().opacity(opacity, duration),
+      this.bottom().opacity(opacity, duration),
+    );
+  }
+
+  public *unseethrough(duration: number = 1) {
+    if (!this.locked) return;
+    yield* all(
+      this.background().opacity(1, duration),
+      this.top().opacity(1, duration),
+      this.bottom().opacity(1, duration),
+      delay(duration, this.object.opacity(0, 0)),
     );
   }
 }

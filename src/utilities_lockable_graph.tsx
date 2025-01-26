@@ -61,4 +61,15 @@ export class LockableGraph extends Graph {
     }
     yield* all(...animations);
   }
+
+  *setSeeThrough(seethrough: boolean) {
+    yield* all(
+      ...[...this.locks.entries()].map(([_, lock]) => {
+        return (function* () {
+          if (seethrough) yield* lock().seethrough();
+          else yield* lock().unseethrough();
+        })();
+      }),
+    );
+  }
 }

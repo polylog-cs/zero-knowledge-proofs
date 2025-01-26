@@ -78,7 +78,7 @@ export class ProtocolScene {
     text: string,
     removeCurrent: boolean = false,
   ) {
-    const lineHeight = 50;
+    const lineHeight = 40;
     const isProver = which === 'prover';
     const targetRef = isProver ? this.proverRef : this.verifierRef;
     const textsArray = isProver ? this.proverTexts : this.verifierTexts;
@@ -94,7 +94,7 @@ export class ProtocolScene {
       <Txt
         ref={newTextRef}
         text={text}
-        fontSize={40}
+        fontSize={56}
         fontFamily={FONT_FAMILY}
         fill={Solarized.text}
         opacity={0}

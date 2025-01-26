@@ -35,7 +35,7 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
   yield* scene.sendGraph('verifier');
 
-  yield* scene.addText('verifier', 'Hm...🧐');
+  yield* scene.addText('verifier', 'Hm... 🧐');
 
   yield* all(
     scene.graphRef().pointAtVertex(revealedEdge[0], 1, true),
@@ -44,16 +44,18 @@ export default makeScene2D(function* (view) {
 
   yield* scene.addText('verifier', 'Different colors');
 
+  yield* scene.graphRef().setSeeThrough(true);
+  yield* all(
+    sequence(
+      0.5,
+      ...Array.from({ length: 7 }, () => scene.graphRef().shuffleColors(0.3)),
+    ),
+  );
+  yield* scene.graphRef().setSeeThrough(false);
+
   yield* all(scene.graphRef().removeArrows(), scene.removeText('verifier'));
 
   yield* scene.sendGraph('prover');
-  yield* scene.graphRef().unlockVertices();
-
-  yield* all(
-    // TODO fix
-    scene.graphRef().lockVertices(nonRevealedVertices, 5),
-    sequence(0.1, ...Array.from({ length: 7 }, () => scene.graphRef().shuffleColors())),
-  );
   yield* scene.graphRef().unlockVertices();
 
   revealedEdge = ['C', 'F'];
