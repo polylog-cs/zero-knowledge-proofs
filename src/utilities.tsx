@@ -46,8 +46,8 @@ export const Solarized = {
   background: '#eee8d5', // base2
   text: '#657b83', //  base00
   gray: '#657b83', //  base00
-  proverText: '#2aa198', // cyan
-  verifierText: '#d33682', // magenta
+  proverText: '#b58900', // yellow
+  verifierText: '#073642', // base02
 };
 
 export const solarizedPalette = [

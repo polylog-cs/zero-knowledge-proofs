@@ -133,7 +133,7 @@ export default makeScene2D(function* (view) {
     view.add(
       <>
         <Rect
-          fill={Solarized.base02}
+          fill={Solarized.base3}
           ref={highlights[0]}
           width={0}
           height={80}
@@ -143,7 +143,7 @@ export default makeScene2D(function* (view) {
         ></Rect>
         ,
         <Rect
-          fill={Solarized.base02}
+          fill={Solarized.base3}
           ref={highlights[1]}
           width={0}
           height={80}
@@ -215,9 +215,9 @@ export default makeScene2D(function* (view) {
   );
   yield* waitFor(1);
 
-  const hashHighlightWidth = 380;
-  highlights[0]().position(textRefs[0]().position().addX(95));
-  highlights[1]().position(textRefs[1]().position().addX(160));
+  const hashHighlightWidth = 375;
+  highlights[0]().position(textRefs[0]().position().addX(100));
+  highlights[1]().position(textRefs[1]().position().addX(165));
   yield* all(
     highlights[0]().width(hashHighlightWidth, 1),
     highlights[1]().width(hashHighlightWidth, 1),
