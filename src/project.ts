@@ -24,20 +24,17 @@ import './global.css';
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
-    discussion1,
+    teacher,
     building_protocol_1,
     building_protocol_2,
+    discussion1,
     commitments_1,
     commitments_2,
-    //test,
     sudoku_reduction,
-    lock,
-    phone,
-    teacher,
     np_to_coloring,
     np_to_coloring_algorithm,
     np_to_coloring_conversion,
     np_to_coloring_big_graph,
-    phone_trust,
+    phone,
   ],
 });
