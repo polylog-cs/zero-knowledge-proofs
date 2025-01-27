@@ -219,7 +219,7 @@ export class ProtocolScene {
   }
 
   public *challenge(noText: boolean = false, shortened: boolean = false) {
-    let numChallenges = shortened ? 1 : 20;
+    let numChallenges = shortened ? 3 : 20;
     let pointingDuration = shortened ? 0.5 : 3;
     yield* this.graphRef().pointAtRandomEdges(
       undefined,

@@ -129,10 +129,10 @@ export default makeScene2D(function* (view) {
   flyingTextRefs.push(productContainerRef);
 
   yield* scene.fadeInGraph(1);
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 6; i++) {
     let duration = 1;
     let shortened = false;
-    if (i >= 3) {
+    if (i >= 1) {
       duration = 0.3;
       shortened = true;
     }
