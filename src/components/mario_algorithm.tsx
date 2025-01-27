@@ -9,7 +9,7 @@ import {
 } from '@motion-canvas/2d';
 import { SignalValue, SimpleSignal, Vector2 } from '@motion-canvas/core';
 
-import super_mario_bros_logo_alpha from '../assets/images/super_mario_bros_logo_alpha.png';
+import super_mario_bros_logo_alpha from '../assets/images/super_mario_bros_logo.svg';
 import { Solarized } from '../utilities';
 import { MyTxt } from '../utilities_text';
 

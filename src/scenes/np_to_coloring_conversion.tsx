@@ -2,10 +2,12 @@ import { Camera, CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, Reference, Vector2, waitFor } from '@motion-canvas/core';
 
 import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simple.png';
-import graph_screenshot from '../assets/images/graph_screenshot.png';
 import sat_screenshot from '../assets/images/sat_screenshot.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
+import { exampleGraphData, GraphData } from '../utilities_graph';
+import { LockableGraph } from '../utilities_lockable_graph';
+import { shift } from '../utilities_moving';
 
 const makeWobbly = (bezier: Reference<CubicBezier>) => {
   const lineDirection = () => bezier().p3().sub(bezier().p0());
@@ -112,6 +114,14 @@ export default makeScene2D(function* (view) {
 
   const line3 = createRef<CubicBezier>();
 
+  const g = new LockableGraph(50);
+  g.initialize(exampleGraphData);
+  const graphLayout = g.getGraphLayout();
+  graphLayout.scale(1.2);
+  shift(graphLayout, new Vector2(0, -50));
+  yield* g.applyColors();
+  yield* g.fadeIn(0);
+
   view.add(
     <>
       <Rect
@@ -125,14 +135,14 @@ export default makeScene2D(function* (view) {
         ref={coloringStep}
       >
         {/* Hacky to use a screenshot here, but we don't manipulate the graph at all so it's ok. */}
-        <Img src={graph_screenshot} height={squareSize}></Img>
+        {graphLayout}
       </Rect>
       <CubicBezier
         ref={line3}
         lineWidth={15}
         arrowSize={30}
         stroke={arrowColor}
-        p0={satStep().left}
+        p0={satStep().left().addX(-30)}
         p3={coloringStep().right}
         end={0}
         endArrow

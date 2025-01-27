@@ -1,7 +1,6 @@
 import { Img, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
 import { all, createRef, linear, useLogger, waitFor } from '@motion-canvas/core';
 
-import super_mario_bros_logo_alpha from '../assets/images/super_mario_bros_logo_alpha.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
 import { MyTxt } from '../utilities_text';
