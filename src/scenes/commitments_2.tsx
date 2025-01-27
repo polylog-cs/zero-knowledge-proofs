@@ -27,16 +27,8 @@ export default makeScene2D(function* (view) {
   const otherColors = ['green', 'blue'];
   const salt = '10101111';
   const collisionSalt = '00100000';
-  const hash = '0011...1000';
-  const otherHashes = [
-    '1111...0100',
-    '1100...1111',
-    '0101...0000',
-    '1011...0001',
-    '0110...1000',
-    '1110...1101',
-    '1011...1011',
-  ];
+  const hash = '0x72ab83de';
+  const otherHashes = ['0x0deadbeef', '0x2cf79693a', '0x00dfd9b2b'];
 
   const textsConfig = [
     {
@@ -50,15 +42,15 @@ export default makeScene2D(function* (view) {
     },
     {
       participant: 'prover',
-      texts: [`"My box is ${hash}."`],
+      texts: [`“My box is ${hash}.”`],
     },
     {
       participant: 'verifier',
-      texts: ['"Ok, could you open it?"'],
+      texts: ['“Ok, could you open it?”'],
     },
     {
       participant: 'prover',
-      texts: [`"It's ${color}. You can check using ${salt}."`],
+      texts: [`“It's ${color}. You can check using ${salt}.”`],
     },
     {
       participant: 'verifier',
@@ -66,7 +58,7 @@ export default makeScene2D(function* (view) {
     },
     {
       participant: 'verifier',
-      texts: ['"This matches the value you committed to."', '"Looks ok."'],
+      texts: ['“This matches the value you committed to.”', '“Looks ok.”'],
     },
   ];
 
@@ -126,7 +118,7 @@ export default makeScene2D(function* (view) {
     // Show why we need the salt
     yield* all(
       changeText(textRefs[0], `hash(${color}) = ${otherHashes[0]}`),
-      changeText(textRefs[1], `"My box is ${otherHashes[0]}."`),
+      changeText(textRefs[1], `“My box is ${otherHashes[0]}.”`),
     );
     yield* waitFor(1);
     const allColorHashesText =
@@ -136,6 +128,7 @@ export default makeScene2D(function* (view) {
     yield* changeText(textRefs[2], allColorHashesText);
     yield* waitFor(1);
 
+    let width = 768;
     // textRefs[0]().add(
     view.add(
       <>
@@ -146,7 +139,7 @@ export default makeScene2D(function* (view) {
           height={80}
           opacity={1}
           zIndex={-1}
-          position={textRefs[0]().position().addX(-400)}
+          position={textRefs[0]().left()}
         ></Rect>
         ,
         <Rect
@@ -156,20 +149,36 @@ export default makeScene2D(function* (view) {
           height={80}
           opacity={1}
           zIndex={-1}
-          position={textRefs[2]().right().addX(-320)}
+          position={textRefs[2]().right().addX(-width)}
         ></Rect>
       </>,
     );
 
-    const expandedWidth = 740;
     yield* all(
-      highlights[0]().width(expandedWidth, 1),
-      highlights[1]().width(expandedWidth, 1),
+      highlights[0]().position(
+        highlights[0]()
+          .position()
+          .addX(width / 2),
+        1,
+      ),
+      highlights[1]().position(
+        highlights[1]()
+          .position()
+          .addX(width / 2),
+        1,
+      ),
+      highlights[0]().width(width + 30, 1),
+      highlights[1]().width(width + 30, 1),
     );
 
     yield* waitFor(1);
     // Reset to previous state
-    yield* all(highlights[0]().width(0, 1), highlights[1]().width(0, 1));
+    yield* all(
+      highlights[0]().width(0, 1),
+      highlights[1]().width(0, 1),
+      highlights[0]().position(highlights[0]().left(), 1),
+      highlights[1]().position(highlights[1]().left(), 1),
+    );
     yield* waitFor(1);
     yield* all(
       textRefs[2]().opacity(0, 1),
