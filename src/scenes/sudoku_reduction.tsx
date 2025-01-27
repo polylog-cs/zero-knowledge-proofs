@@ -140,6 +140,7 @@ export default makeScene2D(function* (view) {
 
   const exampleCell = [0, 4];
 
+  yield* sudokuLayout.children()[exampleCell[0]].zIndex(10, 0);
   const rect = sudokuLayout.children()[exampleCell[0]].children()[
     exampleCell[1]
   ] as Rect;
