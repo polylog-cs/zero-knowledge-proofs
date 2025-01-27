@@ -16,6 +16,7 @@ import {
   Color,
   createRef,
   createSignal,
+  delay,
   Logger,
   PossibleVector2,
   Reference,
@@ -207,11 +208,18 @@ export class SudokuGraph extends Graph {
     return vertices;
   }
 
-  *colorPalette(colors: string[] = solarizedPalette) {
+  *colorPalette(
+    delay: number = 0.5,
+    eachDuration: number = 0.8,
+    decolor: boolean = false,
+  ) {
     yield* sequence(
-      0.5,
+      delay,
       ...[...Array(9).keys()].map((d) =>
-        this.getVertex(`clique-${d}`).fill(colors[d], 0.8),
+        this.getVertex(`clique-${d}`).fill(
+          decolor ? Solarized.text : solarizedPalette[d],
+          eachDuration,
+        ),
       ),
     );
   }
@@ -390,5 +398,27 @@ export class Sudoku {
       );
       yield* waitFor(0.1);
     }
+  }
+
+  *color(
+    eachDelay: number = 0.5,
+    eachDuration: number = 0.8,
+    decolor: boolean = false,
+  ) {
+    yield* all(
+      ...this.cells.flatMap((row, r) =>
+        row.flatMap((cell, c) => {
+          return delay(
+            eachDelay * (this.solution[r][c] - 1),
+            cell
+              .textRef()
+              .fill(
+                decolor ? Solarized.text : solarizedPalette[this.solution[r][c] - 1],
+                eachDuration,
+              ),
+          );
+        }),
+      ),
+    );
   }
 }
