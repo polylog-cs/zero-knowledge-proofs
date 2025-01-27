@@ -24,10 +24,11 @@ export function* solve(
   object: MyTxt,
   solveAttempts: number = 10,
   solveTime: number = 0.1,
+  answer: string = undefined,
 ): ThreadGenerator {
   const random = useRandom();
   const [a, b] = object.text().split(' + ').map(Number);
-  const result = a + b;
+  const result = answer === undefined ? a + b : answer;
 
   const icon = createRef<Icon>();
 
@@ -207,7 +208,7 @@ function* animatePercentage(
   );
 }
 
-export default makeScene2D(function* (view) {
+export function* terriblehack(view, failing: boolean = false) {
   view.fill(Solarized.base2);
   view.scale(new Vector2(-1, 1));
 
@@ -250,7 +251,7 @@ export default makeScene2D(function* (view) {
       padding={20}
       top={teacher().top().addY(100)}
       ref={challenge}
-      text={'13 + 32'}
+      text={failing ? '91 + 15' : '13 + 32'}
       zIndex={-1}
     />,
   );
@@ -266,11 +267,22 @@ export default makeScene2D(function* (view) {
   let response = createRef<MyTxt>();
   response(challenge().clone());
 
-  challenge().opacity(0.25);
+  challenge().opacity(failing ? 0 : 0.25);
   view.add(response());
 
   // send response to student + solve
   yield* all(response().bottom(student().top().addY(-15).addX(-30), 1));
+  if (failing) {
+    yield* solve(view, response(), undefined, undefined, 'idk, 14?');
+    const surprise = createRef<MyTxt>();
+    surprise(challenge().clone());
+    view.add(surprise());
+    surprise().text('😮/🤨/‼️');
+    yield* all(challenge().opacity(0, 1), surprise().opacity(1, 1));
+    yield* waitFor(3);
+    return;
+  }
+
   yield* solve(view, response());
 
   const eq = createRef<MyTxt>();
@@ -458,4 +470,8 @@ export default makeScene2D(function* (view) {
     ),
     delay(0.25, animatePercentage(view, responseLayout, 8, '0.0027')),
   );
+}
+
+export default makeScene2D(function* (view) {
+  yield* terriblehack(view, false);
 });
