@@ -58,7 +58,7 @@ export default makeScene2D(function* (view) {
     },
     {
       participant: 'verifier',
-      texts: ['“This matches the value you committed to.”', '“Looks ok.”'],
+      texts: ['“This matches the value you committed to.”', '“.”', '“Looks ok.”'],
     },
   ];
 
@@ -202,11 +202,11 @@ export default makeScene2D(function* (view) {
     for (let j = 0; j < textConfig.texts.length; j++) {
       const text = textConfig.texts[j];
       yield* changeText(textRef, text);
-      yield* waitFor(1);
+      if (i != textsConfig.length - 1 || j != 1) yield* waitFor(1);
     }
   }
 
-  yield* all(...textRefs.map((r) => changeText(r, '')));
+  yield* all(...textRefs.map((r) => changeText(r, ' ')));
   yield* waitFor(1);
 
   yield* all(
