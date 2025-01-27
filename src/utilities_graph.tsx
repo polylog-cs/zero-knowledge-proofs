@@ -5,6 +5,7 @@ import {
   Reference,
   sequence,
   useLogger,
+  useRandom,
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
@@ -382,14 +383,14 @@ export class Graph {
     const getTimeFractionAt = (i: number) => (0.5 + i / k) ** timingExponent;
     const totalNormalizedTime = getTimeFractionAt(k) - getTimeFractionAt(0);
 
+    const random = useRandom();
     let lastEdge: (typeof this.edges)[0] | null = null;
     for (let i = 0; i < k; i++) {
       let availableEdges = this.edges.filter((e) => e !== lastEdge);
       if (finalEdge != undefined && i == k - 1) {
         availableEdges = [this.getEdge(finalEdge)];
       }
-      const chosenEdge =
-        availableEdges[Math.floor(Math.random() * availableEdges.length)];
+      const chosenEdge = availableEdges[random.nextInt(0, availableEdges.length)];
       const index = this.edges.indexOf(chosenEdge);
 
       const normalizedDuration = getTimeFractionAt(i + 1) - getTimeFractionAt(i);
@@ -422,11 +423,7 @@ export class Graph {
       const vertexData = this.vertexMap.get(label);
       if (!vertexData) continue;
       const targetColor = this.palette[cIndex % this.palette.length];
-      anims.push(
-        (function* () {
-          yield* vertexData.ref().fill(targetColor, durationPerVertex);
-        })(),
-      );
+      anims.push(vertexData.ref().fill(targetColor, durationPerVertex));
     }
     yield* sequence(stepDelay, ...anims);
   }

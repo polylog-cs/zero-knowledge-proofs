@@ -23,6 +23,7 @@ import {
   sequence,
   Signal,
   ThreadGenerator,
+  useRandom,
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
@@ -330,6 +331,7 @@ export class Sudoku {
 
   // Method to fill in non-clue values with blur animation
   *fillInNonClues(blurValue: number) {
+    const random = useRandom();
     yield* sequence(
       0.03, // Delay between each cell being filled
       ...this.cells
@@ -348,7 +350,7 @@ export class Sudoku {
           }
         })
         .filter(Boolean)
-        .sort(() => Math.random() - 0.5), // Filter out undefined values for clue cells
+        .sort(() => random.nextFloat()), // Filter out undefined values for clue cells
     );
   }
 

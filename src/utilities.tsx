@@ -21,6 +21,7 @@ import {
   Reference,
   sequence,
   useLogger,
+  useRandom,
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
@@ -153,8 +154,9 @@ export function logLabeled(label: string, value: unknown) {
 }
 
 export function shuffleArray(array: any[]) {
+  const random = useRandom();
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = random.nextInt(0, i + 1);
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
