@@ -207,13 +207,16 @@ export class SudokuGraph extends Graph {
     return vertices;
   }
 
-  *colorSolution(solution: number[][], colors: string[] = solarizedPalette) {
-    const cliqueAnims: Array<ThreadGenerator> = [];
-    for (let d = 0; d < 9; d++) {
-      cliqueAnims.push(this.getVertex(`clique-${d}`).fill(colors[d], 0.5));
-    }
-    yield* sequence(0.2, ...cliqueAnims);
+  *colorPalette(colors: string[] = solarizedPalette) {
+    yield* sequence(
+      0.5,
+      ...[...Array(9).keys()].map((d) =>
+        this.getVertex(`clique-${d}`).fill(colors[d], 0.8),
+      ),
+    );
+  }
 
+  *colorSolution(solution: number[][], colors: string[] = solarizedPalette) {
     // Now, for each digit 1 through 9, color all Sudoku vertices with that digit
     for (let d = 1; d <= 9; d++) {
       const color = colors[d - 1];
@@ -294,6 +297,7 @@ export class Sudoku {
                 width={this.cellSize}
                 height={this.cellSize}
                 stroke={Solarized.gray}
+                fill={Solarized.background}
                 lineWidth={2}
                 alignItems="center"
                 justifyContent="center"

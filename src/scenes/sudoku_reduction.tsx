@@ -8,7 +8,7 @@ import {
   Txt,
 } from '@motion-canvas/2d';
 import { createRef, createSignal, useLogger, Vector2 } from '@motion-canvas/core';
-import { all, sequence, waitFor } from '@motion-canvas/core/lib/flow';
+import { all, delay, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
 import {
   indicate,
@@ -19,22 +19,21 @@ import {
   solarizedPalette,
 } from '../utilities';
 import { generateArcPoints } from '../utilities_graph';
+import { nextTo } from '../utilities_moving';
 import { clues, solution, Sudoku, SudokuGraph } from '../utilities_sudoku';
+import { MyTxt } from '../utilities_text';
 
 export default makeScene2D(function* (view) {
-  const logger = useLogger();
-  logger.info('Sudoku Reduction');
-  logger.info(`scene: ${JSON.stringify(view.width())}`);
-  logger.info(`scene: ${JSON.stringify(view.height())}`);
   view.fill(Solarized.base2);
 
   // 1) Create and show the sample Sudoku.
-  const sudoku = new Sudoku(9, 50, solution, clues);
+  const sudoku = new Sudoku(9, 55, solution, clues);
   const sudokuLayout = sudoku.getLayout();
   view.add(sudokuLayout);
 
   // Position the sudoku on the left side eventually, but start it centered
   sudoku.layoutRef().position.x(0);
+  sudokuLayout.scale(1.2);
 
   // Wait a moment to show the Sudoku
   yield* waitFor(0.5);
@@ -49,27 +48,19 @@ export default makeScene2D(function* (view) {
   yield;
   graph.containerRef().position([200, -250]);
 
-  yield* graph.fadeVerticesSequential(0.02, 1, graph.gridVertices);
+  yield* graph.fadeVerticesSequential(0.01, 0.7, graph.gridVertices);
 
   // 4) On top of the nodes, show a swatch of nine colors.
 
   const swatchRef = createRef<Layout>();
-  const swatchLayout = (
-    <Layout
-      ref={swatchRef}
-      layout
-      direction={'row'}
-      gap={10}
-      y={-250} // Position above the nodes
-      x={400}
-    >
+  view.add(
+    <Layout ref={swatchRef} layout direction={'row'} gap={10} position={[480, -320]}>
       {solarizedPalette.map((c, i) => (
-        <Rect key={`color-${i}`} width={30} height={30} fill={c} opacity={0} />
+        <Rect key={`color-${i}`} width={30} height={30} fill={c} opacity={1} />
       ))}
-    </Layout>
+    </Layout>,
   );
   const squares = Array.from(swatchRef().children()) as Rect[];
-  view.add(swatchLayout);
 
   // Fade in the swatch
   yield* sequence(0.1, ...squares.map((square) => square.opacity(1, 0.2)));
@@ -77,7 +68,7 @@ export default makeScene2D(function* (view) {
 
   // 5) On top of sudoku, show a list of 9 digits.
   const digitsRef = createRef<Layout>();
-  const digitsLayout = (
+  view.add(
     <Layout
       ref={digitsRef}
       layout
@@ -85,21 +76,19 @@ export default makeScene2D(function* (view) {
       gap={10}
       alignItems="center"
       justifyContent="center"
-      y={-250} // Position above sudoku
-      x={-400}
     >
       {Array.from({ length: 9 }, (_, i) => (
-        <Txt
+        <MyTxt
           key={`digit-${i}`}
           text={(i + 1).toString()}
           fontSize={40}
-          fill="black"
+          fill={solarizedPalette[i]}
           opacity={0}
         />
       ))}
-    </Layout>
+    </Layout>,
   );
-  view.add(digitsLayout);
+  nextTo(digitsRef(), sudoku.layoutRef(), 'up', 70);
 
   const digits = Array.from(digitsRef().children()) as Txt[];
   yield* sequence(0.1, ...digits.map((digit) => digit.opacity(1, 0.2)));
@@ -129,7 +118,7 @@ export default makeScene2D(function* (view) {
   }
 
   yield* graph.fadeEdgesSequential(
-    0.1,
+    0.05,
     1,
     arr.flat().map(([r, c]) => ['(0,0)', `(${r},${c})`]),
     0,
@@ -149,10 +138,11 @@ export default makeScene2D(function* (view) {
   yield* indicate(graph.getVertex(`(${exampleCell[0]},${exampleCell[1]})`));
   yield* waitFor(1);
 
-  yield* graph.containerRef().position.y(-100, 1);
-  yield* waitFor(1);
-
-  yield* graph.fadeVerticesSequential(0.05, 1, graph.cliqueVertices);
+  yield* sequence(
+    0.5,
+    graph.containerRef().position.y(-170, 1),
+    graph.fadeVerticesSequential(0.05, 1, graph.cliqueVertices),
+  );
   yield* waitFor(1);
 
   yield* graph.fadeEdgesSequential(0.05, 1, graph.cliqueArcs);
@@ -193,24 +183,36 @@ export default makeScene2D(function* (view) {
   const edgeList = [graph.crossArcs, graph.rowArcs, graph.columnArcs, graph.boxArcs];
 
   for (let i = 0; i < edgeList.length; i++) {
-    yield* graph.fadeEdgesSequential(0.02, 1, edgeList[i]);
-    yield* waitFor(1);
+    yield* graph.fadeEdgesSequential(i == 0 ? 0.015 : 0.005, 1, edgeList[i]);
+    yield* waitFor(i == 0 ? 1 : 0.5);
 
     const edges = edgeList[i];
     if (i == 0) {
       edges.push(...graph.cliqueArcs);
     }
-    yield* graph.fadeEdgesSequential(0.005, 1, edges, 0.1);
-    yield* waitFor(1);
+    yield* graph.fadeEdgesSequential(i == 0 ? 0.005 : 0.001, 1, edges, 0.1);
+    yield* waitFor(i == 0 ? 1 : 0.5);
   }
 
-  yield* indicate(graph.containerRef(), 1.1);
-  yield* waitFor(1);
+  /*yield* indicate(graph.containerRef(), 1.1);
+  yield* waitFor(1);*/
 
   yield* indicate(sudokuLayout, 1.1);
   yield* waitFor(1);
   yield* sudoku.fillInSolutionFancy();
   yield* waitFor(1);
+
+  yield* all(
+    graph.colorPalette(),
+    ...sudoku.cells.flatMap((row, r) =>
+      row.flatMap((cell, c) => {
+        return delay(
+          0.5 * (sudoku.solution[r][c] - 1),
+          cell.textRef().fill(solarizedPalette[sudoku.solution[r][c] - 1], 0.8),
+        );
+      }),
+    ),
+  );
 
   yield* graph.colorSolution(solution);
   yield* waitFor(1);
