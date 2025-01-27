@@ -5,11 +5,10 @@ import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simpl
 import sat_screenshot from '../assets/images/sat_screenshot.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
-import { exampleGraphData, GraphData } from '../utilities_graph';
-import { LockableGraph } from '../utilities_lockable_graph';
+import { exampleGraphData, Graph } from '../utilities_graph';
 import { shift } from '../utilities_moving';
 
-const makeWobbly = (bezier: Reference<CubicBezier>) => {
+export const makeWobbly = (bezier: Reference<CubicBezier>) => {
   const lineDirection = () => bezier().p3().sub(bezier().p0());
   bezier().p1(() => bezier().p0().add(lineDirection().mul(0.4).rotate(30)));
   bezier().p2(() => bezier().p3().add(lineDirection().mul(-0.4).rotate(30)));
@@ -114,7 +113,7 @@ export default makeScene2D(function* (view) {
 
   const line3 = createRef<CubicBezier>();
 
-  const g = new LockableGraph(50);
+  const g = new Graph(50);
   g.initialize(exampleGraphData);
   const graphLayout = g.getGraphLayout();
   graphLayout.scale(1.2);
