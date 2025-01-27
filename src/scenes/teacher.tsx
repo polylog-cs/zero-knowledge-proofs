@@ -16,6 +16,7 @@ import gear from '../assets/icons/gear-solid.svg';
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
+import { alignTo } from '../utilities_moving';
 import { MyTxt } from '../utilities_text';
 
 export function* solve(
@@ -79,7 +80,9 @@ function* addChallengeAndResponse(
   responseObject,
   quick: boolean,
   gearColor,
+  fake: boolean,
 ) {
+  if (fake) quick = true;
   const random = useRandom();
 
   const num1 = random.nextInt(10, 99);
@@ -114,24 +117,35 @@ function* addChallengeAndResponse(
     all(
       newChallenge().absolutePosition(
         challengeLayout().children()[challengeIndex].absolutePosition(),
-        1,
+        fake ? 0 : 1,
       ),
-      newChallenge().opacity(0).opacity(1, 1),
-      newChallenge().scale(0).scale(1, 1),
+      newChallenge()
+        .opacity(0)
+        .opacity(fake ? 0 : 1, fake ? 0 : 1),
+      newChallenge()
+        .scale(0)
+        .scale(fake ? 0 : 1, fake ? 0 : 1),
     ),
     delay(
       quick ? 0 : 1,
       all(
-        solve(view, newResponse(), quick ? 7 : 10),
+        solve(view, newResponse(), fake ? 0 : quick ? 7 : 10),
         delay(
           quick ? 0 : 0.25,
           all(
-            newResponse().opacity(0).opacity(1, 0.5),
-            newResponse().scale(0).scale(1, 1),
-            newResponse().fill(gearColor != null ? gearColor : newResponse().fill(), 1),
+            newResponse()
+              .opacity(0)
+              .opacity(fake ? 0 : 1, fake ? 0 : 0.5),
+            newResponse()
+              .scale(0)
+              .scale(fake ? 0 : 1, fake ? 0 : 1),
+            newResponse().fill(
+              gearColor != null ? gearColor : newResponse().fill(),
+              fake ? 0 : 1,
+            ),
             newResponse().absolutePosition(
               responseLayout().children()[responseIndex].absolutePosition(),
-              1,
+              fake ? 0 : 1,
             ),
           ),
         ),
@@ -146,12 +160,20 @@ function* addChallengeAndResponse(
   responseLayout().add(newResponse());
 }
 
-function* animatePercentage(view, responseLayout, i) {
+function* animatePercentage(
+  view,
+  responseLayout,
+  i,
+  percentageStr: string = undefined,
+) {
   const p = createRef<MyTxt>();
 
   // Calculate percentage based on the current index
   const percentage = Math.pow(0.9, i) * 100;
-  const text = `[${percentage.toFixed(i >= 3 ? 1 : 0)}%]`;
+  const text =
+    percentageStr === undefined
+      ? `[${percentage.toFixed(i >= 3 ? 1 : 0)}%]`
+      : `[${percentageStr}%]`;
 
   view.add(
     <MyTxt
@@ -173,7 +195,7 @@ function* animatePercentage(view, responseLayout, i) {
     return responseCenter
       .addX(-response.width() / 2)
       .addX(-p().width() / 2)
-      .addX(responseLayout().width() * 0.9);
+      .addX(responseLayout().width());
   });
 
   yield* all(
@@ -352,7 +374,7 @@ export default makeScene2D(function* (view) {
     yield* animatePercentage(view, responseLayout, i);
   }
 
-  for (let i = 3; i < 5; i++) {
+  for (let i = 3; i < 6; i++) {
     yield* all(
       addChallengeAndResponse(
         view,
@@ -368,4 +390,66 @@ export default makeScene2D(function* (view) {
       delay(0.25, animatePercentage(view, responseLayout, i)),
     );
   }
+
+  for (let i = 0; i < 2; i++) {
+    yield* all(
+      addChallengeAndResponse(
+        view,
+        challengeLayout,
+        responseLayout,
+        challenge,
+        teacher,
+        student,
+        response,
+        true,
+        Solarized.cyan,
+        true,
+      ),
+    );
+  }
+
+  const p = createRef<MyTxt>();
+  view.add(
+    <MyTxt
+      fontSize={40}
+      padding={20}
+      textAlign="center"
+      text={'…'}
+      fill={Solarized.gray}
+      ref={p}
+      opacity={0}
+      zIndex={-1}
+      rotation={90}
+    />,
+  );
+
+  p().absolutePosition(() => {
+    let response = responseLayout().children()[5];
+    let responseCenter = response.absolutePosition();
+
+    return responseCenter
+      .addX(-response.width() / 2)
+      .addX(-p().width() / 2)
+      .addX(responseLayout().width() * 0.9)
+      .add(
+        response.position().sub(responseLayout().children()[4].position()).scale(1.5),
+      );
+  });
+
+  yield* p().opacity(1, 1);
+
+  yield* all(
+    addChallengeAndResponse(
+      view,
+      challengeLayout,
+      responseLayout,
+      challenge,
+      teacher,
+      student,
+      response,
+      true,
+      Solarized.cyan,
+    ),
+    delay(0.25, animatePercentage(view, responseLayout, 8, '0.0027')),
+  );
 });
