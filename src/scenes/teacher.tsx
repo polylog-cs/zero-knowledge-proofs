@@ -124,7 +124,7 @@ function* addChallengeAndResponse(
         .opacity(fake ? 0 : 1, fake ? 0 : 1),
       newChallenge()
         .scale(0)
-        .scale(fake ? 0 : 1, fake ? 0 : 1),
+        .scale(fake ? 0 : new Vector2(-1, 1), fake ? 0 : 1),
     ),
     delay(
       quick ? 0 : 1,
@@ -138,7 +138,7 @@ function* addChallengeAndResponse(
               .opacity(fake ? 0 : 1, fake ? 0 : 0.5),
             newResponse()
               .scale(0)
-              .scale(fake ? 0 : 1, fake ? 0 : 1),
+              .scale(fake ? 0 : new Vector2(-1, 1), fake ? 0 : 1),
             newResponse().fill(
               gearColor != null ? gearColor : newResponse().fill(),
               fake ? 0 : 1,
@@ -189,24 +189,27 @@ function* animatePercentage(
   );
 
   p().absolutePosition(() => {
-    let response = responseLayout().children()[i];
-    let responseCenter = response.absolutePosition();
-
+    let response: MyTxt = responseLayout().children()[i];
+    let responseCenter = response
+      .position()
+      .sub(responseLayout().position())
+      .add(responseLayout().absolutePosition());
     return responseCenter
       .addX(-response.width() / 2)
       .addX(-p().width() / 2)
-      .addX(responseLayout().width());
+      .addX(responseLayout().width() * 1.2);
   });
 
   yield* all(
     p().opacity(0).opacity(1, 1),
-    p().scale(0).scale(1, 1),
+    p().scale(0).scale(new Vector2(-1, 1), 1),
     responseLayout().children()[i].fill(Solarized.cyan, 1),
   );
 }
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
+  view.scale(new Vector2(-1, 1));
 
   const student = createRef<Img>();
   const teacher = createRef<Img>();
@@ -255,7 +258,7 @@ export default makeScene2D(function* (view) {
   yield* all(
     challenge().bottom(teacher().top(), 1),
     challenge().opacity(0).opacity(1, 1),
-    challenge().scale(0).scale(1, 1),
+    challenge().scale(0).scale(new Vector2(-1, 1), 1),
   );
 
   // Tom's note: this pattern makes it so that response is also a reference to txt
@@ -296,6 +299,7 @@ export default makeScene2D(function* (view) {
           padding={[0, 0, 20, 0]}
           opacity={0}
           fontWeight={700}
+          scale={new Vector2(-1, 1)}
         />
         {challenge().clone().padding(0).fontSize(50).opacity(0)}
       </Layout>
@@ -307,6 +311,7 @@ export default makeScene2D(function* (view) {
           padding={[0, 0, 20, 0]}
           opacity={0}
           fontWeight={700}
+          scale={new Vector2(-1, 1)}
         />
         {response().clone().padding(0).fontSize(50).opacity(0)}
       </Layout>
@@ -366,7 +371,7 @@ export default makeScene2D(function* (view) {
   yield* all(
     onlyThisMuch().bottom(student().top(), 1),
     onlyThisMuch().opacity(0).opacity(1, 1),
-    onlyThisMuch().scale(0).scale(1, 1),
+    onlyThisMuch().scale(0).scale(new Vector2(-1, 1), 1),
   );
 
   // show probabilities
@@ -420,6 +425,7 @@ export default makeScene2D(function* (view) {
       opacity={0}
       zIndex={-1}
       rotation={90}
+      scale={new Vector2(-1, 1)}
     />,
   );
 
