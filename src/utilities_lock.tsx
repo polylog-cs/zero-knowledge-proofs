@@ -162,8 +162,7 @@ export class Lock extends Node {
     this.locked = false;
   }
 
-  public *seethrough(duration: number = 1) {
-    let opacity = 0.7;
+  public *seethrough(duration: number = 1, opacity: number = 0.7) {
     if (!this.locked) return;
     yield* all(
       this.object.opacity(1, 0),

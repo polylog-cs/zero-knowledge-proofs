@@ -1,7 +1,15 @@
 import { Circle, Img, Layout, makeScene2D } from '@motion-canvas/2d';
-import { all, chain, createRef, waitFor } from '@motion-canvas/core';
-import { MyTxt } from '../utilities_text';
-import keyImage from '../assets/images/key.png';
+import {
+  all,
+  chain,
+  createRef,
+  easeInQuad,
+  easeOutQuad,
+  linear,
+  waitFor,
+} from '@motion-canvas/core';
+
+import keyImage from '../assets/images/key.svg';
 import {
   Participant,
   PROVER_POSITION,
@@ -10,6 +18,7 @@ import {
 import { FONT_FAMILY, Solarized } from '../utilities';
 import { Lock } from '../utilities_lock';
 import { nextTo } from '../utilities_moving';
+import { MyTxt } from '../utilities_text';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
@@ -60,7 +69,7 @@ export default makeScene2D(function* (view) {
         fill={Solarized.text}
         opacity={0}
       />
-      <Img ref={key} scale={[1, -1]} src={keyImage} opacity={0} />
+      <Img ref={key} scale={[1, -1]} src={keyImage} opacity={0} width={150} />
     </>,
   );
 
@@ -81,7 +90,7 @@ export default makeScene2D(function* (view) {
     yield* all(
       key().rotation(180, 1),
       key().position.x(verifier().position().x - 150, 1),
-      key().position.y(-150, 0.5).to(0, 0.5),
+      key().position.y(-200, 0.5, easeInQuad).to(0, 0.5, easeOutQuad),
     );
   };
 
@@ -101,22 +110,15 @@ export default makeScene2D(function* (view) {
     revealText().opacity(0, 1),
   );
   yield* waitFor(1);
-  // The circle must not be a child of the lock so that it doesn't inherit the opacity.
-  // We want the lock to become see-through.
-  circle().reparent(view);
-  yield* circle().opacity(1, 0);
 
-  yield* all(lock().opacity(0.5, 1));
+  yield* all(lock().seethrough(1, 0.5));
   verifier().expression('looking');
   yield* waitFor(1);
   verifier().expression('neutral');
+  yield* all(lock().unseethrough());
 
   //// The color cannot be changed
-  yield* all(
-    lock().unlock(0.5),
-    circle().opacity(1, 1),
-    circle().position(PROVER_POSITION.addX(350), 1),
-  );
+  yield* all(lock().unlock(1), circle().position(PROVER_POSITION.addX(350), 1));
   lock().opacity(1);
   yield* waitFor(1);
 

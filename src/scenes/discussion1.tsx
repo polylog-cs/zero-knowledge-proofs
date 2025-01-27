@@ -173,7 +173,9 @@ export default makeScene2D(function* (view) {
   view.add(
     <MyLatex
       ref={finalTextRef}
-      tex={'\\cdot \\dots \\,  = \\left( \\frac{6}{7} \\right)^{100} = 2\\cdot 10^{-7}'}
+      tex={
+        '\\cdot \\dots \\,  = \\left( \\frac{6}{7} \\right)^{100} \\approx 2\\cdot 10^{-7}'
+      }
       position={productContainerRef().absolutePosition()}
       fontSize={30}
       fill={Solarized.text}
