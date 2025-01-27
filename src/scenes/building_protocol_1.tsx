@@ -1,16 +1,8 @@
-import { makeScene2D, Rect, Spline } from '@motion-canvas/2d';
-import {
-  all,
-  createRef,
-  sequence,
-  useLogger,
-  Vector2,
-  waitFor,
-} from '@motion-canvas/core';
+import { makeScene2D } from '@motion-canvas/2d';
+import { all, sequence, useLogger } from '@motion-canvas/core';
 
-import { logPosition, Solarized } from '../utilities';
-import { exampleGraphData, Graph } from '../utilities_graph';
-import { LockableGraph } from '../utilities_lockable_graph';
+import { Solarized } from '../utilities';
+import { exampleGraphData } from '../utilities_graph';
 import { ProtocolScene } from '../utilities_protocol';
 
 export default makeScene2D(function* (view) {

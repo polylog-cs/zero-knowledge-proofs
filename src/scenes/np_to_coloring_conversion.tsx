@@ -1,4 +1,4 @@
-import { Camera, CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
+import { CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, Reference, Vector2, waitFor } from '@motion-canvas/core';
 
 import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simple.png';
@@ -17,10 +17,10 @@ export const makeWobbly = (bezier: Reference<CubicBezier>) => {
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
 
-  let algorithmStep = createRef<MarioAlgorithm>();
-  let circuitStep = createRef<Rect>();
-  let satStep = createRef<Rect>();
-  let coloringStep = createRef<Rect>();
+  const algorithmStep = createRef<MarioAlgorithm>();
+  const circuitStep = createRef<Rect>();
+  const satStep = createRef<Rect>();
+  const coloringStep = createRef<Rect>();
 
   view.add(<MarioAlgorithm zIndex={10} ref={algorithmStep} />);
 

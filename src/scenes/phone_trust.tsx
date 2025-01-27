@@ -6,27 +6,13 @@ import {
   Line,
   makeScene2D,
   Node,
-  NodeProps,
   Rect,
   Txt,
 } from '@motion-canvas/2d';
-import {
-  all,
-  chain,
-  createRef,
-  delay,
-  easeInExpo,
-  easeInOutExpo,
-  linear,
-  loop,
-  Reference,
-  Vector2,
-  waitFor,
-} from '@motion-canvas/core';
+import { createRef, waitFor } from '@motion-canvas/core';
 import chroma from 'chroma-js';
 
 import android_logo from '../assets/icons/android-brands-solid.svg';
-import user_tie from '../assets/icons/user-tie-solid.svg';
 import vasek1 from '../assets/images/vasek.png';
 import vasek2 from '../assets/images/vasek2.png';
 import gradientShader from '../shaders/gradient2.glsl';
@@ -124,8 +110,8 @@ export default makeScene2D(function* (view) {
       <Line
         ref={lineSilent}
         points={() => {
-          let b = prover().position().add(prover().circle().right().addX(20));
-          let a = authority().position().add(authority().circle().left().addX(-20));
+          const b = prover().position().add(prover().circle().right().addX(20));
+          const a = authority().position().add(authority().circle().left().addX(-20));
 
           return [b, a];
         }}
@@ -145,8 +131,8 @@ export default makeScene2D(function* (view) {
       <Line
         ref={lineHonest}
         points={() => {
-          let b = verifier().position().add(verifier().circle().left().addX(-20));
-          let a = authority().position().add(authority().circle().right().addX(20));
+          const b = verifier().position().add(verifier().circle().left().addX(-20));
+          const a = authority().position().add(authority().circle().right().addX(20));
 
           return [b, a];
         }}

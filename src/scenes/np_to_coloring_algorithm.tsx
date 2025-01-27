@@ -1,4 +1,4 @@
-import { Img, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
+import { makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, linear, useLogger, waitFor } from '@motion-canvas/core';
 
 import { MarioAlgorithm } from '../components/mario_algorithm';
@@ -13,10 +13,10 @@ const inputs = [
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
 
-  let inputsText = createRef<MyTxt>();
-  let outputTextRect = createRef<Rect>();
-  let outputText1 = createRef<MyTxt>();
-  let outputText2 = createRef<MyTxt>();
+  const inputsText = createRef<MyTxt>();
+  const outputTextRect = createRef<Rect>();
+  const outputText1 = createRef<MyTxt>();
+  const outputText2 = createRef<MyTxt>();
 
   view.add(
     <>

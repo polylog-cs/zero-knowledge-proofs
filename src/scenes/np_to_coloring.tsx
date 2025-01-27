@@ -26,13 +26,13 @@ import gradientShader from '../shaders/gradient2.glsl';
 import { Solarized } from '../utilities';
 
 export default makeScene2D(function* (view) {
-  let image = createRef<Img>();
-  let imageCircle = createRef<Circle>();
-  let clouds = createRef<Node>();
-  let layout = createRef<Layout>();
+  const image = createRef<Img>();
+  const imageCircle = createRef<Circle>();
+  const clouds = createRef<Node>();
+  const layout = createRef<Layout>();
 
-  let mixSignal = createSignal<number>(0.0);
-  let distFactor = createSignal<number>(1);
+  const mixSignal = createSignal<number>(0.0);
+  const distFactor = createSignal<number>(1);
 
   view.add(
     <>

@@ -16,7 +16,6 @@ import gear from '../assets/icons/gear-solid.svg';
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
-import { alignTo } from '../utilities_moving';
 import { MyTxt } from '../utilities_text';
 
 export function* solve(
@@ -32,7 +31,7 @@ export function* solve(
 
   const icon = createRef<Icon>();
 
-  let opacityScaleSignal = createSignal(0);
+  const opacityScaleSignal = createSignal(0);
 
   view.add(
     <Icon
@@ -49,7 +48,7 @@ export function* solve(
 
   yield loop(() => icon().rotation(0).rotation(360, 1, linear));
 
-  let gearDuration = solveTime * solveAttempts;
+  const gearDuration = solveTime * solveAttempts;
 
   yield* all(
     opacityScaleSignal(1, gearDuration),
@@ -190,8 +189,8 @@ function* animatePercentage(
   );
 
   p().absolutePosition(() => {
-    let response: MyTxt = responseLayout().children()[i];
-    let responseCenter = response
+    const response: MyTxt = responseLayout().children()[i];
+    const responseCenter = response
       .position()
       .sub(responseLayout().position())
       .add(responseLayout().absolutePosition());
@@ -264,7 +263,7 @@ export function* terriblehack(view, failing: boolean = false) {
 
   // Tom's note: this pattern makes it so that response is also a reference to txt
   //  just doing challenge().clone() would return a Txt, not Reference<Txt>
-  let response = createRef<MyTxt>();
+  const response = createRef<MyTxt>();
   response(challenge().clone());
 
   challenge().opacity(failing ? 0 : 0.25);
@@ -442,8 +441,8 @@ export function* terriblehack(view, failing: boolean = false) {
   );
 
   p().absolutePosition(() => {
-    let response = responseLayout().children()[5];
-    let responseCenter = response.absolutePosition();
+    const response = responseLayout().children()[5];
+    const responseCenter = response.absolutePosition();
 
     return responseCenter
       .addX(-response.width() / 2)

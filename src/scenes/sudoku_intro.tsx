@@ -1,15 +1,7 @@
-import { blur, Circle, Layout, makeScene2D, Node, Rect, Txt } from '@motion-canvas/2d';
-import { all, createRef, createSignal, sequence, waitFor } from '@motion-canvas/core';
+import { makeScene2D } from '@motion-canvas/2d';
+import { waitFor } from '@motion-canvas/core';
 
-import {
-  cellSize,
-  clues,
-  fontSize,
-  gridSize,
-  Solarized,
-  solution,
-  Sudoku,
-} from '../utilities';
+import { cellSize, clues, gridSize, Solarized, solution, Sudoku } from '../utilities';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);

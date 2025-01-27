@@ -1,22 +1,5 @@
-import {
-  Camera,
-  Circle,
-  CubicBezier,
-  Img,
-  Line,
-  LineSegment,
-  makeScene2D,
-  Rect,
-} from '@motion-canvas/2d';
-import {
-  all,
-  createRef,
-  linear,
-  Reference,
-  useLogger,
-  Vector2,
-  waitFor,
-} from '@motion-canvas/core';
+import { Camera, Circle, Line, makeScene2D } from '@motion-canvas/2d';
+import { createRef, useLogger, waitFor } from '@motion-canvas/core';
 
 // See prepare_facebook_dataset.py
 import graphData from '../assets/facebook_layout.json';
@@ -64,7 +47,7 @@ export default makeScene2D(function* (view) {
   );
 
   camera().zoom(10);
-  yield* camera().zoom(1, 10);
+  yield* camera().zoom(0.7, 10);
 
   yield* waitFor(3);
 });

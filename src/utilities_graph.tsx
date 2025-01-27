@@ -1,4 +1,4 @@
-import { Circle, Layout, Line, Shape, Spline, Txt } from '@motion-canvas/2d';
+import { Circle, Layout, Shape, Spline, Txt } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -10,7 +10,7 @@ import {
   waitFor,
 } from '@motion-canvas/core';
 
-import { logPosition, shuffleArray, Solarized } from './utilities';
+import { shuffleArray, Solarized } from './utilities';
 import { Finger } from './utilities_finger';
 
 const logger = useLogger();
@@ -276,7 +276,7 @@ export class Graph {
     const startPos = new Vector2(fromVertex.position);
     const endPos = new Vector2(toVertex.position);
     const mid = startPos.add(endPos).scale(0.5);
-    let degrees = endPos.sub(startPos).degrees + (fromLeft ? 90 : 270);
+    const degrees = endPos.sub(startPos).degrees + (fromLeft ? 90 : 270);
 
     const arrowRef = createRef<Finger>();
     const arrowNode = (
@@ -319,7 +319,7 @@ export class Graph {
     if (!vertexData) return;
 
     const position = new Vector2(vertexData.position);
-    let direction = this.vertexDirections.get(vertexLabel)?.degrees ?? 0;
+    const direction = this.vertexDirections.get(vertexLabel)?.degrees ?? 0;
 
     const arrowRef = createRef<Finger>();
     const arrowNode = (

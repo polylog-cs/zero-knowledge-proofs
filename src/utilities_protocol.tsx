@@ -1,4 +1,4 @@
-import { Img, Layout, makeScene2D, Node, Rect, Txt, View2D } from '@motion-canvas/2d';
+import { Img, Layout, Txt, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -15,7 +15,7 @@ import {
   PROVER_POSITION,
   VERIFIER_POSITION,
 } from './components/participant';
-import { FONT_FAMILY, logPosition, Solarized } from './utilities';
+import { FONT_FAMILY, Solarized } from './utilities';
 import { exampleGraphData, GraphData } from './utilities_graph';
 import { LockableGraph } from './utilities_lockable_graph';
 import { alignTo, moveTo, nextTo, shift } from './utilities_moving';
@@ -179,7 +179,7 @@ export class ProtocolScene {
   public *sendGraph(target: 'center' | ParticipantKind, duration: number = 1) {
     const g = this.graphRef();
     if (!g) return;
-    let finalPos = CENTER_POSITION;
+    const finalPos = CENTER_POSITION;
 
     switch (target) {
       case 'center':
@@ -219,8 +219,8 @@ export class ProtocolScene {
   }
 
   public *challenge(noText: boolean = false, shortened: boolean = false) {
-    let numChallenges = shortened ? 3 : 20;
-    let pointingDuration = shortened ? 0.5 : 3;
+    const numChallenges = shortened ? 3 : 20;
+    const pointingDuration = shortened ? 0.5 : 3;
     yield* this.graphRef().pointAtRandomEdges(
       undefined,
       numChallenges,

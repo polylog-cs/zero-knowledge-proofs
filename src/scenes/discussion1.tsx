@@ -1,4 +1,4 @@
-import { makeScene2D, Rect, Spline } from '@motion-canvas/2d';
+import { makeScene2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -10,9 +10,8 @@ import {
   waitFor,
 } from '@motion-canvas/core';
 
-import { logPosition, Solarized } from '../utilities';
-import { exampleGraphData, Graph } from '../utilities_graph';
-import { LockableGraph } from '../utilities_lockable_graph';
+import { Solarized } from '../utilities';
+import { exampleGraphData } from '../utilities_graph';
 import { alignTo, nextTo } from '../utilities_moving';
 import { ProtocolScene } from '../utilities_protocol';
 import { MyLatex, MyTxt } from '../utilities_text';
@@ -49,9 +48,9 @@ export default makeScene2D(function* (view) {
 
   yield* scene.fadeInGraph(1);
 
-  let e = scene.graphRef().getEdge(['E', 'F']).ref();
-  let v1 = scene.graphRef().getVertex('E');
-  let v2 = scene.graphRef().getVertex('F');
+  const e = scene.graphRef().getEdge(['E', 'F']).ref();
+  const v1 = scene.graphRef().getVertex('E');
+  const v2 = scene.graphRef().getVertex('F');
   yield* sequence(
     0,
     all(v1.scale(1.42, 1), v2.scale(1.42, 1), e.lineWidth(2 * e.lineWidth(), 1)),

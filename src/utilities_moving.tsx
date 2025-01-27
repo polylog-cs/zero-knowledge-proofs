@@ -1,8 +1,6 @@
 import { Node } from '@motion-canvas/2d';
 import { all, Vector2 } from '@motion-canvas/core';
 
-import { logPosition, logValue } from './utilities';
-
 // all functions use absolute positions
 
 // Assuming a known frame size. Replace these with actual values or computations.
@@ -128,7 +126,7 @@ export function nextTo(
   const o = getNodeEdges(other);
 
   let finalPos = node.absolutePosition();
-  let otherPos = other.absolutePosition();
+  const otherPos = other.absolutePosition();
 
   switch (direction) {
     case 'left':

@@ -1,13 +1,11 @@
-import { Circle, Layout, makeScene2D, Node, NodeProps, Rect } from '@motion-canvas/2d';
+import { Circle, Layout, Node, NodeProps, Rect } from '@motion-canvas/2d';
 import {
   all,
   createRef,
   createSignal,
   delay,
   easeInOutExpo,
-  SignalValue,
   SimpleSignal,
-  waitFor,
 } from '@motion-canvas/core';
 import chroma from 'chroma-js';
 
@@ -36,11 +34,11 @@ export class Lock extends Node {
 
     this.object = props.object;
 
-    let w = () => this.object.size.x() * 1.25;
-    let h = () => this.object.size.y() * 1.25;
+    const w = () => this.object.size.x() * 1.25;
+    const h = () => this.object.size.y() * 1.25;
 
-    let r = () => w() / 4;
-    let lw = () => r() / 2;
+    const r = () => w() / 4;
+    const lw = () => r() / 2;
 
     this.add(
       <>
@@ -126,7 +124,7 @@ export class Lock extends Node {
   }
 
   public *lock(duration: number = 1.5) {
-    let t = duration / 3;
+    const t = duration / 3;
 
     if (!this.children().includes(this.object)) {
       this.add(this.object);
@@ -148,7 +146,7 @@ export class Lock extends Node {
   }
 
   public *unlock(duration: number = 1.5) {
-    let t = duration / 3;
+    const t = duration / 3;
 
     yield* all(
       all(

@@ -216,7 +216,7 @@ export class Mobile extends Layout {
   ) {
     this.passwordTextPins.forEach((ref) => ref().save());
 
-    let origColor = this.passwordCircles[0]().fill();
+    const origColor = this.passwordCircles[0]().fill();
 
     yield* all(
       ...pin.map((i, idx) => {
@@ -336,8 +336,8 @@ export default makeScene2D(function* (view) {
       <Line
         ref={line}
         points={() => {
-          let b = ta().position().add(taCircle().left());
-          let a = new Vector2(mobile().right().x, b.y);
+          const b = ta().position().add(taCircle().left());
+          const a = new Vector2(mobile().right().x, b.y);
 
           return [b, a];
         }}

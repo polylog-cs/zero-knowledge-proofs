@@ -1,17 +1,6 @@
-import { Circle, Layout, makeScene2D, Node, NodeProps, Rect } from '@motion-canvas/2d';
-import {
-  all,
-  createRef,
-  createSignal,
-  delay,
-  easeInOutExpo,
-  SignalValue,
-  SimpleSignal,
-  waitFor,
-} from '@motion-canvas/core';
-import chroma from 'chroma-js';
+import { Circle, makeScene2D } from '@motion-canvas/2d';
+import { createRef, waitFor } from '@motion-canvas/core';
 
-import gradientShader from '../shaders/gradient.glsl';
 import { Solarized } from '../utilities';
 import { Lock } from '../utilities_lock';
 

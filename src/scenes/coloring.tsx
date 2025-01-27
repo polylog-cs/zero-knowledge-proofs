@@ -1,34 +1,9 @@
-import {
-  Circle,
-  CubicBezier,
-  Layout,
-  Line,
-  makeScene2D,
-  Node,
-  Path,
-  Rect,
-  Spline,
-  Txt,
-} from '@motion-canvas/2d';
-import {
-  createRef,
-  createSignal,
-  Reference,
-  useLogger,
-  Vector2,
-} from '@motion-canvas/core';
+import { CubicBezier, Layout, Line, makeScene2D, Rect } from '@motion-canvas/2d';
+import { createRef, Vector2 } from '@motion-canvas/core';
 import { all, delay, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
-import {
-  indicate,
-  logPair,
-  logPosition,
-  logValue,
-  Solarized,
-  solarizedPalette,
-} from '../utilities';
-import { Finger } from '../utilities_finger';
-import { exampleGraphData, generateArcPoints, Graph } from '../utilities_graph';
+import { Solarized } from '../utilities';
+import { exampleGraphData, Graph } from '../utilities_graph';
 import { alignTo, nextTo, shift } from '../utilities_moving';
 import { clues, solution, Sudoku } from '../utilities_sudoku';
 import { MyTxt } from '../utilities_text';

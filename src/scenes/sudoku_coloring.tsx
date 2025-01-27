@@ -1,14 +1,12 @@
-import { Circle, Layout, Line, makeScene2D, Node } from '@motion-canvas/2d';
+import { Layout, makeScene2D, Node } from '@motion-canvas/2d';
 import {
   all,
   createRef,
-  createSignal,
   sequence,
   useLogger,
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
-import { MyTxt } from '../utilities_text';
 
 import {
   cellSize,
@@ -21,6 +19,7 @@ import {
   Sudoku,
 } from '../utilities';
 import { exampleEdges, exampleLabels } from '../utilities_graph';
+import { MyTxt } from '../utilities_text';
 
 export default makeScene2D(function* (view) {
   const logger = useLogger();

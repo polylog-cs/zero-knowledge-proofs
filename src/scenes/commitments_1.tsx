@@ -1,13 +1,5 @@
-import { Circle, Img, Layout, makeScene2D } from '@motion-canvas/2d';
-import {
-  all,
-  chain,
-  createRef,
-  easeInQuad,
-  easeOutQuad,
-  linear,
-  waitFor,
-} from '@motion-canvas/core';
+import { Circle, Img, makeScene2D } from '@motion-canvas/2d';
+import { all, createRef, easeInQuad, easeOutQuad, waitFor } from '@motion-canvas/core';
 
 import keyImage from '../assets/images/key.svg';
 import {

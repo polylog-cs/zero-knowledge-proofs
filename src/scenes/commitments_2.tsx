@@ -1,13 +1,5 @@
-import { Latex, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
-import {
-  all,
-  createRef,
-  easeInOutQuad,
-  Reference,
-  useLogger,
-  waitFor,
-} from '@motion-canvas/core';
-import { diffChars } from 'diff';
+import { makeScene2D, Rect, Txt } from '@motion-canvas/2d';
+import { all, createRef, easeInOutQuad, Reference, waitFor } from '@motion-canvas/core';
 
 import {
   Participant,
@@ -128,7 +120,7 @@ export default makeScene2D(function* (view) {
     yield* changeText(textRefs[2], allColorHashesText);
     yield* waitFor(1);
 
-    let width = 768;
+    const width = 768;
     // textRefs[0]().add(
     view.add(
       <>

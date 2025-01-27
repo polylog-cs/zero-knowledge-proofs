@@ -1,25 +1,8 @@
+import { Img, Layout, LayoutProps, Rect } from '@motion-canvas/2d';
 import {
-  blur,
-  Circle,
-  Img,
-  Layout,
-  LayoutProps,
-  Line,
-  Node,
-  NodeProps,
-  Rect,
-  Spline,
-  Txt,
-} from '@motion-canvas/2d';
-import {
-  all,
   Color,
   createRef,
-  createSignal,
-  Logger,
-  PossibleVector2,
   Reference,
-  sequence,
   useLogger,
   useRandom,
   Vector2,
