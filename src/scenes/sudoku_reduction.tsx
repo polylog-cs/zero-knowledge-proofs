@@ -1,8 +1,9 @@
-import { Layout, makeScene2D, Rect, Spline, Txt } from '@motion-canvas/2d';
+import { Layout, Rect, Spline, Txt } from '@motion-canvas/2d';
 import { createRef, Vector2 } from '@motion-canvas/core';
 import { all, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
 import { indicate, Solarized, solarizedPalette } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { generateArcPoints } from '../utilities_graph';
 import { nextTo } from '../utilities_moving';
 import { clues, solution, Sudoku, SudokuGraph } from '../utilities_sudoku';

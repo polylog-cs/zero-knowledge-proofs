@@ -1,4 +1,4 @@
-import { Circle, Img, makeScene2D } from '@motion-canvas/2d';
+import { Circle, Img } from '@motion-canvas/2d';
 import { all, createRef, easeInQuad, easeOutQuad, waitFor } from '@motion-canvas/core';
 
 import keyImage from '../assets/images/key.svg';
@@ -8,6 +8,7 @@ import {
   VERIFIER_POSITION,
 } from '../components/participant';
 import { FONT_FAMILY, Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { Lock } from '../utilities_lock';
 import { nextTo } from '../utilities_moving';
 import { MyTxt } from '../utilities_text';

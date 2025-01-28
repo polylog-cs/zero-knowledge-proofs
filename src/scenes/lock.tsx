@@ -1,7 +1,8 @@
-import { Circle, makeScene2D } from '@motion-canvas/2d';
+import { Circle } from '@motion-canvas/2d';
 import { createRef, waitFor } from '@motion-canvas/core';
 
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { Lock } from '../utilities_lock';
 
 export default makeScene2D(function* (view) {

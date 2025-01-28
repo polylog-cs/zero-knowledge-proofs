@@ -4,7 +4,6 @@ import {
   Layout,
   LayoutProps,
   Line,
-  makeScene2D,
   Node,
   Rect,
   Txt,
@@ -17,6 +16,7 @@ import vasek1 from '../assets/images/vasek.png';
 import vasek2 from '../assets/images/vasek2.png';
 import gradientShader from '../shaders/gradient2.glsl';
 import { FONT_FAMILY, Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 
 export interface BadgeProps extends LayoutProps {
   image: string;

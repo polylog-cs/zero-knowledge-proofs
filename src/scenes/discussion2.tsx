@@ -1,4 +1,4 @@
-import { makeScene2D, Node } from '@motion-canvas/2d';
+import { Node } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -10,6 +10,7 @@ import {
 } from '@motion-canvas/core';
 
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { nextTo, shift } from '../utilities_moving';
 import { ProtocolScene } from '../utilities_protocol';

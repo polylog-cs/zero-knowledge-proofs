@@ -1,8 +1,9 @@
-import { CubicBezier, Layout, Line, makeScene2D, Rect } from '@motion-canvas/2d';
+import { CubicBezier, Layout, Line, Rect } from '@motion-canvas/2d';
 import { createRef, Vector2 } from '@motion-canvas/core';
 import { all, delay, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { alignTo, nextTo, shift } from '../utilities_moving';
 import { clues, solution, Sudoku } from '../utilities_sudoku';

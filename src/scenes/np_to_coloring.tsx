@@ -1,4 +1,4 @@
-import { Circle, Img, Layout, makeScene2D, Node, Rect } from '@motion-canvas/2d';
+import { Circle, Img, Layout, Node, Rect } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -24,6 +24,7 @@ import mario_run_3 from '../assets/SMB/run3.png';
 import mario_run_4 from '../assets/SMB/run4.png';
 import gradientShader from '../shaders/gradient2.glsl';
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 
 export default makeScene2D(function* (view) {
   const image = createRef<Img>();

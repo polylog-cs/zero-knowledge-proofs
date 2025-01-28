@@ -1,4 +1,4 @@
-import { makeScene2D, Rect, Txt } from '@motion-canvas/2d';
+import { Rect, Txt } from '@motion-canvas/2d';
 import { all, createRef, easeInOutQuad, Reference, waitFor } from '@motion-canvas/core';
 
 import {
@@ -7,6 +7,7 @@ import {
   VERIFIER_POSITION,
 } from '../components/participant';
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { MyTxt, customTextLerp as textLerpWithDiff } from '../utilities_text';
 
 export default makeScene2D(function* (view) {

@@ -3,7 +3,6 @@ import {
   Img,
   Layout,
   Line,
-  makeScene2D,
   Node,
   NodeProps,
   Rect,
@@ -28,6 +27,7 @@ import thumbs_up from '../assets/icons/thumbs-up-solid.svg';
 import user_tie from '../assets/icons/user-tie-solid.svg';
 import gradientShader from '../shaders/gradient2.glsl';
 import { FONT_FAMILY, Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 
 export interface MobileProps extends NodeProps {
   pinLength: number;

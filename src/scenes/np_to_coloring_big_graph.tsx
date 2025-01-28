@@ -1,9 +1,10 @@
-import { Camera, Circle, Line, makeScene2D } from '@motion-canvas/2d';
+import { Camera, Circle, Line } from '@motion-canvas/2d';
 import { createRef, useLogger, waitFor } from '@motion-canvas/core';
 
 // See prepare_facebook_dataset.py
 import graphData from '../assets/facebook_layout.json';
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);

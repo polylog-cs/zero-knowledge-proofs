@@ -1,8 +1,9 @@
-import { Img, Line, makeScene2D } from '@motion-canvas/2d';
+import { Img, Line } from '@motion-canvas/2d';
 import { all, createRef, delay, sequence, Vector2, waitFor } from '@motion-canvas/core';
 
 import garbage from '../assets/images/garbage.svg';
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleGraphData } from '../utilities_graph';
 import { ProtocolScene } from '../utilities_protocol';
 

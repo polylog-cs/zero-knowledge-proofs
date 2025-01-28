@@ -1,8 +1,9 @@
-import { makeScene2D, Rect } from '@motion-canvas/2d';
+import { Rect } from '@motion-canvas/2d';
 import { all, createRef, linear, useLogger, waitFor } from '@motion-canvas/core';
 
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
 import { MyTxt } from '../utilities_text';
 
 const inputs = [

@@ -271,7 +271,6 @@ export class Graph {
 
     const fromVertex = this.vertexMap.get(edge.from);
     const toVertex = this.vertexMap.get(edge.to);
-    console.log(edge.from + edge.to);
 
     const startPos = new Vector2(fromVertex.position);
     const endPos = new Vector2(toVertex.position);

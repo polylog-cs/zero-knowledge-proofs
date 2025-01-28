@@ -1,4 +1,4 @@
-import { Img, Layout, makeScene2D, View2D } from '@motion-canvas/2d';
+import { Img, Layout, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -6,6 +6,7 @@ import {
   delay,
   linear,
   loop,
+  PlaybackState,
   ThreadGenerator,
   useRandom,
   Vector2,
@@ -16,6 +17,8 @@ import gear from '../assets/icons/gear-solid.svg';
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
+import { makeScene2D } from '../utilities_fix_view_scaling';
+import { alignTo } from '../utilities_moving';
 import { MyTxt } from '../utilities_text';
 
 export function* solve(
