@@ -123,7 +123,7 @@ export class Graph {
     const vertexData = this.vertexMap.get(label);
     return (
       <Circle
-        key={label}
+        //key={label}
         ref={vertexData.ref}
         size={this.vertexRadius}
         fill={Solarized.gray}
@@ -143,7 +143,7 @@ export class Graph {
           const toVertex = this.vertexMap.get(edge.to);
           return (
             <Spline
-              key={`edge-${i}`}
+              //key={`edge-${i}`}
               ref={edge.ref}
               stroke={Solarized.gray}
               lineWidth={4}
@@ -439,6 +439,16 @@ export class Graph {
     } while (arraysEqual(this.palette, oldPalette));
 
     yield* this.applyColors(durationPerVertex, stepDelay);
+  }
+
+  *uncolor(
+    durationPerVertex: number = 0.5,
+    stepDelay: number = 0.1,
+    newColors?: Map<string, number>,
+  ) {
+    yield* all(
+      ...[...this.vertexMap.entries()].map(([_, v]) => v.ref().fill(Solarized.gray, 1)),
+    );
   }
 }
 

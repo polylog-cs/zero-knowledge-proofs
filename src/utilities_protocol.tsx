@@ -2,15 +2,16 @@ import { Img, Layout, Txt, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
+  delay,
   Reference,
+  sequence,
   ThreadGenerator,
   Vector2,
   waitFor,
 } from '@motion-canvas/core';
 
-import proverImage from './assets/images/prover.png';
-import verifierImage from './assets/images/verifier.png';
 import {
+  Participant,
   ParticipantKind,
   PROVER_POSITION,
   VERIFIER_POSITION,
@@ -26,8 +27,8 @@ const GRAPH_BUFFER = 50;
 export type GraphPosition = ParticipantKind | 'center';
 
 export class ProtocolScene {
-  public proverRef = createRef<Img>();
-  public verifierRef = createRef<Img>();
+  public proverRef = createRef<Participant>();
+  public verifierRef = createRef<Participant>();
   public graphRef = createRef<LockableGraph>();
   public containerRef = createRef<Layout>();
 
@@ -58,11 +59,10 @@ export class ProtocolScene {
    */
   private *addParticipant(which: ParticipantKind, path?: string) {
     const ref = which === 'prover' ? this.proverRef : this.verifierRef;
-    const defaultPath = which === 'prover' ? proverImage : verifierImage;
     const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
 
     this.containerRef().add(
-      <Img ref={ref} src={path ?? defaultPath} position={position} opacity={0} />,
+      <Participant ref={ref} kind={which} position={position} opacity={0} />,
     );
     yield* ref().opacity(1, 1);
   }
@@ -77,6 +77,7 @@ export class ProtocolScene {
     which: ParticipantKind,
     text: string,
     removeCurrent: boolean = false,
+    fast: boolean = false,
   ) {
     const lineHeight = 40;
     const isProver = which === 'prover';
@@ -106,7 +107,7 @@ export class ProtocolScene {
 
     // Fade in new line
     yield* newTextRef().opacity(1, 0.5);
-    yield* waitFor(0.5);
+    if (!fast) yield* waitFor(0.5);
 
     // Add new line to array
     textsArray.push(newTextRef);
@@ -206,16 +207,17 @@ export class ProtocolScene {
     }
   }
 
-  public *shufflingColors(unlock: boolean = true) {
+  public *shufflingColors(unlock: boolean = true, fast: boolean = false) {
     if (unlock) {
-      yield* this.graphRef().unlockVertices();
+      yield* this.graphRef().unlockVertices(undefined, fast ? 0.5 : 1);
     }
     for (let i = 0; i < 5; i++) {
-      yield* this.graphRef().shuffleColors();
+      yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.2);
+      yield* waitFor(fast ? 0.05 : 0.1);
     }
-    yield* waitFor(0.5);
-    yield* this.graphRef().lockVertices();
-    yield* waitFor(0.5);
+    if (!fast) yield* waitFor(0.5);
+    yield* this.graphRef().lockVertices(undefined, fast ? 0.5 : 1);
+    if (!fast) yield* waitFor(0.5);
   }
 
   public *challenge(noText: boolean = false, shortened: boolean = false) {
@@ -247,33 +249,41 @@ export class ProtocolScene {
     yield* this.graphRef().removeArrows();
   }
 
-  public *oneRound(firstRound: boolean = false) {
-    yield* this.shufflingColors(!firstRound);
+  public *oneRound(firstRound: boolean = false, fast: boolean = false) {
+    yield* this.shufflingColors(!firstRound, fast);
 
-    yield* this.sendGraph('verifier', 1);
-    yield* waitFor(0.5);
+    yield* this.sendGraph('verifier', fast ? 0.5 : 1);
 
-    yield* this.challenge();
-    yield* waitFor(0.5);
+    const numChallenges = fast ? 4 : 7;
+    const pointingDuration = fast ? 0.5 : 1;
+    yield* this.graphRef().pointAtRandomEdges(
+      undefined,
+      numChallenges,
+      pointingDuration,
+    );
 
-    yield* this.sendGraph('prover', 1);
-    yield* waitFor(0.5);
+    yield* all(
+      this.graphRef().unlockVertices(this.graphRef().challengeEdge, fast ? 0.5 : 1),
+      delay(fast ? 0.2 : 1, this.addText('verifier', '✅', true, fast)),
+    );
 
-    yield* this.graphRef().unlockVertices();
-    yield* waitFor(0.5);
+    if (!fast) yield* waitFor(0.5);
+    yield* all(this.removeText('verifier'), this.graphRef().removeArrows());
+
+    yield* this.sendGraph('prover', fast ? 0.5 : 1);
   }
 
   // assumes that the graph exists
-  public *basicProtocol(numRounds: number = 3) {
+  public *basicProtocol(numRounds: number = 5) {
     if (this.graphRef() === undefined) {
       return;
     }
     yield* this.sendGraph('prover', 1);
-    yield* this.graphRef().applyColors(0.5, 0.3);
+    yield* this.graphRef().applyColors(0.5, 0.1);
     yield* waitFor(0.5);
 
     for (let i = 0; i < numRounds; i++) {
-      yield* this.oneRound(i === 0);
+      yield* this.oneRound(i == 0, i >= 2);
     }
   }
 }

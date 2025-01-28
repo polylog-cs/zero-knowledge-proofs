@@ -127,6 +127,7 @@ export function nextTo(
 
   let finalPos = node.absolutePosition();
   const otherPos = other.absolutePosition();
+  console.log(n, o);
 
   switch (direction) {
     case 'left':
