@@ -174,7 +174,7 @@ export class Graph {
     }
   }
 
-  *changeVertexColor(label: string, color: string, duration: number) {
+  *changeVertexColor(label: string, color: string, duration: number = 0.5) {
     const vertex = this.vertexMap.get(label);
     if (vertex) {
       yield* vertex.ref().fill(color, duration);
@@ -441,13 +441,12 @@ export class Graph {
     yield* this.applyColors(durationPerVertex, stepDelay);
   }
 
-  *uncolor(
-    durationPerVertex: number = 0.5,
-    stepDelay: number = 0.1,
-    newColors?: Map<string, number>,
-  ) {
-    yield* all(
-      ...[...this.vertexMap.entries()].map(([_, v]) => v.ref().fill(Solarized.gray, 1)),
+  *uncolor(durationPerVertex: number = 0.5, stepDelay: number = 0.1) {
+    yield* sequence(
+      stepDelay,
+      ...[...this.vertexMap.entries()].map(([_, v]) =>
+        v.ref().fill(Solarized.gray, durationPerVertex),
+      ),
     );
   }
 }

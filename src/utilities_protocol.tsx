@@ -33,8 +33,8 @@ export class ProtocolScene {
   public containerRef = createRef<Layout>();
 
   // Arrays to store multiple text lines for prover and verifier
-  private proverTexts: Reference<Txt>[] = [];
-  private verifierTexts: Reference<Txt>[] = [];
+  public proverTexts: Reference<Txt>[] = [];
+  public verifierTexts: Reference<Txt>[] = [];
 
   constructor(private view: View2D) {
     view.add(<Layout ref={this.containerRef} layout={false} />);

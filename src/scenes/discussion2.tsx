@@ -157,6 +157,7 @@ export default makeScene2D(function* (view) {
     scene.containerRef().opacity(0, 1),
   );
   yield* waitFor(1);
+  shift(scene.containerRef(), new Vector2(0, -100));
   yield* scene.graphRef().unlockVertices(undefined, 0);
   yield* scene.graphRef().uncolor(0, 0);
   yield* scene.sendGraph('prover', 0);
