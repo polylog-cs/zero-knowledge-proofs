@@ -1,17 +1,27 @@
 import { Img, initial, Node, NodeProps, signal } from '@motion-canvas/2d';
 import { SignalValue, SimpleSignal, Vector2 } from '@motion-canvas/core';
 
+import proverImageAlarmed from '../assets/images/prover_alarmed.png';
 import proverImageEmbarrassed from '../assets/images/prover_embarrassed.png';
+import proverImageEvil from '../assets/images/prover_evil.png';
 import proverImageLooking from '../assets/images/prover_looking.png';
 import proverImageThinking from '../assets/images/prover_thinking.png';
 import proverImageNeutral from '../assets/images/prover.png';
+import verifierImageAlarmed from '../assets/images/verifier_alarmed.png';
 import verifierImageEmbarrassed from '../assets/images/verifier_embarrassed.png';
+import verifierImageEvil from '../assets/images/verifier_evil.png';
 import verifierImageLooking from '../assets/images/verifier_looking.png';
 import verifierImageThinking from '../assets/images/verifier_thinking.png';
 import verifierImageNeutral from '../assets/images/verifier.png';
 
 export type ParticipantKind = 'prover' | 'verifier';
-export type Expression = 'neutral' | 'thinking' | 'looking' | 'embarrassed';
+export type Expression =
+  | 'neutral'
+  | 'thinking'
+  | 'looking'
+  | 'embarrassed'
+  | 'alarmed'
+  | 'evil';
 
 export const PROVER_POSITION = new Vector2(-600, 0);
 export const VERIFIER_POSITION = new Vector2(600, 0);
@@ -22,12 +32,16 @@ const EXPRESSION_TO_IMAGE: Record<ParticipantKind, Record<Expression, string>> =
     thinking: proverImageThinking,
     looking: proverImageLooking,
     embarrassed: proverImageEmbarrassed,
+    alarmed: proverImageAlarmed,
+    evil: proverImageEvil,
   },
   verifier: {
     neutral: verifierImageNeutral,
     thinking: verifierImageThinking,
     looking: verifierImageLooking,
     embarrassed: verifierImageEmbarrassed,
+    alarmed: verifierImageAlarmed,
+    evil: verifierImageEvil,
   },
 };
 
