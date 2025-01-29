@@ -1,11 +1,10 @@
-import { CubicBezier, Img, Rect } from '@motion-canvas/2d';
+import { CubicBezier, Img, makeScene2D, Rect } from '@motion-canvas/2d';
 import { all, createRef, Reference, Vector2, waitFor } from '@motion-canvas/core';
 
 import circuit_screenshot_simple from '../assets/images/circuit_screenshot_simple.png';
 import sat_screenshot from '../assets/images/sat_screenshot.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
-import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { shift } from '../utilities_moving';
 

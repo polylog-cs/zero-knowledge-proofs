@@ -1,4 +1,4 @@
-import { Img, Layout, View2D } from '@motion-canvas/2d';
+import { Img, Layout, makeScene2D, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -6,8 +6,6 @@ import {
   delay,
   linear,
   loop,
-  PlaybackState,
-  Reference,
   ThreadGenerator,
   useRandom,
   Vector2,
@@ -18,8 +16,6 @@ import gear from '../assets/icons/gear-solid.svg';
 import studentImage from '../assets/images/student.png';
 import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
-import { makeScene2D } from '../utilities_fix_view_scaling';
-import { alignTo } from '../utilities_moving';
 import { MyTxt } from '../utilities_text';
 
 export function* solve(
@@ -213,9 +209,9 @@ function* animatePercentage(
   );
 }
 
-export function* terriblehack(view, failing: boolean = false) {
+export function* terriblehack(view: View2D, failing: boolean = false) {
   view.fill(Solarized.base2);
-  view.scale(new Vector2(-1, 1));
+  view.scale(new Vector2(-view.scale().x, view.scale().y));
 
   const student = createRef<Img>();
   const teacher = createRef<Img>();

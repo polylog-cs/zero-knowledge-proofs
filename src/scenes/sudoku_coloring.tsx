@@ -1,4 +1,4 @@
-import { Layout, Node } from '@motion-canvas/2d';
+import { Layout, makeScene2D, Node } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -18,7 +18,6 @@ import {
   solution,
   Sudoku,
 } from '../utilities';
-import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleEdges, exampleLabels } from '../utilities_graph';
 import { MyTxt } from '../utilities_text';
 
