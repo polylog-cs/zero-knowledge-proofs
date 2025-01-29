@@ -22,8 +22,8 @@ import './global.css';
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
-    teacher,
     teacher_failing,
+    teacher,
     coloring,
     building_protocol_1,
     building_protocol_2,

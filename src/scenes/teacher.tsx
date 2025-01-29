@@ -262,7 +262,7 @@ export function* terriblehack(view, failing: boolean = false) {
   );
 
   yield* all(
-    challenge().bottom(teacher().top(), 1),
+    challenge().bottom(teacher().top().addY(-30), 1),
     challenge().opacity(0).opacity(1, 1),
     challenge().scale(0).scale(new Vector2(-1, 1), 1),
   );
@@ -282,9 +282,11 @@ export function* terriblehack(view, failing: boolean = false) {
     const surprise = createRef<MyTxt>();
     surprise(challenge().clone());
     view.add(surprise());
-    surprise().text('😮/🤨/‼️');
+    surprise().text('nope');
     yield* all(challenge().opacity(0, 1), surprise().opacity(1, 1));
-    yield* waitFor(3);
+    yield* waitFor(2);
+    yield* all(response().opacity(0, 1), surprise().opacity(0, 1));
+    yield* waitFor(1);
     return;
   }
 
