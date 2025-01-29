@@ -92,7 +92,11 @@ export default makeScene2D(function* (view) {
 
   yield* passKey();
   yield* all(revealText().opacity(1, 1), unlockUsingKey());
+  prover().expression('happy');
+  verifier().expression('happy');
   yield* waitFor(1);
+  prover().expression('neutral');
+  verifier().expression('neutral');
 
   //// Peeking is not allowed
   yield* all(
@@ -105,8 +109,10 @@ export default makeScene2D(function* (view) {
 
   yield* all(lock().seethrough(1, 0.5));
   verifier().expression('looking');
+  prover().expression('alarmed');
   yield* waitFor(1);
   verifier().expression('neutral');
+  prover().expression('neutral');
   yield* all(lock().unseethrough());
 
   //// The color cannot be changed
@@ -115,7 +121,7 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1);
 
   // Pass to verifier
-  prover().expression('thinking');
+  prover().expression('evil');
   yield* lock().lock();
   yield* circle().position(VERIFIER_POSITION.addX(-350), 1);
   yield* waitFor(1);
@@ -125,6 +131,6 @@ export default makeScene2D(function* (view) {
   circle().fill(Solarized.green);
   yield* unlockUsingKey();
   prover().expression('embarrassed');
-  verifier().expression('thinking');
+  verifier().expression('alarmed');
   yield* waitFor(1);
 });

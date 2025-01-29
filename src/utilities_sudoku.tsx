@@ -194,7 +194,7 @@ export class SudokuGraph extends Graph {
   }
 
   *colorPalette(
-    delay: number = 0.5,
+    delay: number = 0.2,
     eachDuration: number = 0.8,
     decolor: boolean = false,
   ) {

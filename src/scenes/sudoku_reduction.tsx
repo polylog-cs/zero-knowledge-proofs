@@ -162,7 +162,7 @@ export default makeScene2D(function* (view) {
   );
   const nonExistingEdge = (
     <Spline
-      stroke={Solarized.base03}
+      stroke={Solarized.base01}
       lineDash={[6]}
       lineWidth={7}
       opacity={0}
@@ -187,17 +187,17 @@ export default makeScene2D(function* (view) {
   yield* waitFor(0.5);
   yield* graph.colorPalette(0, 1, true);
 
-  const edgeList = [graph.crossArcs, graph.rowArcs, graph.columnArcs, graph.boxArcs];
+  const edgeGroups = [graph.crossArcs, graph.rowArcs, graph.columnArcs, graph.boxArcs];
 
-  for (let i = 0; i < edgeList.length; i++) {
-    yield* graph.fadeEdgesSequential(i == 0 ? 0.015 : 0.005, 1, edgeList[i]);
-    yield* waitFor(i == 0 ? 1 : 0.5);
+  for (let i = 0; i < edgeGroups.length; i++) {
+    yield* graph.fadeEdgesSequential(i == 0 ? 0.01 : 0.005, 1, edgeGroups[i]);
+    // yield* waitFor(i == 0 ? 1 : 0.5);
 
-    const edges = edgeList[i];
+    const edges = edgeGroups[i];
     if (i == 0) {
       edges.push(...graph.cliqueArcs);
     }
-    yield* graph.fadeEdgesSequential(i == 0 ? 0.005 : 0.001, 1, edges, 0.1);
+    yield* graph.fadeEdgesSequential(i == 0 ? 0.001 : 0.001, 1, edges, 0.1);
     yield* waitFor(i == 0 ? 1 : 0.5);
   }
 
