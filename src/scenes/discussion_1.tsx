@@ -65,9 +65,12 @@ export default makeScene2D(function* (view) {
 
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
 
-  yield* all(scene.addText('prover', '😅'), scene.addText('verifier', '😮/🤨/‼️'));
-  yield* waitFor(1);
+  scene.proverRef().expression('embarrassed');
+  scene.verifierRef().expression('alarmed');
+  yield* waitFor(2);
   yield* all(scene.fadeOutGraph(1), scene.removeText('both'));
+  scene.proverRef().expression('neutral');
+  scene.verifierRef().expression('neutral');
 
   // evidence from seeing different colors
 
@@ -103,7 +106,7 @@ export default makeScene2D(function* (view) {
       ref={probabilityRef}
       position={[0, -400]}
       text="P(prover fools me | prover cheats)"
-      fontSize={32}
+      fontSize={60}
       fill={Solarized.text}
       opacity={0}
     />,
@@ -116,7 +119,7 @@ export default makeScene2D(function* (view) {
       ref={productContainerRef}
       position={[0, -150]}
       text="="
-      fontSize={30}
+      fontSize={60}
       fill={Solarized.text}
       opacity={0}
     />,
@@ -146,6 +149,7 @@ export default makeScene2D(function* (view) {
         ref={flyingRef}
         tex={i == 0 ? '\\frac{6}{7}' : '\\cdot \\, \\frac{6}{7}'}
         opacity={0}
+        fontSize={40}
       />,
     );
     flyingRef()
@@ -176,7 +180,7 @@ export default makeScene2D(function* (view) {
         '\\cdot \\dots \\,  = \\left( \\frac{6}{7} \\right)^{100} \\approx 2\\cdot 10^{-7}'
       }
       position={productContainerRef().absolutePosition()}
-      fontSize={30}
+      fontSize={40}
       fill={Solarized.text}
       opacity={0}
     />,
@@ -184,6 +188,7 @@ export default makeScene2D(function* (view) {
   nextTo(finalTextRef(), flyingTextRefs[flyingTextRefs.length - 1](), 'right', 0, 0);
   yield* finalTextRef().opacity(1, 1);
   yield* waitFor(1);
+  scene.proverRef().expression('happy');
 
   // learning the coloring
 

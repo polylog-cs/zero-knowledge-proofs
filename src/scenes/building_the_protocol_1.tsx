@@ -27,7 +27,7 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
   yield* scene.sendGraph('verifier');
 
-  yield* scene.addText('verifier', 'Hm... 🧐');
+  scene.verifierRef().expression('thinking');
 
   yield* all(
     scene.graphRef().pointAtVertex(revealedEdge[0], 1, true),
@@ -46,6 +46,7 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().setSeeThrough(false);
 
   yield* all(scene.graphRef().removeArrows(), scene.removeText('verifier'));
+  scene.verifierRef().expression('neutral');
 
   yield* scene.sendGraph('prover');
   yield* scene.graphRef().unlockVertices();
@@ -58,7 +59,8 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
   yield* scene.sendGraph('verifier');
 
-  yield* scene.addText('verifier', '👀');
+  scene.verifierRef().expression('looking');
+
   yield* all(
     scene.graphRef().pointAtVertex('C', 1, true),
     scene.graphRef().pointAtVertex('F', 1, true),

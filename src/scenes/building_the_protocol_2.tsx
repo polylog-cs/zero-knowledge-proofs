@@ -33,6 +33,7 @@ export default makeScene2D(function* (view) {
   );
 
   yield* all(scene.addText('verifier', '4. Check the colors'));
+  scene.verifierRef().expression('thinking');
 
   yield* waitFor(5);
 });
