@@ -79,7 +79,6 @@ export class ProtocolScene {
     removeCurrent: boolean = false,
     fast: boolean = false,
   ) {
-    const lineHeight = 40;
     const isProver = which === 'prover';
     const targetRef = isProver ? this.proverRef : this.verifierRef;
     const textsArray = isProver ? this.proverTexts : this.verifierTexts;

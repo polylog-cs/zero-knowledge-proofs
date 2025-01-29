@@ -29,7 +29,7 @@ export default makeScene2D(function* (view) {
   const graphLayout = g.getGraphLayout();
   graphLayout.scale(0.8);
   view.add(graphLayout);
-  nextTo(graphLayout, scene.verifierRef(), 'up', -50);
+  nextTo(graphLayout, scene.verifierRef(), 'up', 0);
   yield* all(shift(scene.containerRef(), new Vector2(0, 100), 1), g.fadeIn(1));
 
   exampleGraphData;
@@ -127,8 +127,8 @@ export default makeScene2D(function* (view) {
               .getEdge(e)
               .ref()
               .getPointAtPercentage(0.6)
-              .position.addX(-35)
-              .add(graphLayout.absolutePosition())
+              .position.addX(-70)
+              .transformAsPoint(g.getEdge(e).ref().localToWorld())
           }
           scale={10}
           opacity={0}
@@ -136,7 +136,10 @@ export default makeScene2D(function* (view) {
       );
       yield* all(
         copy().scale(graphLayout.scale, 1),
-        copy().absolutePosition(graphLayout.absolutePosition().addX(-70), 1),
+        copy().absolutePosition(
+          graphLayout.absolutePosition().addX(-70 * view.absoluteScale().magnitude),
+          1,
+        ),
         delay(0.8, all(cross().scale(5, 1), cross().opacity(1, 1))),
         delay(1.8, cross().opacity(0, 1)),
       );

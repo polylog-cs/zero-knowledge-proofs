@@ -5,7 +5,7 @@ import { all, delay, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 import { Solarized } from '../utilities';
 import { makeScene2D } from '../utilities_fix_view_scaling';
 import { exampleGraphData, Graph } from '../utilities_graph';
-import { alignTo, nextTo, shift } from '../utilities_moving';
+import { absoluteToViewSpace, alignTo, nextTo, shift } from '../utilities_moving';
 import { clues, solution, Sudoku } from '../utilities_sudoku';
 import { MyTxt } from '../utilities_text';
 import { makeWobbly } from './np_to_coloring_conversion';
@@ -76,66 +76,48 @@ export default makeScene2D(function* (view) {
   const mkline = (a: Vector2, b: Vector2, c: number) => {
     const ref = createRef<Line>();
     view.add(
-      <>
-        <Line
-          points={() => {
-            return [a, b.add(a.sub(b).normalized.scale(c))];
-          }}
-          lineWidth={5}
-          stroke={Solarized.gray}
-          endArrow
-          ref={ref}
-          arrowSize={20}
-          opacity={0}
-        />
-      </>,
+      <Line
+        points={() => {
+          return [a, b.add(a.sub(b).normalized.scale(c * view.scale().magnitude))];
+        }}
+        lineWidth={5}
+        stroke={Solarized.gray}
+        endArrow
+        ref={ref}
+        arrowSize={20}
+        opacity={0}
+      />,
     );
     return ref;
   };
 
   const ar1 = mkline(
     nosame_sudoku().bottom().addX(-20),
-    sudoku
-      .layoutRef()
-      .children()[0]
-      .children()[4]
-      .absolutePosition()
-      .sub(sudoku.layoutRef().absolutePosition())
-      .add(sudoku.layoutRef().position())
-      .addY(-30),
+    absoluteToViewSpace(
+      view,
+      sudoku.layoutRef().children()[0].children()[4].absolutePosition(),
+    ).addY(-30),
     25,
   );
 
   const ar2 = mkline(
     nosame_sudoku().bottom().addX(20),
-    sudoku
-      .layoutRef()
-      .children()[0]
-      .children()[8]
-      .absolutePosition()
-      .sub(sudoku.layoutRef().absolutePosition())
-      .add(sudoku.layoutRef().position())
-      .addY(-30),
+    absoluteToViewSpace(
+      view,
+      sudoku.layoutRef().children()[0].children()[8].absolutePosition(),
+    ).addY(-30),
     25,
   );
 
   const ar3 = mkline(
     nosame_graph().bottom().addX(-20),
-    g
-      .getVertex('A')
-      .absolutePosition()
-      .sub(graph.absolutePosition())
-      .add(graph.position()),
+    absoluteToViewSpace(view, g.getVertex('A').absolutePosition()),
     50,
   );
 
   const ar4 = mkline(
     nosame_graph().bottom().addX(20),
-    g
-      .getVertex('B')
-      .absolutePosition()
-      .sub(graph.absolutePosition())
-      .add(graph.position()),
+    absoluteToViewSpace(view, g.getVertex('B').absolutePosition()),
     50,
   );
 

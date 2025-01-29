@@ -1,5 +1,5 @@
-import { Node } from '@motion-canvas/2d';
-import { all, Vector2 } from '@motion-canvas/core';
+import { Node, View2D } from '@motion-canvas/2d';
+import { all, useLogger, Vector2 } from '@motion-canvas/core';
 
 // all functions use absolute positions
 
@@ -18,11 +18,13 @@ type Corner = 'UL' | 'UR' | 'DL' | 'DR';
 // Helper to get node edges from the cached bounding box
 function getNodeEdges(node: Node) {
   // cacheBBox returns {x, y, width, height}
-  const bbox = node.cacheBBox();
-  const left = bbox.x + node.absolutePosition().x;
-  const right = bbox.x + bbox.width + node.absolutePosition().x;
-  const top = bbox.y + node.absolutePosition().y;
-  const bottom = bbox.y + bbox.height + node.absolutePosition().y;
+  let bbox = node.cacheBBox();
+  let p = node.localToWorld().transformPoint(bbox.topLeft);
+  let q = node.localToWorld().transformPoint(bbox.bottomRight);
+  const left = p.x;
+  const right = q.x;
+  const top = p.y;
+  const bottom = q.y;
 
   const centerX = (left + right) / 2;
   const centerY = (top + bottom) / 2;
@@ -34,8 +36,8 @@ function getNodeEdges(node: Node) {
     bottom,
     centerX,
     centerY,
-    width: bbox.width,
-    height: bbox.height,
+    width: right - left,
+    height: bottom - top,
   };
 }
 
@@ -61,6 +63,8 @@ export function moveTo(node: Node, newPos: Vector2 | Node, duration: number = 0)
  * If duration > 0, animate; otherwise, immediate.
  */
 export function shift(node: Node, offset: Vector2, duration: number = 0) {
+  offset.x *= node.view().absoluteScale().x;
+  offset.y *= node.view().absoluteScale().y;
   const currentPos = node.absolutePosition();
   const finalPos = currentPos.add(offset);
 
@@ -85,6 +89,10 @@ export function alignTo(
   buff: number = 0,
   duration: number = 0,
 ) {
+  buff *=
+    direction == 'up' || direction == 'down'
+      ? node.view().absoluteScale().y
+      : node.view().absoluteScale().x;
   const n = getNodeEdges(node);
   const o = getNodeEdges(other);
 
@@ -122,6 +130,10 @@ export function nextTo(
   buff: number = 0,
   duration: number = 0,
 ) {
+  buff *=
+    direction == 'up' || direction == 'down'
+      ? node.view().absoluteScale().y
+      : node.view().absoluteScale().x;
   const n = getNodeEdges(node);
   const o = getNodeEdges(other);
 
@@ -165,6 +177,10 @@ export function toEdge(
   buff: number = 0,
   duration: number = 0,
 ) {
+  buff *=
+    direction == 'up' || direction == 'down'
+      ? node.view().absoluteScale().y
+      : node.view().absoluteScale().x;
   const n = getNodeEdges(node);
   let finalPos = node.absolutePosition();
 
@@ -208,6 +224,8 @@ export function toCorner(
   buffY: number = 0,
   duration: number = 0,
 ) {
+  buffX *= node.view().absoluteScale().x;
+  buffY *= node.view().absoluteScale().y;
   let horizontalDirection: 'left' | 'right';
   let verticalDirection: 'up' | 'down';
 
@@ -242,4 +260,9 @@ export function toCorner(
       );
     })();
   }
+}
+
+export function absoluteToViewSpace(view: View2D, p: Vector2) {
+  const a = view.worldToLocal().transformPoint(p);
+  return new Vector2(a.x, a.y);
 }

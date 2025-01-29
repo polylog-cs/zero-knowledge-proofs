@@ -1,4 +1,4 @@
-import { Img, Layout, LayoutProps, Rect } from '@motion-canvas/2d';
+import { Img, Layout, LayoutProps, Node, Rect } from '@motion-canvas/2d';
 import {
   Color,
   createRef,
@@ -84,22 +84,18 @@ export function addVectors(
   return [v1[0] + v2[0], v1[1] + v2[1]];
 }
 
-export function* indicate(
-  node: {
-    scale: (value: number, duration?: number) => Generator<any, void, unknown>;
-  },
-  newScale: number = 1.5,
-) {
+export function* indicate(node: Node, newScale: number = 1.5) {
   // Save current z-level
   const oldZ = node.zIndex(); // get current z-value
 
   // Move it to the front
   yield* node.zIndex(999, 0); // instantly set z to a very large number
 
+  const scale = node.scale();
   // Animate scale up and back down
-  yield* node.scale(newScale, 0.3);
+  yield* node.scale(scale.mul(newScale), 0.3);
   yield* waitFor(0.5);
-  yield* node.scale(1.0, 0.3);
+  yield* node.scale(scale, 0.3);
 
   // Restore old z
   yield* node.zIndex(oldZ, 0);

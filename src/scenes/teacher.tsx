@@ -7,6 +7,7 @@ import {
   linear,
   loop,
   PlaybackState,
+  Reference,
   ThreadGenerator,
   useRandom,
   Vector2,
@@ -164,8 +165,8 @@ function* addChallengeAndResponse(
 }
 
 function* animatePercentage(
-  view,
-  responseLayout,
+  view: View2D,
+  responseLayout: Reference<Layout>,
   i,
   percentageStr: string = undefined,
 ) {
@@ -183,24 +184,26 @@ function* animatePercentage(
       fontSize={40}
       padding={20}
       ref={p}
-      textAlign="center"
+      textAlign="left"
       text={text}
       fill={Solarized.gray}
       opacity={0.5}
       zIndex={-1}
+      width={10}
     />,
   );
 
   p().absolutePosition(() => {
-    const response: MyTxt = responseLayout().children()[i];
-    const responseCenter = response
-      .position()
-      .sub(responseLayout().position())
-      .add(responseLayout().absolutePosition());
-    return responseCenter
-      .addX(-response.width() / 2)
-      .addX(-p().width() / 2)
-      .addX(responseLayout().width() * 1.2);
+    const response = responseLayout().children()[i] as MyTxt;
+    let responseCenter = response.absolutePosition();
+    responseCenter.x =
+      responseLayout().localToWorld().transformPoint(responseLayout().left()).x -
+      80 * view.absoluteScale().x;
+    return responseCenter;
+    //return responseCenter
+    //  .addX(-response.width() / 2)
+    //  .addX(-p().width() / 2)
+    //  .addX(responseLayout().width() * 1.2);
   });
 
   yield* all(
