@@ -30,3 +30,5 @@ npx prettier --write src/
 ## Sources
 
 Facebook dataset (used as an example graph): https://snap.stanford.edu/data/egonets-Facebook.html
+
+Pointing hand: https://www.rawpixel.com/image/6261834/png-sticker-vintage

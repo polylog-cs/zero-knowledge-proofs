@@ -25,12 +25,11 @@ export default makeScene2D(function* (view) {
   view.add(
     <Layout ref={swatchRef} layout direction={'row'} gap={16}>
       {[Solarized.red, Solarized.green, Solarized.blue].map((c, i) => (
-        <Rect key={`color-${i}`} width={80} height={80} fill={c} opacity={0} />
+        <Rect key={`color-${i}`} width={100} height={100} fill={c} opacity={0} />
       ))}
     </Layout>,
   );
-  alignTo(swatchRef(), view, 'left', 20);
-  alignTo(swatchRef(), view, 'up', 20);
+  alignTo(swatchRef(), view, 'left', 220, 0);
   const squares = Array.from(swatchRef().children()) as Rect[];
 
   // Fade in the swatch
@@ -71,7 +70,8 @@ export default makeScene2D(function* (view) {
     </>,
   );
   nextTo(nosame_sudoku(), sudoku.layoutRef().children()[0].children()[6], 'up', 130);
-  nextTo(nosame_graph(), g.getEdge(['B', 'C']).ref(), 'up', 210);
+  nextTo(nosame_graph(), g.getEdge(['B', 'C']).ref(), 'up', 0);
+  nosame_graph().position.y(nosame_sudoku().position.y());
 
   const mkline = (a: Vector2, b: Vector2, c: number) => {
     const ref = createRef<Line>();
@@ -92,7 +92,7 @@ export default makeScene2D(function* (view) {
   };
 
   const ar1 = mkline(
-    nosame_sudoku().bottom().addX(-20),
+    nosame_sudoku().bottom().add([-50, 20]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[4].absolutePosition(),
@@ -101,7 +101,7 @@ export default makeScene2D(function* (view) {
   );
 
   const ar2 = mkline(
-    nosame_sudoku().bottom().addX(20),
+    nosame_sudoku().bottom().add([50, 20]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[8].absolutePosition(),
@@ -110,13 +110,13 @@ export default makeScene2D(function* (view) {
   );
 
   const ar3 = mkline(
-    nosame_graph().bottom().addX(-20),
+    nosame_graph().bottom().add([-50, 20]),
     absoluteToViewSpace(view, g.getVertex('A').absolutePosition()),
     50,
   );
 
   const ar4 = mkline(
-    nosame_graph().bottom().addX(20),
+    nosame_graph().bottom().add([50, 20]),
     absoluteToViewSpace(view, g.getVertex('B').absolutePosition()),
     50,
   );
@@ -131,7 +131,7 @@ export default makeScene2D(function* (view) {
       ref={line}
       lineWidth={30}
       arrowSize={60}
-      stroke={Solarized.base02}
+      stroke={Solarized.base00}
       p0={[-150, 0]}
       p3={[270, 0]}
       end={0}
