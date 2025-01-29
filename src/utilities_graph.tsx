@@ -146,7 +146,7 @@ export class Graph {
               //key={`edge-${i}`}
               ref={edge.ref}
               stroke={Solarized.gray}
-              lineWidth={4}
+              lineWidth={10}
               opacity={0}
               zIndex={-10}
               smoothness={0.6}
@@ -265,7 +265,7 @@ export class Graph {
     fromLeft: boolean = true,
     duration: number = 1,
     keep: boolean = false,
-    arrowLength: number = 50,
+    arrowLength: number = 60,
   ) {
     const edge = this.getEdge(edgePair);
 

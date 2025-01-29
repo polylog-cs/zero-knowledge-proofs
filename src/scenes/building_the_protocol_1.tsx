@@ -50,7 +50,7 @@ export default makeScene2D(function* (view) {
   yield* scene.sendGraph('prover');
   yield* scene.graphRef().unlockVertices();
 
-  revealedEdge = ['C', 'F'];
+  revealedEdge = ['D', 'E'];
   nonRevealedVertices = exampleGraphData.labels.filter(
     (label) => !revealedEdge.includes(label),
   );
@@ -59,6 +59,10 @@ export default makeScene2D(function* (view) {
   yield* scene.sendGraph('verifier');
 
   yield* scene.addText('verifier', '👀');
+  yield* all(
+    scene.graphRef().pointAtVertex('C', 1, true),
+    scene.graphRef().pointAtVertex('F', 1, true),
+  );
 
   yield* all(scene.graphRef().containerRef().opacity(0, 1), scene.removeText('both'));
 });

@@ -44,7 +44,7 @@ export default makeScene2D(function* (view) {
     g.applyColors(undefined, undefined, new Map([['B', 2]])),
   );
   yield* g.pointAtEdge(['B', 'C']);
-  yield* waitFor(1);
+  yield* waitFor(2);
 
   // 1) Create and show the sample Sudoku.
   const sudoku = new Sudoku(9, 55, solution, clues);
