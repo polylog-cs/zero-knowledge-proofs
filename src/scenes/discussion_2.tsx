@@ -9,6 +9,7 @@ import {
   waitFor,
 } from '@motion-canvas/core';
 
+import { Cross } from '../components/cross';
 import { Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { nextTo, shift } from '../utilities_moving';
@@ -116,19 +117,11 @@ export default makeScene2D(function* (view) {
       </Node>,
     );
     if (i == 1) {
-      const cross = createRef<MyTxt>();
-      overlaidEdges().add(
-        <MyTxt
+      const cross = createRef<Cross>();
+      view.add(
+        <Cross
           ref={cross}
-          text="❌"
-          absolutePosition={() =>
-            g
-              .getEdge(e)
-              .ref()
-              .getPointAtPercentage(0.6)
-              .position.addX(-70)
-              .transformAsPoint(g.getEdge(e).ref().localToWorld())
-          }
+          position={() => g.containerRef().position().add([-90, -30])}
           scale={10}
           opacity={0}
         />,

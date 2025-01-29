@@ -164,10 +164,10 @@ export default makeScene2D(function* (view) {
         0,
         shortened ? 0.5 : 1,
       ),
+      scene.sendGraph('prover', duration),
     );
     flyingTextRefs.push(flyingRef);
 
-    yield* scene.sendGraph('prover', duration);
     yield* scene.graphRef().lockVertices(undefined, shortened ? 0.5 : undefined);
     if (!shortened) yield* waitFor(0.5);
   }

@@ -61,14 +61,14 @@ export default makeScene2D(function* (view) {
       scene.addText('prover', 'He will look here'),
       arrowRef().opacity(1, 0.5),
     );
-    scene.proverRef().expression('evil');
     yield* waitFor(1);
-    yield* all(
+    scene.proverRef().expression('evil');
+
+    const chosenEdgeAnims = all(
       scene.graphRef().changeVertexColor(edge[0], Solarized.red),
       scene.graphRef().changeVertexColor(edge[1], Solarized.green),
     );
-    yield* waitFor(1);
-    yield* all(
+    const otherEdgeAnims = all(
       ...['A', 'B', 'C', 'D', 'E', 'F'].map((c) =>
         scene
           .graphRef()
@@ -77,13 +77,22 @@ export default makeScene2D(function* (view) {
           .opacity(edge[0] == c || edge[1] == c ? 0 : 1, 1),
       ),
     );
+    if (i == 0) {
+      yield* chosenEdgeAnims;
+      yield* waitFor(1);
+      yield* otherEdgeAnims;
+    } else {
+      yield* all(chosenEdgeAnims, otherEdgeAnims);
+    }
+
     yield* waitFor(1);
-    scene.proverRef().expression('neutral');
+
     yield* all(
       scene.proverTexts[0]().opacity(0, 1.5),
       arrowRef().opacity(0, 1.5),
       scene.graphRef().lockVertices(),
     );
+    scene.proverRef().expression('neutral');
     yield* scene.sendGraph('verifier');
     yield* sequence(
       0.5,
