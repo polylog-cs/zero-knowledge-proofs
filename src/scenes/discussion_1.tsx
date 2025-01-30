@@ -188,7 +188,7 @@ export default makeScene2D(function* (view) {
   nextTo(finalTextRef(), flyingTextRefs[flyingTextRefs.length - 1](), 'right', 0, 0);
   yield* finalTextRef().opacity(1, 1);
   yield* waitFor(1);
-  scene.proverRef().expression('happy');
+  scene.verifierRef().expression('happy');
 
   // learning the coloring
 
