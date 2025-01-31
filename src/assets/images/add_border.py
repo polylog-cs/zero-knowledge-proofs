@@ -5,7 +5,7 @@ except ImportError:
     raise
 
 
-IMAGE_SIZE = 400
+IMAGE_SIZE = 450
 # The radius of the Gaussian blur used to expand the mask.
 # Not sure this corresponds to pixels.
 BORDER_RADIUS = 7
