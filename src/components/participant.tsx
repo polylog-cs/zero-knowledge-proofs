@@ -1,13 +1,6 @@
 import { Img, initial, Node, NodeProps, signal } from '@motion-canvas/2d';
 import { SignalValue, SimpleSignal, Vector2 } from '@motion-canvas/core';
 
-import proverImageAlarmed from '../assets/images/prover_alarmed.png';
-import proverImageEmbarrassed from '../assets/images/prover_embarrassed.png';
-import proverImageEvil from '../assets/images/prover_evil.png';
-import proverImageHappy from '../assets/images/prover_happy.png';
-import proverImageLooking from '../assets/images/prover_looking.png';
-import proverImageThinking from '../assets/images/prover_thinking.png';
-import proverImageNeutral from '../assets/images/prover.png';
 import verifierImageAlarmed from '../assets/images/verifier_alarmed.png';
 import verifierImageEmbarrassed from '../assets/images/verifier_embarrassed.png';
 import verifierImageEvil from '../assets/images/verifier_evil.png';
@@ -15,6 +8,13 @@ import verifierImageHappy from '../assets/images/verifier_happy.png';
 import verifierImageLooking from '../assets/images/verifier_looking.png';
 import verifierImageThinking from '../assets/images/verifier_thinking.png';
 import verifierImageNeutral from '../assets/images/verifier.png';
+import proverImageAlarmed from '../assets/images/vv/with_border/vv_alarmed.png';
+import proverImageEmbarrassed from '../assets/images/vv/with_border/vv_embarrassed.png';
+import proverImageEvil from '../assets/images/vv/with_border/vv_evil.png';
+import proverImageHappy from '../assets/images/vv/with_border/vv_happy.png';
+import proverImageLooking from '../assets/images/vv/with_border/vv_looking.png';
+import proverImageNeutral from '../assets/images/vv/with_border/vv_neutral2.png';
+import proverImageThinking from '../assets/images/vv/with_border/vv_thinking.png';
 
 export type ParticipantKind = 'prover' | 'verifier';
 export type Expression =

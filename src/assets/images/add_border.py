@@ -5,6 +5,12 @@ except ImportError:
     raise
 
 
+IMAGE_SIZE = 400
+# The radius of the Gaussian blur used to expand the mask.
+# Not sure this corresponds to pixels.
+BORDER_RADIUS = 7
+FEATHERING = 1
+
 def add_feathered_border(
     image_path: str,
     output_path: str,
@@ -21,6 +27,7 @@ def add_feathered_border(
         feather_radius: Feathering amount in pixels (default: 5)
     """
     img = Image.open(image_path)
+    img = img.resize((IMAGE_SIZE, IMAGE_SIZE))
 
     # Create mask for feathering based on alpha channel
     mask = Image.new("L", img.size, 0)
@@ -28,10 +35,10 @@ def add_feathered_border(
     mask.paste(alpha, (0, 0))
 
     # Expand the mask using blur + binarization
-    mask = mask.filter(ImageFilter.GaussianBlur(radius=10))
+    mask = mask.filter(ImageFilter.GaussianBlur(radius=BORDER_RADIUS))
     mask = mask.point(lambda x: 255 if x > 1 else 0)
     # Then feather the mask
-    mask = mask.filter(ImageFilter.GaussianBlur(radius=1))
+    mask = mask.filter(ImageFilter.GaussianBlur(radius=FEATHERING))
 
     result = Image.new("RGBA", img.size, (*border_color, 255))
     result = Image.composite(img, result, img)
@@ -63,7 +70,7 @@ def main():
     }
 
     add_feathered_border(
-        args.input, args.output, colors[args.role], args.border_size, args.feather
+        args.input, args.output, colors[args.role]
     )
 
 
