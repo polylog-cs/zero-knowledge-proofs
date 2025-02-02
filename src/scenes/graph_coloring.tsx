@@ -12,11 +12,11 @@ import { makeWobbly } from './np_to_coloring_conversion';
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
 
-  const g = new Graph(50);
+  const g = new Graph(75);
   g.initialize(exampleGraphData);
   const graph = g.getGraphLayout();
   graph.position([0, -100]);
-  graph.scale(1.5);
+  graph.scale(1.25);
   view.add(graph);
   yield* g.fadeIn(1);
 

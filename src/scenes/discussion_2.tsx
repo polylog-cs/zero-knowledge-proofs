@@ -24,13 +24,13 @@ export default makeScene2D(function* (view) {
 
   yield* scene.setup('center', true);
 
-  const g = new Graph(50);
+  const g = new Graph(75);
   g.initialize(exampleGraphData);
   const graphLayout = g.getGraphLayout();
-  graphLayout.scale(0.8);
+  graphLayout.scale(0.6);
   view.add(graphLayout);
-  nextTo(graphLayout, scene.verifierRef(), 'up', 0);
-  yield* all(shift(scene.containerRef(), new Vector2(0, 100), 1), g.fadeIn(1));
+  nextTo(graphLayout, scene.verifierRef(), 'up', -100);
+  yield* all(shift(scene.containerRef(), new Vector2(0, 150), 1), g.fadeIn(1));
 
   exampleGraphData;
   yield* scene.fadeInGraph(1);

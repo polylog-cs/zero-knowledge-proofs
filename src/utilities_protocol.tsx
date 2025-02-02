@@ -137,7 +137,7 @@ export class ProtocolScene {
     opacity: number = 1,
     data: GraphData = exampleGraphData,
   ) {
-    const g = new LockableGraph(50);
+    const g = new LockableGraph(75);
     g.initialize(data);
     const graphLayout = g.getGraphLayout();
     this.containerRef().add(graphLayout);

@@ -12,7 +12,7 @@ import {
 
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
-import { alignTo, nextTo } from '../utilities_moving';
+import { alignTo, nextTo, shift } from '../utilities_moving';
 import { ProtocolScene } from '../utilities_protocol';
 import { MyLatex, MyTxt } from '../utilities_text';
 
@@ -111,7 +111,10 @@ export default makeScene2D(function* (view) {
       opacity={0}
     />,
   );
-  yield* probabilityRef().opacity(1, 1);
+  yield* all(
+    shift(scene.containerRef(), new Vector2(0, 150), 1),
+    probabilityRef().opacity(1, 1),
+  );
   const productContainerRef = createRef<MyTxt>();
 
   view.add(

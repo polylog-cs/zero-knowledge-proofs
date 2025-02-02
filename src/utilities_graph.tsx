@@ -23,8 +23,6 @@ export interface GraphData {
   vertexDirs?: [number, number][];
 }
 
-// example graph
-const l = 100;
 export const exampleGraphData: GraphData = {
   labels: ['A', 'B', 'C', 'D', 'E', 'F'],
   edges: [
@@ -36,13 +34,14 @@ export const exampleGraphData: GraphData = {
     ['F', 'D'],
     ['E', 'F'],
   ],
+  // Positions get scaled based on vertexRadius later
   positions: [
-    [-l, -l],
-    [l, -l],
-    [0, 0],
-    [-l, l],
-    [l, l],
-    [0, 2 * l],
+    [-1, -1.5],
+    [1, -1.5],
+    [0, -0.5],
+    [-1, 0.5],
+    [1, 0.5],
+    [0, 1.5],
   ],
   colors: [0, 1, 2, 1, 0, 2],
   vertexDirs: [
@@ -80,7 +79,7 @@ export class Graph {
 
   private vertexDirections = new Map<string, Vector2>();
 
-  constructor(public vertexRadius: number = 15) {}
+  constructor(public vertexRadius: number) {}
 
   initialize(data: GraphData) {
     // can't have this in constructor because of in lockable graph addVertex uses locks which is not initialized yet
@@ -95,8 +94,12 @@ export class Graph {
       }
     }
 
+    const positionCoef = 2 * this.vertexRadius;
     for (let i = 0; i < data.labels.length; i++) {
-      this.addVertex(data.labels[i], data.positions[i]);
+      this.addVertex(data.labels[i], [
+        data.positions[i][0] * positionCoef,
+        data.positions[i][1] * positionCoef,
+      ]);
     }
     for (const [from, to] of data.edges) {
       this.addEdge(from, to);
@@ -146,7 +149,7 @@ export class Graph {
               //key={`edge-${i}`}
               ref={edge.ref}
               stroke={Solarized.gray}
-              lineWidth={10}
+              lineWidth={this.vertexRadius * 0.25}
               opacity={0}
               zIndex={-10}
               smoothness={0.6}

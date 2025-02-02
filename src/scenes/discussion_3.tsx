@@ -18,7 +18,7 @@ export default makeScene2D(function* (view) {
       .graphRef()
       .getVertex(v)
       .add(
-        <MyTxt ref={image} fontSize={64} opacity={0}>
+        <MyTxt ref={image} fontSize={96} opacity={0}>
           💩
         </MyTxt>,
       );
