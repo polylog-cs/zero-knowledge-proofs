@@ -1,15 +1,18 @@
 try:
     from PIL import Image, ImageFilter
 except ImportError:
-    print("Pillow library is not installed. You can install it using 'pip install pillow'")
+    print(
+        "Pillow library is not installed. You can install it using 'pip install pillow'"
+    )
     raise
 
 
-IMAGE_SIZE = 450
+IMAGE_SIZE = 900
 # The radius of the Gaussian blur used to expand the mask.
 # Not sure this corresponds to pixels.
-BORDER_RADIUS = 7
+BORDER_RADIUS = 14
 FEATHERING = 1
+
 
 def add_feathered_border(
     image_path: str,
@@ -60,7 +63,7 @@ def main():
         choices=["prover", "verifier"],
         help="Role determining border color (prover: #b58900, verifier: #073642)",
     )
-    
+
     args = parser.parse_args()
 
     # Convert hex colors to RGB tuples
@@ -69,9 +72,7 @@ def main():
         "verifier": tuple(int(x, 16) for x in ("07", "36", "42")),
     }
 
-    add_feathered_border(
-        args.input, args.output, colors[args.role]
-    )
+    add_feathered_border(args.input, args.output, colors[args.role])
 
 
 if __name__ == "__main__":
