@@ -1,10 +1,11 @@
-import { Img, Line, makeScene2D } from '@motion-canvas/2d';
+import { Img, Line, makeScene2D, Txt } from '@motion-canvas/2d';
 import { all, createRef, delay, sequence, Vector2, waitFor } from '@motion-canvas/core';
 
 import garbage from '../assets/images/garbage.svg';
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
 import { ProtocolScene } from '../utilities_protocol';
+import { MyTxt } from '../utilities_text';
 
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
@@ -16,7 +17,11 @@ export default makeScene2D(function* (view) {
     scene
       .graphRef()
       .getVertex(v)
-      .add(<Img src={garbage} ref={image} width={50} opacity={0} />);
+      .add(
+        <MyTxt ref={image} fontSize={48} opacity={0}>
+          💩
+        </MyTxt>,
+      );
   }
 
   const edges = [
