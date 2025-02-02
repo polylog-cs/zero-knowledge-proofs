@@ -1,6 +1,9 @@
-import { Latex, LatexProps, Txt, TxtProps } from '@motion-canvas/2d';
+import { Latex, LatexProps, Shape, Txt, TxtProps } from '@motion-canvas/2d';
+import { Color, tween } from '@motion-canvas/core';
+import chroma from 'chroma-js';
 import { diffChars } from 'diff';
 
+import timedGradientShader from './shaders/timedgradient.glsl';
 import { FONT_FAMILY, Solarized } from './utilities';
 
 const TEXT_SIZE: number = 30;
@@ -70,4 +73,22 @@ export function customTextLerp(fromString: string, toString: string, value: numb
   }
 
   return text;
+}
+
+export function* Write(
+  object: Shape,
+  duration: number = 1,
+  gradientWidth: number = 0.1,
+  strokeWidth: number = 1,
+) {
+  object.shaders({
+    fragment: timedGradientShader,
+    uniforms: {
+      gradientWidth: gradientWidth,
+      strokeWidth: strokeWidth,
+    },
+  });
+  yield* tween(duration, (t) => {
+    object.shaders()[0].uniforms['t'] = t;
+  });
 }
