@@ -1,5 +1,5 @@
 import { makeScene2D } from '@motion-canvas/2d';
-import { all, sequence, useLogger } from '@motion-canvas/core';
+import { all, sequence, useLogger, waitFor } from '@motion-canvas/core';
 
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
@@ -60,11 +60,13 @@ export default makeScene2D(function* (view) {
   yield* scene.sendGraph('verifier');
 
   scene.verifierRef().expression('looking');
+  scene.proverRef().expression('alarmed');
 
   yield* all(
     scene.graphRef().pointAtVertex('C', 1, true),
     scene.graphRef().pointAtVertex('F', 1, true),
   );
 
+  yield* waitFor(1);
   yield* all(scene.graphRef().containerRef().opacity(0, 1), scene.removeText('both'));
 });

@@ -126,15 +126,21 @@ export default makeScene2D(function* (view) {
           opacity={0}
         />,
       );
+
       yield* all(
         copy().scale(graphLayout.scale, 1),
         copy().absolutePosition(
           graphLayout.absolutePosition().addX(-70 * view.absoluteScale().magnitude),
           1,
         ),
-        delay(0.8, all(cross().scale(5, 1), cross().opacity(1, 1))),
-        delay(1.8, cross().opacity(0, 1)),
       );
+      scene.verifierRef().expression('alarmed');
+      yield* all(
+        cross().scale(5, 1),
+        cross().opacity(1, 1),
+        delay(0.8, cross().opacity(0, 1)),
+      );
+      scene.verifierRef().expression('neutral');
       break;
     }
     yield* all(

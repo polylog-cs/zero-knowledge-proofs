@@ -96,7 +96,7 @@ export class ProtocolScene {
         text={text}
         fontSize={56}
         fontFamily={FONT_FAMILY}
-        fill={Solarized.text}
+        fill={isProver ? Solarized.proverText : Solarized.verifierText}
         opacity={0}
       />,
     );
@@ -207,6 +207,7 @@ export class ProtocolScene {
   }
 
   public *shufflingColors(unlock: boolean = true, fast: boolean = false) {
+    this.proverRef().expression('thinking');
     if (unlock) {
       yield* this.graphRef().unlockVertices(undefined, fast ? 0.5 : 1);
     }
@@ -217,6 +218,7 @@ export class ProtocolScene {
     if (!fast) yield* waitFor(0.5);
     yield* this.graphRef().lockVertices(undefined, fast ? 0.5 : 1);
     if (!fast) yield* waitFor(0.5);
+    this.proverRef().expression('neutral');
   }
 
   public *challenge(noText: boolean = false, shortened: boolean = false) {
@@ -241,9 +243,11 @@ export class ProtocolScene {
     yield* waitFor(0.5);
 
     if (!noText) {
+      this.verifierRef().expression('happy');
       yield* this.addText('verifier', '✅', true);
       yield* waitFor(1);
       yield* this.removeText('verifier');
+      this.verifierRef().expression('neutral');
     }
     yield* this.graphRef().removeArrows();
   }
@@ -263,8 +267,15 @@ export class ProtocolScene {
 
     yield* all(
       this.graphRef().unlockVertices(this.graphRef().challengeEdge, fast ? 0.5 : 1),
-      delay(fast ? 0.2 : 1, this.addText('verifier', '✅', true, fast)),
+      delay(
+        fast ? 0.2 : 1,
+        all(
+          this.addText('verifier', '✅', true, fast),
+          this.verifierRef().expression('happy', 0),
+        ),
+      ),
     );
+    this.verifierRef().expression('neutral');
 
     if (!fast) yield* waitFor(0.5);
     yield* all(this.removeText('verifier'), this.graphRef().removeArrows());

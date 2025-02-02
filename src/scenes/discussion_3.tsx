@@ -18,7 +18,7 @@ export default makeScene2D(function* (view) {
       .graphRef()
       .getVertex(v)
       .add(
-        <MyTxt ref={image} fontSize={48} opacity={0}>
+        <MyTxt ref={image} fontSize={64} opacity={0}>
           💩
         </MyTxt>,
       );
@@ -53,7 +53,7 @@ export default makeScene2D(function* (view) {
           ];
         }}
         lineWidth={8}
-        stroke={Solarized.gray}
+        stroke={Solarized.proverText}
         endArrow
         ref={arrowRef}
         arrowSize={30}
@@ -62,6 +62,7 @@ export default makeScene2D(function* (view) {
       />,
     );
 
+    scene.proverRef().expression('thinking');
     yield* all(
       scene.addText('prover', 'He will look here'),
       arrowRef().opacity(1, 0.5),
@@ -104,10 +105,12 @@ export default makeScene2D(function* (view) {
       scene.graphRef().pointAtEdge(edge as [string, string], undefined, 1),
       scene.graphRef().unlockVertices(edge),
     );
+    scene.verifierRef().expression('happy');
     yield* scene.addText('verifier', '✅');
     scene.proverRef().expression('evil');
     yield* all(waitFor(1), scene.removeText('prover'));
     scene.proverRef().expression('neutral');
+    scene.verifierRef().expression('neutral');
     yield* all(scene.removeText('verifier'), scene.sendGraph('prover'));
     yield* scene.graphRef().unlockVertices(undefined, 1);
     yield* all(
