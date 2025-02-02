@@ -15,7 +15,6 @@ export default makeScene2D(function* (view) {
   const g = new Graph(75);
   g.initialize(exampleGraphData);
   const graph = g.getGraphLayout();
-  graph.position([0, -100]);
   graph.scale(1.25);
   view.add(graph);
   yield* g.fadeIn(1);
@@ -59,18 +58,18 @@ export default makeScene2D(function* (view) {
     delay(0.5, sudokuLayout.opacity(1, 1)),
   );
 
-  const nosame_sudoku = createRef<MyTxt>(),
-    nosame_graph = createRef<MyTxt>();
+  const nosameSudoku = createRef<MyTxt>(),
+    nosameGraph = createRef<MyTxt>();
 
   view.add(
     <>
-      <MyTxt text="Can't be the same" ref={nosame_sudoku} fontSize={50} opacity={0} />
-      <MyTxt text="Can't be the same" ref={nosame_graph} fontSize={50} opacity={0} />
+      <MyTxt text="Can't be the same" ref={nosameSudoku} fontSize={70} opacity={0} />
+      <MyTxt text="Can't be the same" ref={nosameGraph} fontSize={70} opacity={0} />
     </>,
   );
-  nextTo(nosame_sudoku(), sudoku.layoutRef().children()[0].children()[6], 'up', 130);
-  nextTo(nosame_graph(), g.getEdge(['B', 'C']).ref(), 'up', 0);
-  nosame_graph().position.y(nosame_sudoku().position.y());
+  nextTo(nosameSudoku(), sudoku.layoutRef().children()[0].children()[6], 'up', 100);
+  nextTo(nosameGraph(), g.getEdge(['B', 'C']).ref(), 'up', 0);
+  nosameGraph().position.y(nosameSudoku().position.y());
 
   const mkline = (a: Vector2, b: Vector2, c: number) => {
     const ref = createRef<Line>();
@@ -91,7 +90,7 @@ export default makeScene2D(function* (view) {
   };
 
   const ar1 = mkline(
-    nosame_sudoku().bottom().add([-50, 20]),
+    nosameSudoku().bottom().add([-50, 20]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[4].absolutePosition(),
@@ -100,7 +99,7 @@ export default makeScene2D(function* (view) {
   );
 
   const ar2 = mkline(
-    nosame_sudoku().bottom().add([50, 20]),
+    nosameSudoku().bottom().add([50, 20]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[8].absolutePosition(),
@@ -109,19 +108,19 @@ export default makeScene2D(function* (view) {
   );
 
   const ar3 = mkline(
-    nosame_graph().bottom().add([-50, 20]),
+    nosameGraph().bottom().add([-50, 20]),
     absoluteToViewSpace(view, g.getVertex('A').absolutePosition()),
     50,
   );
 
   const ar4 = mkline(
-    nosame_graph().bottom().add([50, 20]),
+    nosameGraph().bottom().add([50, 20]),
     absoluteToViewSpace(view, g.getVertex('B').absolutePosition()),
     50,
   );
 
-  yield* all(...[nosame_graph, ar3, ar4].map((x) => x().opacity(1, 1)));
-  yield* all(...[nosame_sudoku, ar1, ar2].map((x) => x().opacity(1, 1)));
+  yield* all(...[nosameGraph, ar3, ar4].map((x) => x().opacity(1, 1)));
+  yield* all(...[nosameSudoku, ar1, ar2].map((x) => x().opacity(1, 1)));
 
   yield* waitFor(1);
   const line = createRef<CubicBezier>();

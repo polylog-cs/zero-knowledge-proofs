@@ -268,7 +268,6 @@ export class Graph {
     fromLeft: boolean = true,
     duration: number = 1,
     keep: boolean = false,
-    arrowLength: number = 60,
   ) {
     const edge = this.getEdge(edgePair);
 
@@ -287,7 +286,7 @@ export class Graph {
         position={mid}
         rotation={degrees}
         padding={0.2}
-        scale={arrowLength}
+        scale={90}
         ref={arrowRef}
         opacity={0}
       />
@@ -311,13 +310,7 @@ export class Graph {
   /**
    * Point an arrow at the given vertex.
    */
-  *pointAtVertex(
-    vertexLabel: string,
-    duration: number = 1,
-    keep: boolean = false,
-    arrowLength: number = 80,
-    buff: number = 0.5,
-  ) {
+  *pointAtVertex(vertexLabel: string, duration: number = 1, keep: boolean = false) {
     const vertexData = this.vertexMap.get(vertexLabel);
     if (!vertexData) return;
 
@@ -329,8 +322,8 @@ export class Graph {
       <Finger
         position={position}
         rotation={direction}
-        padding={buff}
-        scale={arrowLength}
+        padding={0.5}
+        scale={120}
         ref={arrowRef}
         opacity={0}
       />
@@ -376,7 +369,6 @@ export class Graph {
     finalEdge?: [string, string],
     k: number = 20,
     totalDuration: number = 3,
-    arrowLength: number = 50,
   ) {
     if (this.edges.length <= 1) {
       throw new Error('Graph must have at least 2 edges to point at random edges.');
@@ -404,7 +396,6 @@ export class Graph {
         true,
         duration,
         i === k - 1,
-        arrowLength,
       );
       lastEdge = chosenEdge;
     }

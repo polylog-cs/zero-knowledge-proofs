@@ -48,15 +48,16 @@ export default makeScene2D(function* (view) {
 
   yield* scene.fadeInGraph(1);
 
-  const e = scene.graphRef().getEdge(['E', 'F']).ref();
-  const v1 = scene.graphRef().getVertex('E');
-  const v2 = scene.graphRef().getVertex('F');
-  yield* sequence(
-    0,
-    all(v1.scale(1.42, 1), v2.scale(1.42, 1), e.lineWidth(2 * e.lineWidth(), 1)),
-    delay(1, all(v1.scale(1, 1), v2.scale(1, 1), e.lineWidth(e.lineWidth(), 1))),
-  );
-  // yield* scene.graphRef().pointAtEdge(['E', 'F'], true, 2, false);
+  // vv: reverted back to pointAtEdge here for consistency with the other scenes
+  // const e = scene.graphRef().getEdge(['E', 'F']).ref();
+  // const v1 = scene.graphRef().getVertex('E');
+  // const v2 = scene.graphRef().getVertex('F');
+  // yield* sequence(
+  //   0,
+  //   all(v1.scale(1.42, 1), v2.scale(1.42, 1), e.lineWidth(2 * e.lineWidth(), 1)),
+  //   delay(1, all(v1.scale(1, 1), v2.scale(1, 1), e.lineWidth(e.lineWidth(), 1))),
+  // );
+  yield* scene.graphRef().pointAtEdge(['E', 'F'], true, 2, false);
 
   yield* scene.graphRef().lockVertices();
   yield* scene.sendGraph('verifier', 1);
