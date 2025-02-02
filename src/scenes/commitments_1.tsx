@@ -130,7 +130,8 @@ export default makeScene2D(function* (view) {
   yield* passKey();
   circle().fill(Solarized.green);
   yield* unlockUsingKey();
-  prover().expression('embarrassed');
-  verifier().expression('alarmed');
+
+  // prover().expression('embarrassed');
+  // verifier().expression('alarmed');
   yield* waitFor(1);
 });
