@@ -46,12 +46,25 @@ export default makeScene2D(function* (view) {
     },
     {
       participant: 'verifier',
-      texts: [`hash(${color}${salt}) = ${hash}`],
+      texts: [
+        `hash(${color}${salt}) = ${hash}`, // first state: the hash is shown…
+        ' ', // then (optionally) erase it (an empty string or whitespace)
+        '“Looks good.”' // and finally, show the final message at the same position.
+      ],
     },
-    {
-      participant: 'verifier',
-      texts: ['“This matches the value you committed to.”', '“.”', '“Looks ok.”'],
-    },
+    // {
+    //   participant: 'verifier',
+    //   texts: [`hash(${color}${salt}) = ${hash}`],
+    // },
+    // {
+    //   participant: 'verifier',
+    //   texts: ['“Looks good.”'],
+    // },
+    
+  //   {
+  //     participant: 'verifier',
+  //     texts: ['“This matches the value you committed to.”', '“.”', '“Looks ok.”'],
+  //   },
   ];
 
   view.add(
@@ -76,7 +89,7 @@ export default makeScene2D(function* (view) {
       view.add(
         <MyTxt
           x={participant === 'prover' ? -100 : 100}
-          y={-100 + index * 100}
+          y={-100 + index * 100 + 50}
           fontSize={70}
           fill={
             participant === 'prover' ? Solarized.proverText : Solarized.verifierText
@@ -90,6 +103,7 @@ export default makeScene2D(function* (view) {
       return ref;
     },
   );
+
 
   const shiftY = -300;
   yield* all(
