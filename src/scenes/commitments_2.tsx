@@ -1,5 +1,12 @@
 import { makeScene2D, Rect, Txt } from '@motion-canvas/2d';
-import { all, createRef, easeInOutQuad, Reference, waitFor } from '@motion-canvas/core';
+import {
+  all,
+  createRef,
+  delay,
+  easeInOutQuad,
+  Reference,
+  waitFor,
+} from '@motion-canvas/core';
 
 import {
   Participant,
@@ -49,7 +56,7 @@ export default makeScene2D(function* (view) {
       texts: [
         `hash(${color}${salt}) = ${hash}`, // first state: the hash is shown…
         ' ', // then (optionally) erase it (an empty string or whitespace)
-        '“Looks good.”' // and finally, show the final message at the same position.
+        '“Looks good.”', // and finally, show the final message at the same position.
       ],
     },
     // {
@@ -60,11 +67,11 @@ export default makeScene2D(function* (view) {
     //   participant: 'verifier',
     //   texts: ['“Looks good.”'],
     // },
-    
-  //   {
-  //     participant: 'verifier',
-  //     texts: ['“This matches the value you committed to.”', '“.”', '“Looks ok.”'],
-  //   },
+
+    //   {
+    //     participant: 'verifier',
+    //     texts: ['“This matches the value you committed to.”', '“.”', '“Looks ok.”'],
+    //   },
   ];
 
   view.add(
@@ -89,7 +96,7 @@ export default makeScene2D(function* (view) {
       view.add(
         <MyTxt
           x={participant === 'prover' ? -100 : 100}
-          y={-100 + index * 100 + 50}
+          y={-150 + index * 100 + 50}
           fontSize={70}
           fill={
             participant === 'prover' ? Solarized.proverText : Solarized.verifierText
@@ -103,7 +110,6 @@ export default makeScene2D(function* (view) {
       return ref;
     },
   );
-
 
   const shiftY = -300;
   yield* all(
@@ -126,6 +132,7 @@ export default makeScene2D(function* (view) {
       changeText(textRefs[0], `hash(${color}) = ${otherHashes[0]}`),
       changeText(textRefs[1], `“My box is ${otherHashes[0]}.”`),
     );
+    verifier().expression('evil');
     yield* waitFor(1);
     const allColorHashesText =
       `hash(${otherColors[1]}) = ${otherHashes[2]}\n` +
@@ -190,6 +197,7 @@ export default makeScene2D(function* (view) {
       textRefs[2]().opacity(0, 1),
       changeText(textRefs[0], textsConfig[0].texts[textsConfig[0].texts.length - 1]),
       changeText(textRefs[1], textsConfig[1].texts[textsConfig[1].texts.length - 1]),
+      delay(0.5, verifier().expression('neutral', 0)),
     );
     yield* waitFor(1);
 

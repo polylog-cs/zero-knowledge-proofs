@@ -94,7 +94,7 @@ export default makeScene2D(function* (view) {
   yield* all(revealText().opacity(1, 1), unlockUsingKey());
   prover().expression('happy');
   verifier().expression('happy');
-  yield* waitFor(1);
+  yield* waitFor(2);
   prover().expression('neutral');
   verifier().expression('neutral');
 
@@ -105,7 +105,7 @@ export default makeScene2D(function* (view) {
     commitText().opacity(0, 1),
     revealText().opacity(0, 1),
   );
-  yield* waitFor(1);
+  yield* waitFor(2);
 
   yield* all(lock().seethrough(1, 0.5));
   verifier().expression('looking');

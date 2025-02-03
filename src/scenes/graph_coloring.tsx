@@ -37,11 +37,12 @@ export default makeScene2D(function* (view) {
   yield* all(swatchRef().opacity(0, 1), g.applyColors());
   yield* waitFor(2);
   yield* sequence(
-    0.5,
+    0.8,
     g.pointAtVertex('B', 1.5),
     g.applyColors(undefined, undefined, new Map([['B', 2]])),
   );
-  yield* g.pointAtEdge(['B', 'C']);
+  yield* waitFor(1);
+  yield* g.pointAtEdge(['B', 'C'], undefined, 1.5);
   yield* waitFor(2);
 
   // 1) Create and show the sample Sudoku.
@@ -78,11 +79,11 @@ export default makeScene2D(function* (view) {
         points={() => {
           return [a, b.add(a.sub(b).normalized.scale(c))];
         }}
-        lineWidth={5}
+        lineWidth={8}
         stroke={Solarized.gray}
         endArrow
         ref={ref}
-        arrowSize={20}
+        arrowSize={30}
         opacity={0}
       />,
     );
@@ -90,7 +91,7 @@ export default makeScene2D(function* (view) {
   };
 
   const ar1 = mkline(
-    nosameSudoku().bottom().add([-50, 20]),
+    nosameSudoku().bottom().add([-50, 0]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[4].absolutePosition(),
@@ -99,7 +100,7 @@ export default makeScene2D(function* (view) {
   );
 
   const ar2 = mkline(
-    nosameSudoku().bottom().add([50, 20]),
+    nosameSudoku().bottom().add([50, 0]),
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[8].absolutePosition(),
@@ -108,13 +109,13 @@ export default makeScene2D(function* (view) {
   );
 
   const ar3 = mkline(
-    nosameGraph().bottom().add([-50, 20]),
+    nosameGraph().bottom().add([-50, 0]),
     absoluteToViewSpace(view, g.getVertex('A').absolutePosition()),
     50,
   );
 
   const ar4 = mkline(
-    nosameGraph().bottom().add([50, 20]),
+    nosameGraph().bottom().add([50, 0]),
     absoluteToViewSpace(view, g.getVertex('B').absolutePosition()),
     50,
   );

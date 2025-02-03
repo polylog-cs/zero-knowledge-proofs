@@ -1,7 +1,6 @@
 import { Img, Line, makeScene2D, Txt } from '@motion-canvas/2d';
 import { all, createRef, delay, sequence, Vector2, waitFor } from '@motion-canvas/core';
 
-import garbage from '../assets/images/garbage.svg';
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
 import { ProtocolScene } from '../utilities_protocol';
@@ -22,6 +21,7 @@ export default makeScene2D(function* (view) {
         </MyTxt>,
       );
   }
+  yield* scene.sendGraph('prover', 0);
 
   const edges = [
     ['C', 'D'],
@@ -40,8 +40,8 @@ export default makeScene2D(function* (view) {
               .topLeft.add(scene.proverRef().cacheBBox().topRight)
               .mul(0.5)
               .add(scene.proverRef().position())
-              .addY(-10)
-              .addX(110),
+              .addY(-30)
+              .addX(80),
             scene
               .graphRef()
               .getVertex(edge[0])

@@ -9,7 +9,7 @@ import {
   waitFor,
 } from '@motion-canvas/core';
 
-import { Solarized } from '../utilities';
+import { Solarized, solarizedPalette } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
 import { ProtocolScene } from '../utilities_protocol';
 
@@ -50,28 +50,26 @@ export default makeScene2D(function* (view) {
     chain(
       ...Array.from({ length: 7 }, () => {
         i++;
-        function shift(c: Color) {
-          return c
-            .set('hsl.h', (c.get('hsl.h') + i * 160) % 360)
-            .set('hsl.s', 0.7)
-            .set('hsl.l', 0.4);
-        }
         return all(
           ...exampleGraphData.labels.map((v) =>
             scene
               .graphRef()
               .changeVertexColor(
                 v,
-                shift(scene.graphRef().getVertex(v).fill() as Color).css(),
-                0.15,
+                solarizedPalette[
+                  (i +
+                    3 * exampleGraphData.colors[exampleGraphData.labels.indexOf(v)]) %
+                    9
+                ],
+                0.1,
               ),
           ),
-          waitFor(0.5),
+          waitFor(0.8),
         );
       }),
     ),
   );
-  yield* scene.graphRef().applyColors(0.15, 0);
+  yield* scene.graphRef().applyColors(0.1, 0);
 
   yield* all(scene.graphRef().removeArrows(), scene.removeText('verifier'));
   scene.verifierRef().expression('neutral');

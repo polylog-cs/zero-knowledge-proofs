@@ -1,5 +1,5 @@
-import { Layout, makeScene2D, Rect, Spline, Txt } from '@motion-canvas/2d';
-import { createRef, Vector2 } from '@motion-canvas/core';
+import { Layout, makeScene2D, Rect, Shape, Spline, Txt } from '@motion-canvas/2d';
+import { Color, createRef, Vector2 } from '@motion-canvas/core';
 import { all, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
 import { indicate, Solarized, solarizedPalette } from '../utilities';
@@ -209,10 +209,55 @@ export default makeScene2D(function* (view) {
   yield* sudoku.fillInSolutionFancy();
   yield* waitFor(1);
 
-  yield* all(graph.colorPalette(), sudoku.color());
+  const eachDelay = 0.5,
+    eachDuration = 0.3;
+  yield* all(
+    graph.colorPalette(eachDelay, eachDuration),
+    sudoku.color(eachDelay, eachDuration),
+  );
 
   yield* graph.colorSolution(solution);
   yield* waitFor(1);
+  const colorOrNot = function* (node: Shape, c: Color) {
+    if (node.origFill === undefined) {
+      node.save();
+      node.origFill = node.fill();
+    }
+    const keep = (node.origFill as Color).css() == c.css();
+    yield* all(
+      node.fill(keep ? c : Solarized.gray, 1),
+      node.opacity(keep ? 1 : 0.3, 1),
+    );
+  };
+
+  const colorOneColor = (c: Color) =>
+    all(
+      ...graph.gridVertices
+        .concat(graph.cliqueVertices)
+        .map((v) => colorOrNot(graph.getVertex(v), c)),
+      ...sudoku.cells
+        .flat()
+        .flat()
+        .map((v) => colorOrNot(v.textRef(), c)),
+    );
+
+  for (let i = 0; i < 5; i++) {
+    yield* colorOneColor(
+      sudoku.cells[0][i].textRef().origFill ??
+        (sudoku.cells[0][i].textRef().fill() as Color),
+    );
+    yield* waitFor(i == 0 ? 2 : 1);
+  }
+
+  yield* all(
+    ...graph.gridVertices
+      .concat(graph.cliqueVertices)
+      .map((v) => graph.getVertex(v).restore(1)),
+    ...sudoku.cells
+      .flat()
+      .flat()
+      .map((v) => v.textRef().restore(1)),
+  );
 
   yield* waitFor(5);
 });

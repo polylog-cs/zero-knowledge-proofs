@@ -146,9 +146,8 @@ export default makeScene2D(function* (view) {
           1,
         ),
       );
-      // RH: tohle sem podle mě nesedí, Vaškův face je spíš jako "are you kidding me?"
-      // scene.verifierRef().expression('alarmed');
-      // scene.proverRef().expression('happy');
+      scene.verifierRef().expression('alarmed');
+      scene.proverRef().expression('happy');
       yield* all(
         cross().scale(5, 1),
         cross().opacity(1, 1),

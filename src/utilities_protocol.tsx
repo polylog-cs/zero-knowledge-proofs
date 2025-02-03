@@ -99,14 +99,14 @@ export class ProtocolScene {
       <MyTxt
         ref={newTextRef}
         text={text}
-        fontSize={56}
+        fontSize={72}
         fill={isProver ? Solarized.proverText : Solarized.verifierText}
         opacity={0}
       />,
     );
     const pos = isProver ? 'left' : 'right';
     alignTo(newTextRef(), targetRef(), pos, 0);
-    nextTo(newTextRef(), targetRef(), 'up', 10);
+    nextTo(newTextRef(), targetRef(), 'up', 30);
 
     // Fade in new line
     yield* newTextRef().opacity(1, 0.5);
@@ -227,8 +227,8 @@ export class ProtocolScene {
   }
 
   public *challenge(noText: boolean = false, shortened: boolean = false) {
-    const numChallenges = shortened ? 3 : 20;
-    const pointingDuration = shortened ? 0.5 : 3;
+    const numChallenges = shortened ? 3 : 15;
+    const pointingDuration = shortened ? 0.5 : 2.5;
     yield* this.graphRef().pointAtRandomEdges(
       undefined,
       numChallenges,
