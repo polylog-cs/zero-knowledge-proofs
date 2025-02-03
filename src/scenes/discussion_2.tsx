@@ -87,10 +87,22 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1);
   yield* scene.sendGraph('prover', 0);
   yield* all(scene.containerRef().opacity(1, 1));
-  yield* scene.shufflingColors(true);
+  yield* scene.graphRef().unlockVertices();
+
+  // Highlight the vertices that are originally red when shuffling.
+  const v1 = scene.graphRef().getVertex('B');
+  const v2 = scene.graphRef().getVertex('D');
+  yield* all(v1.scale(1.42, 1), v2.scale(1.42, 1));
+  yield* scene.shufflingColors(false);
+  // scene.shufflingColors() also locks the graph,
+  // so we can reset the scale without an animation
+  v1.scale(1);
+  v2.scale(1);
+
   yield* scene.sendGraph('verifier', 1);
   fast = false;
   yield* graphLayout.opacity(1, 1);
+  scene.verifierRef().expression('evil');
   for (const [i, _e] of [
     ['B', 'A'],
     ['A', 'C'],
@@ -135,12 +147,14 @@ export default makeScene2D(function* (view) {
         ),
       );
       scene.verifierRef().expression('alarmed');
+      scene.proverRef().expression('happy');
       yield* all(
         cross().scale(5, 1),
         cross().opacity(1, 1),
         delay(0.8, cross().opacity(0, 1)),
       );
       scene.verifierRef().expression('neutral');
+      scene.proverRef().expression('neutral');
       break;
     }
     yield* all(

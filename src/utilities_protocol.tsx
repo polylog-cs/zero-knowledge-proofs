@@ -212,7 +212,7 @@ export class ProtocolScene {
     }
     for (let i = 0; i < 5; i++) {
       yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.2);
-      yield* waitFor(fast ? 0.05 : 0.1);
+      yield* waitFor(fast ? 0.05 : 0.3);
     }
     if (!fast) yield* waitFor(0.5);
     yield* this.graphRef().lockVertices(undefined, fast ? 0.5 : 1);
