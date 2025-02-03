@@ -13,6 +13,8 @@ import {
 import { shuffleArray, Solarized } from './utilities';
 import { Finger } from './utilities_finger';
 
+const random = useRandom(42, true);
+
 const logger = useLogger();
 
 export interface GraphData {
@@ -378,7 +380,6 @@ export class Graph {
     const getTimeFractionAt = (i: number) => (0.5 + i / k) ** timingExponent;
     const totalNormalizedTime = getTimeFractionAt(k) - getTimeFractionAt(0);
 
-    const random = useRandom();
     let lastEdge: (typeof this.edges)[0] | null = null;
     for (let i = 0; i < k; i++) {
       let availableEdges = this.edges.filter((e) => e !== lastEdge);

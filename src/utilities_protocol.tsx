@@ -1,6 +1,7 @@
 import { Img, Layout, View2D } from '@motion-canvas/2d';
 import {
   all,
+  chain,
   createRef,
   delay,
   Reference,
@@ -16,6 +17,7 @@ import {
   PROVER_POSITION,
   VERIFIER_POSITION,
 } from './components/participant';
+import { Tick } from './components/tick';
 import { Solarized } from './utilities';
 import { exampleGraphData, GraphData } from './utilities_graph';
 import { LockableGraph } from './utilities_lockable_graph';
@@ -36,6 +38,8 @@ export class ProtocolScene {
   // Arrays to store multiple text lines for prover and verifier
   public proverTexts: Reference<MyTxt>[] = [];
   public verifierTexts: Reference<MyTxt>[] = [];
+
+  public globalText = createRef<MyTxt>();
 
   constructor(private view: View2D) {
     view.add(<Layout ref={this.containerRef} layout={false} />);
@@ -142,20 +146,9 @@ export class ProtocolScene {
     const graphLayout = g.getGraphLayout();
     this.containerRef().add(graphLayout);
 
-    // Position depending on initialPosition
-    switch (initialPosition) {
-      case 'center':
-        g.containerRef().position(CENTER_POSITION);
-        break;
-      case 'prover':
-        nextTo(g.containerRef(), this.proverRef(), 'right', 50);
-        break;
-      case 'verifier':
-        nextTo(g.containerRef(), this.verifierRef(), 'left', 50);
-    }
-
     this.graphRef = () => g;
     g.containerRef().opacity(opacity);
+    yield* this.sendGraph(initialPosition, 0);
     yield* g.fadeIn(0);
   }
 
@@ -205,17 +198,30 @@ export class ProtocolScene {
     }
   }
 
+  public *verifierHappy(fadeDuration: number = 1, waitDuration: number = 1) {
+    const check = <Tick position={[0, -300]} scale={4} zIndex={-1} />;
+    this.verifierRef().add(check);
+    check.save();
+
+    yield* check.opacity(0).scale(0).position(0).restore(fadeDuration);
+    yield* waitFor(waitDuration);
+    yield* all(
+      check.opacity(0, fadeDuration),
+      check.scale(check.scale().mul(2), fadeDuration),
+    );
+  }
+
   public *shufflingColors(unlock: boolean = true, fast: boolean = false) {
     this.proverRef().expression('thinking');
     if (unlock) {
-      yield* this.graphRef().unlockVertices(undefined, fast ? 0.5 : 1);
+      yield* this.graphRef().unlockVertices(undefined, fast ? 0.7 : 1);
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < (fast ? 5 : 8); i++) {
       yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.2);
-      yield* waitFor(fast ? 0.05 : 0.3);
+      yield* waitFor(fast ? 0.1 : 0.3);
     }
     if (!fast) yield* waitFor(0.5);
-    yield* this.graphRef().lockVertices(undefined, fast ? 0.5 : 1);
+    yield* this.graphRef().lockVertices(undefined, fast ? 0.7 : 1);
     if (!fast) yield* waitFor(0.5);
     this.proverRef().expression('neutral');
   }
@@ -243,43 +249,84 @@ export class ProtocolScene {
 
     if (!noText) {
       this.verifierRef().expression('happy');
-      yield* this.addText('verifier', '✅', true);
-      yield* waitFor(1);
-      yield* this.removeText('verifier');
+      yield* this.verifierHappy();
       this.verifierRef().expression('neutral');
     }
     yield* this.graphRef().removeArrows();
   }
 
   public *oneRound(firstRound: boolean = false, fast: boolean = false) {
-    yield* this.shufflingColors(!firstRound, fast);
-
-    yield* this.sendGraph('verifier', fast ? 0.5 : 1);
-
-    const numChallenges = fast ? 4 : 7;
-    const pointingDuration = fast ? 0.5 : 1;
-    yield* this.graphRef().pointAtRandomEdges(
-      undefined,
-      numChallenges,
-      pointingDuration,
+    yield* all(
+      this.shufflingColors(!firstRound, fast),
+      this.setGlobalText('Shuffle \& Lock', 'prover'),
     );
 
     yield* all(
-      this.graphRef().unlockVertices(this.graphRef().challengeEdge, fast ? 0.5 : 1),
+      this.sendGraph('verifier', fast ? 0.7 : 1),
+      this.setGlobalText('Challenge', 'verifier'),
+    );
+
+    const numChallenges = fast ? 1 : 10;
+    const pointingDuration = fast ? 0.5 : 2;
+    yield* all(
+      this.graphRef().pointAtRandomEdges(undefined, numChallenges, pointingDuration),
+    );
+
+    yield* all(
+      chain(
+        waitFor(fast ? 0 : 0.5),
+        sequence(
+          fast ? 0.5 : 1,
+          this.setGlobalText('Reveal', 'prover'),
+          this.graphRef().unlockVertices(this.graphRef().challengeEdge, 1),
+        ),
+      ),
       delay(
-        fast ? 0.2 : 1,
-        all(
-          this.addText('verifier', '✅', true, fast),
-          this.verifierRef().expression('happy', 0),
+        fast ? 1.5 : 3,
+        chain(
+          sequence(
+            fast ? 0 : 1,
+            this.setGlobalText('Check', 'verifier'),
+            fast ? waitFor(0) : this.verifierRef().expression('thinking', 0),
+          ),
+          waitFor(fast ? 0.5 : 2),
+          all(
+            this.verifierRef().expression('happy', 0),
+            this.verifierHappy(1, fast ? 0 : 1),
+          ),
         ),
       ),
     );
-    this.verifierRef().expression('neutral');
-
     if (!fast) yield* waitFor(0.5);
     yield* all(this.removeText('verifier'), this.graphRef().removeArrows());
+    this.verifierRef().expression('neutral');
 
     yield* this.sendGraph('prover', fast ? 0.5 : 1);
+  }
+
+  public *setGlobalText(txt: string, who: ParticipantKind) {
+    const anims = [];
+    const up = new Vector2(0, -100);
+    if (this.globalText() !== undefined) {
+      anims.push(
+        all(shift(this.globalText(), up.mul(-1), 1), this.globalText().opacity(0, 1)),
+      );
+    }
+
+    this.containerRef().add(
+      <MyTxt
+        ref={this.globalText}
+        position={new Vector2(0, -450)}
+        fontSize={128}
+        fill={who == 'prover' ? Solarized.proverText : Solarized.verifierText}
+      >
+        {txt}
+      </MyTxt>,
+    );
+    this.globalText().save();
+    shift(this.globalText(), up);
+    this.globalText().opacity(0);
+    yield* all(...anims, this.globalText().restore(1));
   }
 
   // assumes that the graph exists
