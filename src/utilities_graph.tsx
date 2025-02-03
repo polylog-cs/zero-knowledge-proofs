@@ -285,7 +285,7 @@ export class Graph {
       <Finger
         position={mid}
         rotation={degrees}
-        padding={0.2}
+        padding={0.25}
         scale={90}
         ref={arrowRef}
         opacity={0}
@@ -322,7 +322,7 @@ export class Graph {
       <Finger
         position={position}
         rotation={direction}
-        padding={0.5}
+        padding={0.6}
         scale={120}
         ref={arrowRef}
         opacity={0}
