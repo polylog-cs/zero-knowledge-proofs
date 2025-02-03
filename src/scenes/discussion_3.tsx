@@ -17,7 +17,7 @@ export default makeScene2D(function* (view) {
       .graphRef()
       .getVertex(v)
       .add(
-        <MyTxt fontSize={96} position={new Vector2(0, -5)}>
+        <MyTxt fontSize={96} position={new Vector2(0, -5)} opacity={0}>
           💩
         </MyTxt>,
       );
@@ -96,7 +96,6 @@ export default makeScene2D(function* (view) {
       arrowRef().opacity(0, 1.5),
       scene.graphRef().lockVertices(),
     );
-    scene.proverRef().expression('neutral');
     yield* scene.sendGraph('verifier');
     yield* sequence(
       0.5,
@@ -104,10 +103,8 @@ export default makeScene2D(function* (view) {
       scene.graphRef().unlockVertices(edge),
     );
     scene.verifierRef().expression('happy');
-    yield* scene.addText('verifier', '✅');
-    scene.proverRef().expression('evil');
+    //yield* scene.addText('verifier', '✓');
     yield* all(waitFor(1), scene.removeText('prover'));
-    scene.proverRef().expression('neutral');
     scene.verifierRef().expression('neutral');
     yield* all(scene.removeText('verifier'), scene.sendGraph('prover'));
     yield* scene.graphRef().unlockVertices(undefined, 1);

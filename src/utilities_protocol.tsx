@@ -23,7 +23,7 @@ import { alignTo, moveTo, nextTo, shift } from './utilities_moving';
 import { MyTxt } from './utilities_text';
 
 const CENTER_POSITION = new Vector2(0, 0);
-const GRAPH_BUFFER = 50;
+const GRAPH_BUFFER = 0;
 
 export type GraphPosition = ParticipantKind | 'center';
 

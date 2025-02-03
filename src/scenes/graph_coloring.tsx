@@ -63,8 +63,8 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <>
-      <MyTxt text="Can't be the same" ref={nosameSudoku} fontSize={70} opacity={0} />
-      <MyTxt text="Can't be the same" ref={nosameGraph} fontSize={70} opacity={0} />
+      <MyTxt text="Can’t be the same" ref={nosameSudoku} fontSize={70} opacity={0} />
+      <MyTxt text="Can’t be the same" ref={nosameGraph} fontSize={70} opacity={0} />
     </>,
   );
   nextTo(nosameSudoku(), sudoku.layoutRef().children()[0].children()[6], 'up', 100);
@@ -76,7 +76,7 @@ export default makeScene2D(function* (view) {
     view.add(
       <Line
         points={() => {
-          return [a, b.add(a.sub(b).normalized.scale(c * view.scale().magnitude))];
+          return [a, b.add(a.sub(b).normalized.scale(c))];
         }}
         lineWidth={5}
         stroke={Solarized.gray}

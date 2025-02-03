@@ -85,7 +85,7 @@ export function* Write(
     fragment: timedGradientShader,
     uniforms: {
       gradientWidth: gradientWidth,
-      strokeWidth: strokeWidth,
+      strokeWidth: strokeWidth * object.view().absoluteScale().magnitude,
     },
   });
   yield* tween(duration, (t) => {
