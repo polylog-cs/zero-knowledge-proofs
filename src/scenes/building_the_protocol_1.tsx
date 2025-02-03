@@ -36,7 +36,7 @@ export default makeScene2D(function* (view) {
 
   yield* scene.addText('verifier', 'Different colors');
 
-  yield* scene.graphRef().setSeeThrough(true);
+  yield* all(scene.graphRef().unlockVertices(undefined, 1), scene.sendGraph('center'));
   yield* all(
     sequence(
       0.5,

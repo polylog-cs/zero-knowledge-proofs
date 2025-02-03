@@ -13,12 +13,11 @@ export default makeScene2D(function* (view) {
 
   yield* scene.setup('prover', false, false);
   for (const v of exampleGraphData.labels) {
-    const image = createRef<Img>();
     scene
       .graphRef()
       .getVertex(v)
       .add(
-        <MyTxt ref={image} fontSize={96} opacity={0}>
+        <MyTxt fontSize={96} position={new Vector2(0, -5)}>
           💩
         </MyTxt>,
       );
@@ -57,7 +56,6 @@ export default makeScene2D(function* (view) {
         endArrow
         ref={arrowRef}
         arrowSize={30}
-        opacity={0}
         end={0.95}
       />,
     );
@@ -65,7 +63,7 @@ export default makeScene2D(function* (view) {
     scene.proverRef().expression('thinking');
     yield* all(
       scene.addText('prover', 'He will look here'),
-      arrowRef().opacity(1, 0.5),
+      arrowRef().opacity(0).opacity(1, 0.5),
     );
     yield* waitFor(1);
     scene.proverRef().expression('evil');

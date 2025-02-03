@@ -257,8 +257,6 @@ export default makeScene2D(function* (view) {
 
     let ref = createRef<Spline>();
 
-    logger.info(vertexRefs[from]().toString());
-
     view.add(
       <Spline
         ref={ref}

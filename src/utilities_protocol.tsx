@@ -1,4 +1,4 @@
-import { Img, Layout, Txt, View2D } from '@motion-canvas/2d';
+import { Img, Layout, View2D } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -16,10 +16,11 @@ import {
   PROVER_POSITION,
   VERIFIER_POSITION,
 } from './components/participant';
-import { FONT_FAMILY, Solarized } from './utilities';
+import { Solarized } from './utilities';
 import { exampleGraphData, GraphData } from './utilities_graph';
 import { LockableGraph } from './utilities_lockable_graph';
 import { alignTo, moveTo, nextTo, shift } from './utilities_moving';
+import { MyTxt } from './utilities_text';
 
 const CENTER_POSITION = new Vector2(0, 0);
 const GRAPH_BUFFER = 50;
@@ -33,8 +34,8 @@ export class ProtocolScene {
   public containerRef = createRef<Layout>();
 
   // Arrays to store multiple text lines for prover and verifier
-  public proverTexts: Reference<Txt>[] = [];
-  public verifierTexts: Reference<Txt>[] = [];
+  public proverTexts: Reference<MyTxt>[] = [];
+  public verifierTexts: Reference<MyTxt>[] = [];
 
   constructor(private view: View2D) {
     view.add(<Layout ref={this.containerRef} layout={false} />);
@@ -89,13 +90,12 @@ export class ProtocolScene {
 
     yield* all(...textsArray.map((t, _) => shift(t(), new Vector2(0, -100), 0.5)));
 
-    const newTextRef = createRef<Txt>();
+    const newTextRef = createRef<MyTxt>();
     this.containerRef().add(
-      <Txt
+      <MyTxt
         ref={newTextRef}
         text={text}
         fontSize={56}
-        fontFamily={FONT_FAMILY}
         fill={isProver ? Solarized.proverText : Solarized.verifierText}
         opacity={0}
       />,
@@ -179,11 +179,10 @@ export class ProtocolScene {
   public *sendGraph(target: 'center' | ParticipantKind, duration: number = 1) {
     const g = this.graphRef();
     if (!g) return;
-    const finalPos = CENTER_POSITION;
 
     switch (target) {
       case 'center':
-        yield* moveTo(g.containerRef(), finalPos, duration);
+        yield* g.containerRef().position(CENTER_POSITION, duration);
         return;
       case 'prover':
         yield* nextTo(
