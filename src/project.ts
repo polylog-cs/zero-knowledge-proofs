@@ -8,6 +8,7 @@ import discussion_1 from './scenes/discussion_1?scene';
 import discussion_2 from './scenes/discussion_2?scene';
 import discussion_3 from './scenes/discussion_3?scene';
 import graph_coloring from './scenes/graph_coloring?scene';
+import mario_big_graph from './scenes/mario_big_graph?scene';
 import np_to_coloring_algorithm from './scenes/np_to_coloring_algorithm?scene';
 import np_to_coloring_big_graph from './scenes/np_to_coloring_big_graph?scene';
 import np_to_coloring_conversion from './scenes/np_to_coloring_conversion?scene';
@@ -40,5 +41,6 @@ export default makeProject({
     np_to_coloring_conversion,
     np_to_coloring_big_graph,
     phone,
+    mario_big_graph,
   ],
 });
