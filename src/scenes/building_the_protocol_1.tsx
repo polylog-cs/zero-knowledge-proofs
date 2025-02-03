@@ -1,5 +1,13 @@
 import { makeScene2D } from '@motion-canvas/2d';
-import { all, sequence, useLogger, waitFor } from '@motion-canvas/core';
+import {
+  all,
+  chain,
+  Color,
+  sequence,
+  useLogger,
+  useRandom,
+  waitFor,
+} from '@motion-canvas/core';
 
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
@@ -36,14 +44,34 @@ export default makeScene2D(function* (view) {
 
   yield* scene.addText('verifier', 'Different colors');
 
+  let i = 0;
   yield* all(scene.graphRef().unlockVertices(undefined, 1), scene.sendGraph('center'));
   yield* all(
-    sequence(
-      0.5,
-      ...Array.from({ length: 7 }, () => scene.graphRef().shuffleColors(0.3)),
+    chain(
+      ...Array.from({ length: 7 }, () => {
+        i++;
+        function shift(c: Color) {
+          return c
+            .set('hsl.h', (c.get('hsl.h') + i * 160) % 360)
+            .set('hsl.s', 0.7)
+            .set('hsl.l', 0.4);
+        }
+        return all(
+          ...exampleGraphData.labels.map((v) =>
+            scene
+              .graphRef()
+              .changeVertexColor(
+                v,
+                shift(scene.graphRef().getVertex(v).fill() as Color).css(),
+                0.15,
+              ),
+          ),
+          waitFor(0.5),
+        );
+      }),
     ),
   );
-  yield* scene.graphRef().setSeeThrough(false);
+  yield* scene.graphRef().applyColors(0.15, 0);
 
   yield* all(scene.graphRef().removeArrows(), scene.removeText('verifier'));
   scene.verifierRef().expression('neutral');
