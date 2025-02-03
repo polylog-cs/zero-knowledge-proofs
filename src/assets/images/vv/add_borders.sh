@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 cd orig
 for i in *.png; do
-	magick $i -resize 700x -background none -gravity north -extent 800x800 -gravity center -extent 900x900 ../no_border/$i
+	magick $i -resize 700x -background none -gravity north -extent 900x900 ../no_border/$i
 done
 cd ..
 
