@@ -7,6 +7,8 @@ import {
   delay,
   easeInCubic,
   easeInQuad,
+  easeOutBounce,
+  easeOutElastic,
   getImageData,
   PlaybackState,
   sequence,
@@ -95,7 +97,6 @@ export default makeScene2D(function* (view) {
     V.add(<Circle fill={Solarized.gray} x={s} y={r} size={0.06 + (0.03 * c) / maxC} />);
     if (random.nextFloat(0, 1) < 0.7) raw = random.nextInt(1, 4);
     V.children()[V.children().length - 1].color = colors[raw];
-    V.children()[V.children().length - 1].i = V.children().length - 1;
   }
 
   const its_subsampling = 50;
@@ -104,13 +105,13 @@ export default makeScene2D(function* (view) {
   const E = <Node />;
   G.add(E);
   while (E.children().length < m) {
-    const i = random.nextInt(0, n);
+    const i = random.nextInt(0, n - 1);
     const u = V.children()[i].position();
     //if (random.nextFloat(minC, maxC) > colorAt(u.y, u.x)) continue;
     let minJ: number = undefined;
     let minDist = 10000;
     for (let _ = 0; _ < its_subsampling; _++) {
-      const j = random.nextInt(0, n);
+      const j = random.nextInt(i, n);
       if (i == j) continue;
       const v = V.children()[j].position();
       const dist = u.sub(v).magnitude;
@@ -144,24 +145,18 @@ export default makeScene2D(function* (view) {
       V.children()[j].color,
       0.5,
     );
-    E.children()[E.children().length - 1].i = Math.min(
-      V.children()[i].i,
-      V.children()[j].i,
-    );
+    E.children()[E.children().length - 1].i = i;
+    E.children()[E.children().length - 1].j = j;
   }
 
-  E.children().sort((a, b) => a.i - b.i);
-
+  const ithDelay = (i: number) => invertIncreasing(easeInCubic, i / n) * 6;
   cam.scale(30);
   yield* all(
     cam.scale(1.2, 8),
     all(
       ...V.children().map((v, i) => {
-        let old = v.opacity();
-        return delay(
-          invertIncreasing(easeInCubic, i / n) * 7,
-          v.opacity(0).opacity(old, 1),
-        );
+        let old = v.scale();
+        return delay(ithDelay(i), v.scale(0).scale(old, 1, easeOutElastic));
       }),
     ),
     all(
@@ -169,7 +164,7 @@ export default makeScene2D(function* (view) {
         let old = e.opacity();
         e.end(0).opacity(0);
         return delay(
-          invertIncreasing(easeInCubic, i / m) * 6.5,
+          Math.max(ithDelay(e.i) + 0.5, ithDelay(e.j) - 0.5),
           all(e.opacity(old, 1), e.end(1, 1.5)),
         );
       }),
