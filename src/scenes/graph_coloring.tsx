@@ -38,11 +38,11 @@ export default makeScene2D(function* (view) {
   yield* waitFor(2);
   yield* sequence(
     0.8,
-    g.pointAtVertex('B', 1.5),
+    g.pointAtVertexLooping('B', 45, 1.5),
     g.applyColors(undefined, undefined, new Map([['B', 2]])),
   );
   yield* waitFor(1);
-  yield* g.pointAtEdge(['B', 'C'], undefined, 1.5);
+  yield* g.pointAtEdgeLooping(['B', 'C'], 45, 1.5);
   yield* waitFor(2);
 
   // 1) Create and show the sample Sudoku.
@@ -95,7 +95,7 @@ export default makeScene2D(function* (view) {
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[4].absolutePosition(),
-    ).addY(-30),
+    ).addY(-50),
     25,
   );
 
@@ -104,23 +104,29 @@ export default makeScene2D(function* (view) {
     absoluteToViewSpace(
       view,
       sudoku.layoutRef().children()[0].children()[8].absolutePosition(),
-    ).addY(-30),
+    ).addY(-50),
     25,
   );
 
   const ar3 = mkline(
     nosameGraph().bottom().add([-50, 0]),
     absoluteToViewSpace(view, g.getVertex('A').absolutePosition()),
-    50,
+    70,
   );
 
   const ar4 = mkline(
     nosameGraph().bottom().add([50, 0]),
     absoluteToViewSpace(view, g.getVertex('B').absolutePosition()),
-    50,
+    70,
   );
 
-  yield* all(...[nosameGraph, ar3, ar4].map((x) => x().opacity(1, 1)));
+  // I'm shifting the view, so I hack the background using
+  view.height(view.height() * 2);
+
+  yield* all(
+    shift(view, new Vector2(0, 100), 1),
+    delay(0.5, all(...[nosameGraph, ar3, ar4].map((x) => x().opacity(1, 1)))),
+  );
   yield* all(...[nosameSudoku, ar1, ar2].map((x) => x().opacity(1, 1)));
 
   yield* waitFor(1);
@@ -128,19 +134,21 @@ export default makeScene2D(function* (view) {
   view.add(
     <CubicBezier
       ref={line}
-      lineWidth={30}
-      arrowSize={60}
+      lineWidth={15}
+      arrowSize={40}
       stroke={Solarized.base00}
-      p0={[-150, 0]}
-      p3={[270, 0]}
+      p0={[-150, 50]}
+      p3={[230, 50]}
       end={0}
       endArrow
       zIndex={1}
       lineCap={'round'}
     />,
   );
+
   line().scale(new Vector2(1, -1));
   makeWobbly(line);
-  yield* line().end(1, 1);
+  line().opacity(0);
+  yield* all(line().end(1, 1), line().opacity(1, 0.5));
   yield* waitFor(1);
 });

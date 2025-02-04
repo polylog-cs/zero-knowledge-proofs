@@ -2,6 +2,8 @@ import { Circle, Layout, Shape, Spline, Txt } from '@motion-canvas/2d';
 import {
   all,
   createRef,
+  createSignal,
+  loop,
   Reference,
   sequence,
   useLogger,
@@ -260,6 +262,74 @@ export class Graph {
       this.fadeVerticesSequential(0, duration, [], 0),
       this.fadeEdgesSequential(0, duration, [], 0),
     );
+  }
+
+  /**
+   * Tom's animate (TypeScript doesn't do kwargs so I'd fuck up other animations).
+   */
+  *pointAtEdgeLooping(edgePair: [string, string], angle: number, duration: number = 1) {
+    const edge = this.getEdge(edgePair);
+
+    const fromVertex = this.vertexMap.get(edge.from);
+    const toVertex = this.vertexMap.get(edge.to);
+
+    const startPos = new Vector2(fromVertex.position);
+    const endPos = new Vector2(toVertex.position);
+    const mid = startPos.add(endPos).scale(0.5);
+    const degrees = angle;
+
+    const pointSignal = createSignal(0);
+    yield loop(() => pointSignal(1, 0.5).to(0, 0.5));
+
+    const arrowRef = createRef<Finger>();
+    const arrowNode = (
+      <Finger
+        position={() => {
+          let perp = Vector2.fromDegrees(degrees).scale(20);
+
+          return mid.add(perp.scale(pointSignal()));
+        }}
+        rotation={degrees}
+        padding={0.25}
+        scale={90}
+        ref={arrowRef}
+        opacity={0}
+      />
+    );
+
+    yield* this.flashArrow(arrowRef, duration, false);
+  }
+
+  /**
+   * Tom's animate (TypeScript doesn't do kwargs so I'd fuck up other animations).
+   */
+  *pointAtVertexLooping(vertex: string, angle: number, duration: number = 1) {
+    const vertexData = this.vertexMap.get(vertex);
+    if (!vertexData) return;
+
+    const mid = new Vector2(vertexData.position);
+    const degrees = angle;
+
+    const pointSignal = createSignal(0);
+    yield loop(() => pointSignal(1, 0.5).to(0, 0.5));
+
+    const arrowRef = createRef<Finger>();
+    const arrowNode = (
+      <Finger
+        position={() => {
+          let perp = Vector2.fromDegrees(degrees).scale(20);
+
+          return mid.add(perp.scale(pointSignal()));
+        }}
+        rotation={degrees}
+        padding={0.6}
+        scale={90}
+        ref={arrowRef}
+        opacity={0}
+      />
+    );
+
+    yield* this.flashArrow(arrowRef, duration, false);
   }
 
   /**
