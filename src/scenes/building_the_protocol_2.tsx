@@ -1,5 +1,5 @@
 import { makeScene2D } from '@motion-canvas/2d';
-import { all, delay, useLogger, waitFor } from '@motion-canvas/core';
+import { all, delay, useLogger, Vector2, waitFor } from '@motion-canvas/core';
 
 import { Solarized } from '../utilities';
 import { exampleGraphData } from '../utilities_graph';
@@ -20,7 +20,7 @@ export default makeScene2D(function* (view) {
   const challengeEdge: [string, string] = exampleGraphData.edges[0];
   yield* all(
     scene.addText('verifier', '2. Challenge'),
-    scene.graphRef().pointAtEdge(challengeEdge, true, 2, false),
+    scene.graphRef().pointAtEdgeLooping(challengeEdge, -90, 2),
   );
 
   yield* all(

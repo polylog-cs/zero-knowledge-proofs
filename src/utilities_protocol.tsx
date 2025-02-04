@@ -92,7 +92,7 @@ export class ProtocolScene {
       this.removeText(which);
     }
 
-    yield* all(...textsArray.map((t, _) => shift(t(), new Vector2(0, -100), 0.5)));
+    yield* all(...textsArray.map((t, _) => shift(t(), new Vector2(0, -80), 0.5)));
 
     const newTextRef = createRef<MyTxt>();
     this.containerRef().add(
@@ -102,6 +102,8 @@ export class ProtocolScene {
         fontSize={72}
         fill={isProver ? Solarized.proverText : Solarized.verifierText}
         opacity={0}
+        textAlign={'center'}
+        lineHeight={'90%'}
       />,
     );
     const pos = isProver ? 'left' : 'right';
@@ -306,17 +308,17 @@ export class ProtocolScene {
 
   public *setGlobalText(txt: string, who: ParticipantKind) {
     const anims = [];
-    const up = new Vector2(0, -100);
+    const up = new Vector2(0, -200);
     if (this.globalText() !== undefined) {
       anims.push(
-        all(shift(this.globalText(), up.mul(-1), 1), this.globalText().opacity(0, 1)),
+        all(shift(this.globalText(), up.mul(1), 1), this.globalText().opacity(0, 1)),
       );
     }
 
     this.containerRef().add(
       <MyTxt
         ref={this.globalText}
-        position={new Vector2(0, -450)}
+        position={new Vector2(0, -425)}
         fontSize={128}
         fill={who == 'prover' ? Solarized.proverText : Solarized.verifierText}
       >

@@ -6,6 +6,7 @@ import {
   sequence,
   useLogger,
   useRandom,
+  Vector2,
   waitFor,
 } from '@motion-canvas/core';
 
@@ -42,7 +43,7 @@ export default makeScene2D(function* (view) {
     scene.graphRef().pointAtVertex(revealedEdge[1], 1, true),
   );
 
-  yield* scene.addText('verifier', 'Different colors');
+  yield* scene.addText('verifier', 'Different\ncolors');
 
   let i = 0;
   yield* all(scene.graphRef().unlockVertices(undefined, 1), scene.sendGraph('center'));

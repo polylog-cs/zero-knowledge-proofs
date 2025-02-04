@@ -5,6 +5,7 @@ import {
   delay,
   easeInOutQuad,
   Reference,
+  Vector2,
   waitFor,
 } from '@motion-canvas/core';
 
@@ -111,10 +112,15 @@ export default makeScene2D(function* (view) {
     },
   );
 
+  view.width(view.width() * 2);
+  view.height(view.height() * 2);
+
   const shiftY = -300;
   yield* all(
     prover().position.add([0, shiftY], 1),
     verifier().position.add([0, shiftY], 1),
+    view.scale(view.scale().mul(0.9), 1),
+    view.position(view.position().add(new Vector2(0, 20)), 1),
   );
 
   const changeText = function* (textRef: Reference<Txt>, changeTo: string) {

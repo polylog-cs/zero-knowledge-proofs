@@ -21,6 +21,8 @@ export default makeScene2D(function* (view) {
         </MyTxt>,
       );
   }
+
+  // TODO: this is hack or intended?
   yield* scene.sendGraph('prover', 0);
 
   const edges = [
@@ -62,7 +64,7 @@ export default makeScene2D(function* (view) {
 
     scene.proverRef().expression('thinking');
     yield* all(
-      scene.addText('prover', 'He will look here'),
+      scene.addText('prover', 'I know he will\nlook here...'),
       arrowRef().opacity(0).opacity(1, 0.5),
     );
     yield* waitFor(1);
