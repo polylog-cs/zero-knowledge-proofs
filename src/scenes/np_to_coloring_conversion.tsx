@@ -54,7 +54,7 @@ export default makeScene2D(function* (view) {
         lineWidth={15}
         arrowSize={30}
         stroke={arrowColor}
-        p0={algorithmStep().right}
+        p0={() => algorithmStep().right().add(new Vector2(50, 0))}
         p3={circuitStep().left}
         end={0}
         endArrow
@@ -66,7 +66,8 @@ export default makeScene2D(function* (view) {
 
   makeWobbly(line1);
 
-  yield* all(circuitStep().opacity(1, 1), line1().end(1, 1));
+  line1().opacity(0);
+  yield* all(circuitStep().opacity(1, 1), line1().end(1, 1), line1().opacity(1, 0.5));
   yield* waitFor(1);
   yield* all(
     algorithmStep().scale(scale2, 1),
@@ -97,16 +98,18 @@ export default makeScene2D(function* (view) {
         lineWidth={15}
         arrowSize={30}
         stroke={arrowColor}
-        p0={circuitStep().bottom}
-        p3={satStep().top}
+        p0={() => circuitStep().bottom().add(new Vector2(0, 40))}
+        p3={() => satStep().top().add(new Vector2(0, 30))}
         end={0}
         endArrow
+        lineCap={'round'}
       />
     </>,
   );
   makeWobbly(line2);
 
-  yield* all(satStep().opacity(1, 1), line2().end(1, 1));
+  line2().opacity(0);
+  yield* all(satStep().opacity(1, 1), line2().end(1, 1), line2().opacity(1, 0.5));
   yield* waitFor(1);
 
   // Step 3: SAT to coloring
@@ -117,7 +120,7 @@ export default makeScene2D(function* (view) {
   g.initialize(exampleGraphData);
   const graphLayout = g.getGraphLayout();
   graphLayout.scale(1.2);
-  shift(graphLayout, new Vector2(0, -50));
+  shift(graphLayout, new Vector2(0, 0)); // why is this here? makes it not centered...
   yield* g.applyColors();
   yield* g.fadeIn(0);
 
@@ -141,10 +144,11 @@ export default makeScene2D(function* (view) {
         lineWidth={15}
         arrowSize={30}
         stroke={arrowColor}
-        p0={satStep().left().addX(-30)}
+        p0={() => satStep().left().addX(-50)}
         p3={coloringStep().right}
         end={0}
         endArrow
+        lineCap={'round'}
       />
     </>,
   );
@@ -156,7 +160,7 @@ export default makeScene2D(function* (view) {
 
   const t = 2;
   yield* all(
-    line1().p3(coloringStep().left, t),
+    line1().p3(() => coloringStep().left().add(new Vector2(40, 0)), t),
     algorithmStep().scale(scale1, t),
     algorithmStep().position([-xGap, 0], t),
     coloringStep().scale(scale1, t),
@@ -165,9 +169,13 @@ export default makeScene2D(function* (view) {
     line1().arrowSize(50, t),
     // fade out
     line2().opacity(0, t * 0.5),
+    line2().end(0, t * 0.5),
     line3().opacity(0, t * 0.5),
+    line3().end(0, t * 0.5),
     circuitStep().opacity(0, t * 0.5),
+    circuitStep().scale(0, t * 0.5),
     satStep().opacity(0, t * 0.5),
+    satStep().scale(0, t * 0.5),
   );
   yield* waitFor(5);
 });
