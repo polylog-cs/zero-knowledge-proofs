@@ -308,10 +308,11 @@ export class ProtocolScene {
 
   public *setGlobalText(txt: string, who: ParticipantKind) {
     const anims = [];
-    const up = new Vector2(0, -200);
+    // RH: revertnul jsem tuhle animaci. Náš záměr byl naznačit, že se ty kroky opakují pořád dokola, jako na pásce, což mi přijde, že tahle verze dělá líp.
+    const up = new Vector2(0, -100);
     if (this.globalText() !== undefined) {
       anims.push(
-        all(shift(this.globalText(), up.mul(1), 1), this.globalText().opacity(0, 1)),
+        all(shift(this.globalText(), up.mul(-1), 1), this.globalText().opacity(0, 1)),
       );
     }
 
