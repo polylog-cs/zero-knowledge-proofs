@@ -309,7 +309,8 @@ export class ProtocolScene {
   public *setGlobalText(txt: string, who: ParticipantKind) {
     const anims = [];
     // RH: revertnul jsem tuhle animaci. Náš záměr byl naznačit, že se ty kroky opakují pořád dokola, jako na pásce, což mi přijde, že tahle verze dělá líp.
-    const up = new Vector2(0, -100);
+    // TS: ok, ale v tom případě to chceš posunout o víc, protože se to překrývá s tím předchozím a tím pádem to jako páska nevypadá
+    const up = new Vector2(0, -150);
     if (this.globalText() !== undefined) {
       anims.push(
         all(shift(this.globalText(), up.mul(-1), 1), this.globalText().opacity(0, 1)),
@@ -322,6 +323,7 @@ export class ProtocolScene {
         position={new Vector2(0, -425)}
         fontSize={128}
         fill={who == 'prover' ? Solarized.proverText : Solarized.verifierText}
+        zIndex={-1}
       >
         {txt}
       </MyTxt>,
