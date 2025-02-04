@@ -1,19 +1,25 @@
-
-
-
 import { makeScene2D, Rect } from '@motion-canvas/2d';
-import { all, createRef, Vector2, linear, useLogger, waitFor } from '@motion-canvas/core';
+import {
+  all,
+  createRef,
+  delay,
+  easeOutBounce,
+  linear,
+  loop,
+  useLogger,
+  Vector2,
+  waitFor,
+} from '@motion-canvas/core';
 
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { Solarized } from '../utilities';
-import { MyTxt } from '../utilities_text';
+import { nextTo, shift, toEdge } from '../utilities_moving';
 import { PressedKey } from '../utilities_pressed_key';
-import { nextTo, toEdge, shift } from '../utilities_moving';
-
+import { MyTxt } from '../utilities_text';
 
 const inputs = [
-  '→↑A→→→↑A→→→→→→B→→↑→→→',//←A→→→→←', //↑→↑→B→→→→→A→→→↑A→↑→→↑→→→B',
-  'B→→→↑→→→AA←→→→↑A→→→→→',//B→→←→→↑→', //→A←→↑→→A↑→→B→→→→→→A←→→↑→A→→',
+  '🠦🠥A🠦🠦🠦🠥A🠦🠦🠦🠦🠦🠦B🠦🠦🠥🠦🠦🠦', //←A→→→→←', //↑→↑→B→→→→→A→→→↑A→↑→→↑→→→B',
+  'AB🠦🠤🠦🠤🠧🠧🠥🠥', // easter egg: Konami cheat sheet
 ];
 
 export default makeScene2D(function* (view) {
@@ -32,10 +38,7 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <>
-      <MarioAlgorithm
-      zIndex={10}
-      ref = {marioAlgo}
-      />
+      <MarioAlgorithm zIndex={10} ref={marioAlgo} />
 
       <Rect
         ref={inputsMask}
@@ -46,8 +49,8 @@ export default makeScene2D(function* (view) {
         clip
         zIndex={2}
         layout={false}
-        fill = {Solarized.background}
-        stroke = {Solarized.background}
+        fill={Solarized.background}
+        stroke={Solarized.background}
       />
 
       <Rect
@@ -71,29 +74,18 @@ export default makeScene2D(function* (view) {
         opacity={0}
         zIndex={7}
       >
-        <MyTxt
-          fontSize={130}
-          fill={Solarized.red}
-          textAlign="center"
-          ref={outputText1}
-        >
+        <MyTxt fontSize={130} fill={Solarized.red} textAlign="center" ref={outputText1}>
           No
         </MyTxt>
-        <MyTxt
-          fontSize={60}
-          fill={Solarized.red}
-          textAlign="center"
-          ref={outputText2}
-        >
+        <MyTxt fontSize={60} fill={Solarized.red} textAlign="center" ref={outputText2}>
           World record{'\n'}
           not broken
         </MyTxt>
       </Rect>
     </>,
   );
-  
-  nextTo(inputsMask(), marioAlgo(), 'right', 0);
 
+  nextTo(inputsMask(), marioAlgo(), 'right', 0);
 
   const logger = useLogger();
 
@@ -125,7 +117,7 @@ export default makeScene2D(function* (view) {
     shift(inputsContainer(), new Vector2(-inputsContainer().width(), 14), 0);
     //inputsContainer().x(-inputsContainer().width());
 
-    yield* inputsContainer().x(inputsContainer().width()/2 + 100, 12, linear);
+    yield* inputsContainer().x(inputsContainer().width() / 2 + 100, 12, linear);
 
     // Update "No/Yes" text
     outputTextRect().x(100);
