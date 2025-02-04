@@ -4,6 +4,7 @@ import {
   clamp,
   createRef,
   getImageData,
+  PlaybackState,
   sequence,
   useRandom,
   waitFor,
@@ -32,12 +33,7 @@ const mario = [
   [0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0],
 ];
 const R = 16,
-  S = 12,
-  n = 100,
-  m = 100;
-// To kill your computer:
-//  n = 5000,
-//  m = 5000;
+  S = 12;
 
 function gammaFunction(c: number) {
   return [0, 2, 5, 10][c];
@@ -53,6 +49,15 @@ const maxC = gammaFunction(3);
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   const random = useRandom();
+  let n = 500,
+    m = 300;
+  // To kill your computer:
+  //  n = 5000,
+  //  m = 5000;
+  if (view.playbackState() == PlaybackState.Rendering) {
+    n = 5000;
+    m = 10000;
+  }
 
   const cam = <Node />;
   const G = <Node scale={50} x={-300} y={-400} />;
@@ -115,22 +120,31 @@ export default makeScene2D(function* (view) {
   cam.scale(10);
   yield* all(
     cam.scale(1, 5),
-    /*    sequence(
-      8 / n,
+    sequence(
+      3 / n,
       ...V.children().map((v) => {
-        v.save();
-        v.opacity(0);
-        return v.restore(0.5);
+        let old = v.opacity();
+        return v.opacity(0).opacity(old, 1);
       }),
     ),
     sequence(
-      8 / m,
+      4 / m,
       ...E.children().map((e: Line) => {
-        e.save();
-        e.end(0);
-        return e.restore(0.5);
+        let old = e.opacity();
+        e.end(0).opacity(0);
+        return all(e.opacity(old, 1), e.end(1, 1.5));
       }),
-    ),*/
+    ),
   );
-  yield* waitFor(3);
+  yield* waitFor(2);
+  yield* sequence(
+    1 / n,
+    ...V.children().map((v: Circle) =>
+      v.fill(
+        [Solarized.red, Solarized.green, Solarized.blue][random.nextInt(0, 3)],
+        0.5,
+      ),
+    ),
+  );
+  yield* waitFor(2);
 });

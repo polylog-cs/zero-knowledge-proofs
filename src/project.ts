@@ -41,6 +41,6 @@ export default makeProject({
     np_to_coloring_conversion,
     np_to_coloring_big_graph,
     phone,
-    mario_big_graph,
+    //mario_big_graph,
   ],
 });
