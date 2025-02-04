@@ -2,7 +2,11 @@ import { Circle, Line, makeScene2D, Node } from '@motion-canvas/2d';
 import {
   all,
   clamp,
+  Color,
   createRef,
+  delay,
+  easeInCubic,
+  easeInQuad,
   getImageData,
   PlaybackState,
   sequence,
@@ -13,6 +17,17 @@ import {
 import mario_ascii from '../assets/images/mario_ascii.png';
 import { Solarized } from '../utilities';
 import { MyTxt, Write } from '../utilities_text';
+
+function invertIncreasing(fn, x) {
+  let l = 0,
+    r = 1;
+  for (let i = 0; i < 20; i++) {
+    let m = (l + r) / 2;
+    if (fn(m) < x) l = m;
+    else r = m;
+  }
+  return (l + r) / 2;
+}
 
 const mario = [
   [3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 3],
@@ -32,6 +47,7 @@ const mario = [
   [3, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 3],
   [0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0],
 ];
+const colors = ['white', Solarized.red, Solarized.yellow, Solarized.base03];
 const R = 16,
   S = 12;
 
@@ -39,8 +55,9 @@ function gammaFunction(c: number) {
   return [0, 2, 5, 10][c];
 }
 
-function colorAt(r: number, s: number) {
-  return gammaFunction(3 - mario[Math.floor(r)][Math.floor(s)]);
+function colorAt(r: number, s: number, gamma: boolean = true) {
+  const raw = 3 - mario[Math.floor(r)][Math.floor(s)];
+  return gamma ? gammaFunction(raw) : raw;
 }
 
 const minC = gammaFunction(0);
@@ -49,7 +66,7 @@ const maxC = gammaFunction(3);
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   const random = useRandom();
-  let n = 500,
+  let n = 1000,
     m = 300;
   // To kill your computer:
   //  n = 5000,
@@ -66,11 +83,19 @@ export default makeScene2D(function* (view) {
   const V = <Node />;
   G.add(V);
   while (V.children().length < n) {
-    const r = random.nextFloat(0, R);
-    const s = random.nextFloat(0, S);
+    let r = random.nextFloat(0, R);
+    let s = random.nextFloat(0, S);
+    if (V.children().length == 0) {
+      r = R / 2;
+      s = S / 2;
+    }
     const c = colorAt(r, s);
+    let raw = colorAt(r, s, false);
     if (random.nextFloat(minC, maxC) > c) continue;
     V.add(<Circle fill={Solarized.gray} x={s} y={r} size={0.06 + (0.03 * c) / maxC} />);
+    if (random.nextFloat(0, 1) < 0.7) raw = random.nextInt(1, 4);
+    V.children()[V.children().length - 1].color = colors[raw];
+    V.children()[V.children().length - 1].i = V.children().length - 1;
   }
 
   const its_subsampling = 50;
@@ -115,36 +140,44 @@ export default makeScene2D(function* (view) {
         stroke={Solarized.gray}
       />,
     );
+    E.children()[E.children().length - 1].color = new Color(V.children()[i].color).mix(
+      V.children()[j].color,
+      0.5,
+    );
+    E.children()[E.children().length - 1].i = Math.min(
+      V.children()[i].i,
+      V.children()[j].i,
+    );
   }
 
-  cam.scale(10);
+  E.children().sort((a, b) => a.i - b.i);
+
+  cam.scale(30);
   yield* all(
-    cam.scale(1, 5),
-    sequence(
-      3 / n,
-      ...V.children().map((v) => {
+    cam.scale(1.2, 8),
+    all(
+      ...V.children().map((v, i) => {
         let old = v.opacity();
-        return v.opacity(0).opacity(old, 1);
+        return delay(
+          invertIncreasing(easeInCubic, i / n) * 7,
+          v.opacity(0).opacity(old, 1),
+        );
       }),
     ),
-    sequence(
-      4 / m,
-      ...E.children().map((e: Line) => {
+    all(
+      ...E.children().map((e: Line, i) => {
         let old = e.opacity();
         e.end(0).opacity(0);
-        return all(e.opacity(old, 1), e.end(1, 1.5));
+        return delay(
+          invertIncreasing(easeInCubic, i / m) * 6.5,
+          all(e.opacity(old, 1), e.end(1, 1.5)),
+        );
       }),
     ),
   );
-  yield* waitFor(2);
-  yield* sequence(
-    1 / n,
-    ...V.children().map((v: Circle) =>
-      v.fill(
-        [Solarized.red, Solarized.green, Solarized.blue][random.nextInt(0, 3)],
-        0.5,
-      ),
-    ),
+  yield* all(
+    sequence(1 / n, ...V.children().map((v: Circle) => v.fill(v.color, 0.5))),
+    sequence(1 / m, ...E.children().map((e: Line) => e.stroke(e.color, 0.5))),
   );
   yield* waitFor(2);
 });
