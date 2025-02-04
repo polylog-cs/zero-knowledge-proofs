@@ -47,6 +47,11 @@ export default makeScene2D(function* (view) {
 
   let i = 0;
   yield* all(scene.graphRef().unlockVertices(undefined, 1), scene.sendGraph('center'));
+  const customPalette = solarizedPalette.filter(
+    (c) =>
+      [Solarized.red, Solarized.blue, Solarized.green].find((x) => x == c) ===
+      undefined,
+  );
   yield* all(
     chain(
       ...Array.from({ length: 7 }, () => {
@@ -57,10 +62,10 @@ export default makeScene2D(function* (view) {
               .graphRef()
               .changeVertexColor(
                 v,
-                solarizedPalette[
+                customPalette[
                   (i +
-                    3 * exampleGraphData.colors[exampleGraphData.labels.indexOf(v)]) %
-                    9
+                    2 * exampleGraphData.colors[exampleGraphData.labels.indexOf(v)]) %
+                    customPalette.length
                 ],
                 0.1,
               ),
@@ -94,6 +99,6 @@ export default makeScene2D(function* (view) {
     scene.graphRef().pointAtVertex('F', 1, true),
   );
 
-  yield* waitFor(1);
-  yield* all(scene.graphRef().containerRef().opacity(0, 1), scene.removeText('both'));
+  yield* waitFor(3);
+  yield* all(scene.containerRef().opacity(0, 1));
 });
