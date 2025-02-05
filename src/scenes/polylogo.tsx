@@ -235,27 +235,32 @@ export default makeScene2D(function* (view) {
   let bop = 0.85;
 
   yield* all(
-    backgroundCircle().scale(backgroundCircle().scale().mul(bop), 0.2, easeOutQuad),
+    all(
+      backgroundCircle().scale(backgroundCircle().scale().mul(bop), 0.2, easeOutQuad),
 
-    text().scale(text().scale().mul(0.95), 0.2, easeOutQuad),
-  );
-  yield* all(
-    backgroundCircle().scale(
-      backgroundCircle()
-        .scale()
-        .mul(1 / bop),
-      1,
-      createEaseOutElastic(1),
-    ),
-    text().scale(
-      text()
-        .scale()
-        .mul(1 / 0.95),
-      1,
-      createEaseOutElastic(1),
+      text().scale(text().scale().mul(0.95), 0.2, easeOutQuad),
     ),
     delay(
-      0.0,
+      0.2,
+      all(
+        backgroundCircle().scale(
+          backgroundCircle()
+            .scale()
+            .mul(1 / bop),
+          1,
+          createEaseOutElastic(1),
+        ),
+        text().scale(
+          text()
+            .scale()
+            .mul(1 / 0.95),
+          1,
+          createEaseOutElastic(1),
+        ),
+      ),
+    ),
+    delay(
+      0.1,
       all(
         sequence(
           0.05,
