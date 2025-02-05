@@ -244,19 +244,11 @@ export default makeScene2D(function* (view) {
       0.2,
       all(
         backgroundCircle().scale(
-          backgroundCircle()
-            .scale()
-            .mul(1 / bop),
+          backgroundCircle().scale(),
           1,
           createEaseOutElastic(1),
         ),
-        text().scale(
-          text()
-            .scale()
-            .mul(1 / 0.95),
-          1,
-          createEaseOutElastic(1),
-        ),
+        text().scale(text().scale(), 1, createEaseOutElastic(1)),
       ),
     ),
     delay(
