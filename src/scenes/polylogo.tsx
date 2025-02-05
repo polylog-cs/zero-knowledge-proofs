@@ -116,6 +116,7 @@ export default makeScene2D(function* (view) {
     [9, 10],
   ];
 
+  let text = createRef<MyTxt>();
   let edge_refs = edge_data.map(() => createRef<Line>());
   let edge_objects = edge_refs.map((ref, i) => {
     let [from, to] = edge_data[i];
@@ -150,8 +151,14 @@ export default makeScene2D(function* (view) {
           let [from_pos, from_size, from_color] = circle_data[from];
           let [to_pos, to_size, to_color] = circle_data[to];
 
-          from_pos = from_pos.add(from_size / 2).sub(100 / 2);
-          to_pos = to_pos.add(to_size / 2).sub(100 / 2);
+          from_pos = from_pos
+            .add(from_size / 2)
+            .sub(100 / 2)
+            .div(text().scale());
+          to_pos = to_pos
+            .add(to_size / 2)
+            .sub(100 / 2)
+            .div(text().scale());
 
           let from_ref = circle_refs[from]();
 
@@ -172,7 +179,6 @@ export default makeScene2D(function* (view) {
   });
 
   let backgroundCircle = createRef<Circle>();
-  let text = createRef<MyTxt>();
   let textHidingRect = createRef<Rect>();
 
   view.add(
@@ -214,7 +220,7 @@ export default makeScene2D(function* (view) {
   text().left(backgroundCircle().right());
   text().opacity(0);
 
-  circle_refs.forEach((ref) => ref().scale(0));
+  circle_refs.forEach((ref) => ref().scale(ref().opacity() == 0 ? 1 : 0));
   edge_refs.forEach((ref) => ref().end(0).opacity(0));
 
   yield* all(
@@ -253,7 +259,9 @@ export default makeScene2D(function* (view) {
       all(
         sequence(
           0.05,
-          ...circle_refs.map((ref) => all(ref().scale(1, 1, easeOutElastic))),
+          ...circle_refs.map((ref) =>
+            all(ref().scale(1, 1, createEaseOutElastic(1.5))),
+          ),
         ),
         sequence(
           0.025,
