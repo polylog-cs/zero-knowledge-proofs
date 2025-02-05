@@ -198,6 +198,7 @@ export default makeScene2D(function* (view) {
           width={80}
           height={80}
           ref={textHidingRect}
+          opacity={0}
           right={backgroundCircle()
             .left()
             .add(new Vector2(0, 250 + 40))}
@@ -227,6 +228,7 @@ export default makeScene2D(function* (view) {
     text().position(new Vector2(0, 0), 2, easeInOutQuint),
     text().opacity(1, 2, easeInOutQuint),
     textHidingRect().position(new Vector2(0, 0), 2, easeInOutQuint),
+    textHidingRect().opacity(1, 1),
   );
 
   textHidingRect().remove();
