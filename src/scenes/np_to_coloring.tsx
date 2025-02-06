@@ -330,7 +330,7 @@ export default makeScene2D(function* (view) {
       all(
         ...vertexAppearAnimations,
         ...edgeAppearAnimations,
-        view.scale(1 / zoomOutFactor, duration),
+        view.scale(view.scale().div(zoomOutFactor), duration),
         view.width(view.width() * zoomOutFactor, duration),
         view.height(view.height() * zoomOutFactor, duration),
       ),
