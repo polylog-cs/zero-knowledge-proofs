@@ -1,17 +1,13 @@
-import { makeScene2D, Layout, Img, Line } from '@motion-canvas/2d';
-import {
-  all,
-  createRef,
-  Vector2,
-  waitFor,
-} from '@motion-canvas/core';
-import { Solarized, fontSize } from '../utilities';
-import { clues, solution, Sudoku } from '../utilities_sudoku';
-import { exampleGraphData, Graph } from '../utilities_graph';
-import { MyLatex } from '../utilities_text';
-import { MarioAlgorithm } from '../components/mario_algorithm';
-import tuxPath from '../assets/images/tux.png';
+import { Img, Layout, Line, makeScene2D } from '@motion-canvas/2d';
+import { all, createRef, Vector2, waitFor } from '@motion-canvas/core';
+
 import minePath from '../assets/images/minesweeper.png';
+import tuxPath from '../assets/images/tux.png';
+import { MarioAlgorithm } from '../components/mario_algorithm';
+import { fontSize, Solarized } from '../utilities';
+import { exampleGraphData, Graph } from '../utilities_graph';
+import { clues, solution, Sudoku } from '../utilities_sudoku';
+import { MyLatex } from '../utilities_text';
 
 export default makeScene2D(function* (view) {
   // ------------------------------
@@ -32,7 +28,7 @@ export default makeScene2D(function* (view) {
 
   // We'll consider the center to be at (0,0)
   // so item final positions are around it in a circle
-  const center = new Vector2(0,0);
+  const center = new Vector2(0, 0);
 
   // ------------------------------
   // 2) Circle Layout Parameters
@@ -48,9 +44,9 @@ export default makeScene2D(function* (view) {
   const desiredHeight = 230;
 
   const arrowParams = [
-    { alpha: 0.3, beta: 0.6 },  // Sudoku
+    { alpha: 0.3, beta: 0.6 }, // Sudoku
     { alpha: 0.25, beta: 0.6 }, // Mario
-    { alpha: 0.3, beta: 0.7 },  // Tux
+    { alpha: 0.3, beta: 0.7 }, // Tux
     { alpha: 0.3, beta: 0.6 }, // Zeta
     { alpha: 0.3, beta: 0.7 }, // Minesweeper
   ];
@@ -84,12 +80,16 @@ export default makeScene2D(function* (view) {
   }
 
   // Create and reveal an arrow from paramPoint(...alpha) to paramPoint(...beta)
-  function createArrow(itemRef: Layout|Img|MyLatex, finalPos: Vector2, index: number) {
+  function createArrow(
+    itemRef: Layout | Img | MyLatex,
+    finalPos: Vector2,
+    index: number,
+  ) {
     // Extract alpha_i, beta_i for this item
     const { alpha, beta } = arrowParams[index];
 
     const start = paramPoint(finalPos, center, alpha);
-    const end   = paramPoint(finalPos, center, beta);
+    const end = paramPoint(finalPos, center, beta);
 
     const arrowLineRef = createRef<Line>();
     view.add(
@@ -101,7 +101,7 @@ export default makeScene2D(function* (view) {
         arrowSize={20}
         points={[start, end]}
         opacity={0}
-      />
+      />,
     );
     return arrowLineRef;
   }
@@ -123,7 +123,7 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     sudoku.layoutRef().position.x(sudokuFinalPos.x - 55, 1),
-    sudoku.layoutRef().position.y(sudokuFinalPos.y - 15, 1)
+    sudoku.layoutRef().position.y(sudokuFinalPos.y - 15, 1),
   );
 
   // Arrow from param combos
@@ -146,7 +146,7 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     algorithmRef().position.x(algFinalPos.x + 60, 1),
-    algorithmRef().position.y(algFinalPos.y - 30, 1)
+    algorithmRef().position.y(algFinalPos.y - 30, 1),
   );
 
   const algArrowRef = createArrow(algorithmRef(), algFinalPos, 1);
@@ -168,7 +168,7 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     tuxRef().position.x(tuxFinalPos.x, 1),
-    tuxRef().position.y(tuxFinalPos.y, 1)
+    tuxRef().position.y(tuxFinalPos.y, 1),
   );
 
   const tuxArrowRef = createArrow(tuxRef(), tuxFinalPos, 2);
@@ -183,9 +183,9 @@ export default makeScene2D(function* (view) {
       ref={equationRef}
       tex={'\\zeta(s)=\\sum_{n=1}^{\\infty}\\frac{1}{n^s}'}
       fontSize={fontSize}
-    />
+    />,
   );
-  setUniformHeight(equationRef(), desiredHeight*0.7);
+  setUniformHeight(equationRef(), desiredHeight * 0.7);
 
   const eqAngle = getAngleDeg(3);
   const eqFinalPos = getCirclePos(finalRadius, eqAngle);
@@ -196,7 +196,7 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     equationRef().position.x(eqFinalPos.x, 1),
-    equationRef().position.y(eqFinalPos.y, 1)
+    equationRef().position.y(eqFinalPos.y, 1),
   );
 
   const eqArrowRef = createArrow(equationRef(), eqFinalPos, 3);
@@ -217,8 +217,8 @@ export default makeScene2D(function* (view) {
   minesweeperRef().position.y(mineInitialPos.y);
 
   yield* all(
-    minesweeperRef().position.x(mineFinalPos.x-80, 1),
-    minesweeperRef().position.y(mineFinalPos.y, 1)
+    minesweeperRef().position.x(mineFinalPos.x - 80, 1),
+    minesweeperRef().position.y(mineFinalPos.y, 1),
   );
 
   const mineArrowRef = createArrow(minesweeperRef(), mineFinalPos, 4);

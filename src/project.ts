@@ -15,10 +15,10 @@ import np_to_coloring_conversion from './scenes/np_to_coloring_conversion?scene'
 import np_to_coloring from './scenes/np_to_coloring?scene';
 import phone from './scenes/phone?scene';
 import polylogo from './scenes/polylogo?scene';
+import reductions from './scenes/reductions?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
 import teacher_failing from './scenes/teacher_failing?scene';
 import teacher from './scenes/teacher?scene';
-import reductions from './scenes/reductions?scene';
 import timeline from './scenes/timeline?scene';
 
 import './global.css';
