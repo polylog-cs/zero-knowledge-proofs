@@ -146,15 +146,15 @@ export default makeScene2D(function* (view) {
           1,
         ),
       );
-      scene.verifierRef().expression('alarmed');
+      //scene.verifierRef().expression('alarmed');
       scene.proverRef().expression('happy');
       yield* all(
         cross().scale(5, 1),
         cross().opacity(1, 1),
         delay(0.8, cross().opacity(0, 1)),
       );
-      scene.verifierRef().expression('neutral');
-      scene.proverRef().expression('neutral');
+      // scene.verifierRef().expression('neutral');
+      // scene.proverRef().expression('neutral');
       break;
     }
     yield* all(

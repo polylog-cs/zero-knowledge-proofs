@@ -33,6 +33,7 @@ export default makeScene2D(function* (view) {
   const vertexAnimDuration = 0.5;  // each vertex fades in over 0.5 sec
   const edgeFadeDuration = 2;      // each edge fades in over 2.0 sec
   const startingDelay = 0;
+  const yShift = -18;
 
   // Store references for each vertex
   const vertexRefs: { [id: string]: Reference<Circle> } = {};
@@ -58,7 +59,7 @@ export default makeScene2D(function* (view) {
       {/* Vertices */}
       {Object.entries(positions).map(([id, [px, py]]) => {
         const x = px * positionScale;
-        const y = py * positionScale;
+        const y = py * positionScale + yShift;
         // Vertex fade-in delay (custom formula, can be whatever you like)
         const dist = Math.hypot(x, y);
         const delay = (
@@ -86,11 +87,11 @@ export default makeScene2D(function* (view) {
       {edges.map(([a, b], i) => {
         const [ax, ay] = [
           positions[a][0] * positionScale,
-          positions[a][1] * positionScale,
+          positions[a][1] * positionScale + yShift,
         ];
         const [bx, by] = [
           positions[b][0] * positionScale,
-          positions[b][1] * positionScale,
+          positions[b][1] * positionScale + yShift,
         ];
 
         const lineRef = createRef<Line>();

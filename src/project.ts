@@ -18,6 +18,8 @@ import polylogo from './scenes/polylogo?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
 import teacher_failing from './scenes/teacher_failing?scene';
 import teacher from './scenes/teacher?scene';
+import reductions from './scenes/reductions?scene';
+import timeline from './scenes/timeline?scene';
 
 import './global.css';
 
@@ -40,7 +42,9 @@ export default makeProject({
     np_to_coloring_algorithm,
     np_to_coloring_conversion,
     np_to_coloring_big_graph,
+    reductions,
     phone,
+    //timeline,
     //mario_big_graph,
   ],
 });

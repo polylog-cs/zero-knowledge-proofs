@@ -27,7 +27,7 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices();
   yield* scene.fadeInGraph(1);
 
-  yield* scene.graphRef().pointAtRandomEdges(['A', 'B']);
+  yield* scene.graphRef().pointAtRandomEdges(['A', 'B'], 1);
   yield* scene.graphRef().unlockVertices(scene.graphRef().challengeEdge);
   yield* waitFor(1);
 
