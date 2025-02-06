@@ -1,5 +1,5 @@
-import { Img, Layout, Line, makeScene2D } from '@motion-canvas/2d';
-import { all, createRef, Vector2, waitFor } from '@motion-canvas/core';
+import { Img, Layout, Line, makeScene2D, Node } from '@motion-canvas/2d';
+import { all, chain, createRef, Vector2, waitFor } from '@motion-canvas/core';
 
 import minePath from '../assets/images/minesweeper.png';
 import tuxPath from '../assets/images/tux.png';
@@ -35,7 +35,7 @@ export default makeScene2D(function* (view) {
   // ------------------------------
   const totalItems = 5;
   // Items slide from a large radius inward
-  const initialRadius = 1500;
+  const initialRadius = 800;
   // to a smaller final radius
   const finalRadius = 400;
   // Starting angle offset
@@ -80,11 +80,7 @@ export default makeScene2D(function* (view) {
   }
 
   // Create and reveal an arrow from paramPoint(...alpha) to paramPoint(...beta)
-  function createArrow(
-    itemRef: Layout | Img | MyLatex,
-    finalPos: Vector2,
-    index: number,
-  ) {
+  function createArrow(finalPos: Vector2, index: number) {
     // Extract alpha_i, beta_i for this item
     const { alpha, beta } = arrowParams[index];
 
@@ -106,29 +102,15 @@ export default makeScene2D(function* (view) {
     return arrowLineRef;
   }
 
+  const objects: Node[] = [];
   // ------------------------------
   //  1) Sudoku
   // ------------------------------
   const sudoku = new Sudoku(9, 55, solution, clues);
-  const sudokuLayout = sudoku.getLayout();
-  view.add(sudokuLayout);
+  sudoku.getLayout();
   setUniformHeight(sudoku.layoutRef(), desiredHeight);
-
-  const sudokuAngle = getAngleDeg(0);
-  const sudokuFinalPos = getCirclePos(finalRadius, sudokuAngle);
-  const sudokuInitialPos = getCirclePos(initialRadius, sudokuAngle);
-
-  sudoku.layoutRef().position.x(sudokuInitialPos.x);
-  sudoku.layoutRef().position.y(sudokuInitialPos.y);
-
-  yield* all(
-    sudoku.layoutRef().position.x(sudokuFinalPos.x - 55, 1),
-    sudoku.layoutRef().position.y(sudokuFinalPos.y - 15, 1),
-  );
-
-  // Arrow from param combos
-  const sudokuArrowRef = createArrow(sudoku.layoutRef(), sudokuFinalPos, 0);
-  yield* sudokuArrowRef().opacity(1, 0.7);
+  view.add(sudoku.layoutRef());
+  objects.push(sudoku.layoutRef());
 
   // ------------------------------
   //  2) MarioAlgorithm
@@ -136,21 +118,7 @@ export default makeScene2D(function* (view) {
   const algorithmRef = createRef<MarioAlgorithm>();
   view.add(<MarioAlgorithm ref={algorithmRef} />);
   setUniformHeight(algorithmRef(), desiredHeight);
-
-  const algAngle = getAngleDeg(1);
-  const algFinalPos = getCirclePos(finalRadius, algAngle);
-  const algInitialPos = getCirclePos(initialRadius, algAngle);
-
-  algorithmRef().position.x(algInitialPos.x);
-  algorithmRef().position.y(algInitialPos.y);
-
-  yield* all(
-    algorithmRef().position.x(algFinalPos.x + 60, 1),
-    algorithmRef().position.y(algFinalPos.y - 30, 1),
-  );
-
-  const algArrowRef = createArrow(algorithmRef(), algFinalPos, 1);
-  yield* algArrowRef().opacity(1, 0.7);
+  objects.push(algorithmRef());
 
   // ------------------------------
   //  3) Tux
@@ -158,21 +126,7 @@ export default makeScene2D(function* (view) {
   const tuxRef = createRef<Img>();
   view.add(<Img ref={tuxRef} src={tuxPath} smoothing={true} />);
   setUniformHeight(tuxRef(), desiredHeight);
-
-  const tuxAngle = getAngleDeg(2);
-  const tuxFinalPos = getCirclePos(finalRadius, tuxAngle);
-  const tuxInitialPos = getCirclePos(initialRadius, tuxAngle);
-
-  tuxRef().position.x(tuxInitialPos.x);
-  tuxRef().position.y(tuxInitialPos.y);
-
-  yield* all(
-    tuxRef().position.x(tuxFinalPos.x, 1),
-    tuxRef().position.y(tuxFinalPos.y, 1),
-  );
-
-  const tuxArrowRef = createArrow(tuxRef(), tuxFinalPos, 2);
-  yield* tuxArrowRef().opacity(1, 0.7);
+  objects.push(tuxRef());
 
   // ------------------------------
   //  4) Zeta Equation (SWAPPED)
@@ -186,21 +140,7 @@ export default makeScene2D(function* (view) {
     />,
   );
   setUniformHeight(equationRef(), desiredHeight * 0.7);
-
-  const eqAngle = getAngleDeg(3);
-  const eqFinalPos = getCirclePos(finalRadius, eqAngle);
-  const eqInitialPos = getCirclePos(initialRadius, eqAngle);
-
-  equationRef().position.x(eqInitialPos.x);
-  equationRef().position.y(eqInitialPos.y);
-
-  yield* all(
-    equationRef().position.x(eqFinalPos.x, 1),
-    equationRef().position.y(eqFinalPos.y, 1),
-  );
-
-  const eqArrowRef = createArrow(equationRef(), eqFinalPos, 3);
-  yield* eqArrowRef().opacity(1, 0.7);
+  objects.push(equationRef());
 
   // ------------------------------
   //  5) Minesweeper (SWAPPED last)
@@ -208,21 +148,31 @@ export default makeScene2D(function* (view) {
   const minesweeperRef = createRef<Img>();
   view.add(<Img ref={minesweeperRef} src={minePath} smoothing={true} />);
   setUniformHeight(minesweeperRef(), desiredHeight);
+  objects.push(minesweeperRef());
+  const offsets = [
+    [-55, -15],
+    [60, -30],
+    [0, 0],
+    [0, 0],
+    [-80, 0],
+  ].map((i) => new Vector2(i[0], i[1]));
 
-  const mineAngle = getAngleDeg(4);
-  const mineFinalPos = getCirclePos(finalRadius, mineAngle);
-  const mineInitialPos = getCirclePos(initialRadius, mineAngle);
+  const anims = [];
+  for (let i = 0; i < 5; i++) {
+    objects[i].opacity(0);
+    const angle = getAngleDeg(i);
+    const initialPos = getCirclePos(initialRadius, angle);
+    const finalPos = getCirclePos(finalRadius, angle);
+    objects[i].position(initialPos);
+    const arrow = createArrow(finalPos, i);
+    view.add(arrow);
+    anims.push(
+      all(objects[i].position(finalPos.add(offsets[i]), 1), objects[i].opacity(1, 1)),
+    );
+    anims.push(arrow().opacity(0.7, 1));
+  }
 
-  minesweeperRef().position.x(mineInitialPos.x);
-  minesweeperRef().position.y(mineInitialPos.y);
-
-  yield* all(
-    minesweeperRef().position.x(mineFinalPos.x - 80, 1),
-    minesweeperRef().position.y(mineFinalPos.y, 1),
-  );
-
-  const mineArrowRef = createArrow(minesweeperRef(), mineFinalPos, 4);
-  yield* mineArrowRef().opacity(1, 0.7);
+  yield* chain(...anims);
 
   // Wait a bit at the end
   yield* waitFor(3);
