@@ -51,6 +51,14 @@ export default makeScene2D(function* (view) {
     { alpha: 0.3, beta: 0.7 }, // Minesweeper
   ];
 
+  const offsets = [
+    [-55, -15],
+    [60, -30],
+    [0, 0],
+    [0, 0],
+    [-80, 0],
+  ].map((i) => new Vector2(i[0], i[1]));
+
   // Utility: angle for item i
   function getAngleDeg(i: number): number {
     return alphaAngle + (i * 360) / totalItems;
@@ -63,12 +71,13 @@ export default makeScene2D(function* (view) {
   }
 
   // Utility: scale the node so that it has a certain "height"
-  function setUniformHeight(node: Layout | Img | MyLatex, targetHeight: number) {
+  function setUniformHeight(node: Layout, targetHeight: number) {
     node.cacheBBox();
     const size = node.size();
     if (size.y <= 0) return;
     const factor = targetHeight / size.y;
     node.scale(factor);
+    return node;
   }
 
   // Parametric combination: (1 - alpha)*Y + alpha*X
@@ -103,63 +112,31 @@ export default makeScene2D(function* (view) {
   }
 
   const objects: Node[] = [];
-  // ------------------------------
-  //  1) Sudoku
-  // ------------------------------
   const sudoku = new Sudoku(9, 55, solution, clues);
-  sudoku.getLayout();
-  setUniformHeight(sudoku.layoutRef(), desiredHeight);
-  view.add(sudoku.layoutRef());
-  objects.push(sudoku.layoutRef());
+  objects.push(setUniformHeight(sudoku.getLayout() as Layout, desiredHeight));
 
-  // ------------------------------
-  //  2) MarioAlgorithm
-  // ------------------------------
-  const algorithmRef = createRef<MarioAlgorithm>();
-  view.add(<MarioAlgorithm ref={algorithmRef} />);
-  setUniformHeight(algorithmRef(), desiredHeight);
-  objects.push(algorithmRef());
+  objects.push(setUniformHeight(new MarioAlgorithm(), desiredHeight));
 
-  // ------------------------------
-  //  3) Tux
-  // ------------------------------
-  const tuxRef = createRef<Img>();
-  view.add(<Img ref={tuxRef} src={tuxPath} smoothing={true} />);
-  setUniformHeight(tuxRef(), desiredHeight);
-  objects.push(tuxRef());
+  objects.push(setUniformHeight((<Img src={tuxPath} />) as Layout, desiredHeight));
 
-  // ------------------------------
-  //  4) Zeta Equation (SWAPPED)
-  // ------------------------------
-  const equationRef = createRef<MyLatex>();
-  view.add(
-    <MyLatex
-      ref={equationRef}
-      tex={'\\zeta(s)=\\sum_{n=1}^{\\infty}\\frac{1}{n^s}'}
-      fontSize={fontSize}
-    />,
+  objects.push(
+    setUniformHeight(
+      (
+        <MyLatex
+          tex={'\\zeta(s)=\\sum_{n=1}^{\\infty}\\frac{1}{n^s}'}
+          fontSize={fontSize}
+        />
+      ) as Layout,
+      desiredHeight * 0.7,
+    ),
   );
-  setUniformHeight(equationRef(), desiredHeight * 0.7);
-  objects.push(equationRef());
 
-  // ------------------------------
-  //  5) Minesweeper (SWAPPED last)
-  // ------------------------------
-  const minesweeperRef = createRef<Img>();
-  view.add(<Img ref={minesweeperRef} src={minePath} smoothing={true} />);
-  setUniformHeight(minesweeperRef(), desiredHeight);
-  objects.push(minesweeperRef());
-  const offsets = [
-    [-55, -15],
-    [60, -30],
-    [0, 0],
-    [0, 0],
-    [-80, 0],
-  ].map((i) => new Vector2(i[0], i[1]));
+  objects.push(setUniformHeight((<Img src={minePath} />) as Layout, desiredHeight));
 
   const anims = [];
   for (let i = 0; i < 5; i++) {
     objects[i].opacity(0);
+    view.add(objects[i]);
     const angle = getAngleDeg(i);
     const initialPos = getCirclePos(initialRadius, angle);
     const finalPos = getCirclePos(finalRadius, angle);
