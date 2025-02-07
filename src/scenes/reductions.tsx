@@ -1,5 +1,5 @@
 import { Img, Layout, Line, makeScene2D, Node } from '@motion-canvas/2d';
-import { all, chain, createRef, Vector2, waitFor } from '@motion-canvas/core';
+import { all, chain, createRef, sequence, Vector2, waitFor } from '@motion-canvas/core';
 
 import minePath from '../assets/images/minesweeper.png';
 import tuxPath from '../assets/images/tux.png';
@@ -18,13 +18,12 @@ export default makeScene2D(function* (view) {
   const g = new Graph(75);
   g.initialize(exampleGraphData);
   const graph = g.getGraphLayout();
-  graph.scale(1.25);
+  //graph.scale(1.25);
   view.add(graph);
 
   // Animate the graph into the scene
   yield* g.fadeIn(1);
-  yield* g.applyColors();
-  yield* graph.scale(0.5, 1);
+  yield* sequence(0.5, g.applyColors(), graph.scale(0.5, 1));
 
   // We'll consider the center to be at (0,0)
   // so item final positions are around it in a circle
@@ -35,7 +34,7 @@ export default makeScene2D(function* (view) {
   // ------------------------------
   const totalItems = 5;
   // Items slide from a large radius inward
-  const initialRadius = 800;
+  const initialRadius = 600;
   // to a smaller final radius
   const finalRadius = 400;
   // Starting angle offset
@@ -105,7 +104,6 @@ export default makeScene2D(function* (view) {
         endArrow // arrowhead on the "end" point
         arrowSize={20}
         points={[start, end]}
-        opacity={0}
       />,
     );
     return arrowLineRef;
@@ -143,10 +141,18 @@ export default makeScene2D(function* (view) {
     objects[i].position(initialPos);
     const arrow = createArrow(finalPos, i);
     view.add(arrow);
+    const origScale = objects[i].scale();
     anims.push(
-      all(objects[i].position(finalPos.add(offsets[i]), 1), objects[i].opacity(1, 1)),
+      sequence(
+        0.3,
+        all(
+          objects[i].position(finalPos.add(offsets[i]), 1),
+          objects[i].opacity(1, 1),
+          objects[i].scale(origScale.mul(0.5)).scale(origScale, 1),
+        ),
+        arrow().end(0).end(1, 0.8),
+      ),
     );
-    anims.push(arrow().opacity(0.7, 1));
   }
 
   yield* chain(...anims);
