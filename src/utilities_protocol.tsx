@@ -66,7 +66,9 @@ export class ProtocolScene {
     const ref = which === 'prover' ? this.proverRef : this.verifierRef;
     const position = which === 'prover' ? PROVER_POSITION : VERIFIER_POSITION;
 
-    this.containerRef().add(
+    // yield is important here, see:
+    // https://github.com/motion-canvas/motion-canvas/issues/1151
+    yield this.containerRef().add(
       <Participant ref={ref} kind={which} position={position} opacity={0} />,
     );
     yield* ref().opacity(1, 1);
@@ -95,7 +97,7 @@ export class ProtocolScene {
     yield* all(...textsArray.map((t, _) => shift(t(), new Vector2(0, -80), 0.5)));
 
     const newTextRef = createRef<MyTxt>();
-    this.containerRef().add(
+    yield this.containerRef().add(
       <MyTxt
         ref={newTextRef}
         text={text}

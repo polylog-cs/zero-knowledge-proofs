@@ -65,7 +65,6 @@ export class Participant extends Node {
 
   public constructor(props?: ParticipantProps) {
     super({ ...props });
-    props.expression;
     this.add(
       <Img
         src={() => EXPRESSION_TO_IMAGE[this.kind()][this.expression()]}

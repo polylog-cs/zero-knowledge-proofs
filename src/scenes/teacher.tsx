@@ -216,7 +216,7 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
   const student = createRef<Img>();
   const teacher = createRef<Img>();
 
-  view.add(
+  yield view.add(
     <>
       <Img
         ref={student}
