@@ -115,7 +115,11 @@ export default makeScene2D(function* (view) {
 
   objects.push(setUniformHeight(new MarioAlgorithm(), desiredHeight));
 
-  objects.push(setUniformHeight((<Img src={tuxPath} />) as Layout, desiredHeight));
+  {
+    const img = <Img src={tuxPath} />;
+    yield view.add(img);
+    objects.push(setUniformHeight(img as Layout, desiredHeight));
+  }
 
   objects.push(
     setUniformHeight(
@@ -129,12 +133,15 @@ export default makeScene2D(function* (view) {
     ),
   );
 
-  objects.push(setUniformHeight((<Img src={minePath} />) as Layout, desiredHeight));
+  {
+    const img = <Img src={minePath} />;
+    yield view.add(img);
+    objects.push(setUniformHeight(img as Layout, desiredHeight));
+  }
 
   const anims = [];
   for (let i = 0; i < 5; i++) {
     objects[i].opacity(0);
-    view.add(objects[i]);
     const angle = getAngleDeg(i);
     const initialPos = getCirclePos(initialRadius, angle);
     const finalPos = getCirclePos(finalRadius, angle);
