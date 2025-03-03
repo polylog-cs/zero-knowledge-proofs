@@ -17,7 +17,8 @@ export default makeScene2D(function* (view) {
   const graph = g.getGraphLayout();
   graph.scale(1.25);
   view.add(graph);
-  yield* g.fadeIn(1);
+  yield* g.fadeIn(0);
+  yield* waitFor(5);
 
   const swatchRef = createRef<Layout>();
   view.add(
@@ -31,7 +32,7 @@ export default makeScene2D(function* (view) {
   const squares = Array.from(swatchRef().children()) as Rect[];
 
   // Fade in the swatch
-  yield* sequence(0.1, ...squares.map((square) => square.opacity(1, 0.3)));
+  yield* sequence(0.7, ...squares.map((square) => square.opacity(1, 0.5)));
   yield* waitFor(1);
 
   yield* all(swatchRef().opacity(0, 1), g.applyColors());
@@ -127,9 +128,10 @@ export default makeScene2D(function* (view) {
     shift(view, new Vector2(0, 100), 1),
     delay(0.5, all(...[nosameGraph, ar3, ar4].map((x) => x().opacity(1, 1)))),
   );
+  yield* waitFor(3);
   yield* all(...[nosameSudoku, ar1, ar2].map((x) => x().opacity(1, 1)));
 
-  yield* waitFor(1);
+  yield* waitFor(3);
   const line = createRef<CubicBezier>();
   view.add(
     <CubicBezier

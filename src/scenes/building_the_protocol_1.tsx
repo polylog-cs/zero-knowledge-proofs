@@ -24,9 +24,13 @@ export default makeScene2D(function* (view) {
   yield* scene.addText('prover', 'I can color this');
   yield* scene.addText('verifier', 'Oh yeah?');
   yield* scene.removeText('both');
+  yield* waitFor(1);
 
   yield* scene.sendGraph('prover');
+  yield* waitFor(1);
   yield* scene.graphRef().applyColors();
+
+  yield* waitFor(3);
 
   let revealedEdge = ['E', 'F'];
   let nonRevealedVertices = exampleGraphData.labels.filter(
@@ -34,7 +38,14 @@ export default makeScene2D(function* (view) {
   );
 
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
+
+  yield* all(
+    scene.graphRef().pointAtVertex(revealedEdge[0], 1),
+    scene.graphRef().pointAtVertex(revealedEdge[1], 1),
+  );
+
   yield* scene.sendGraph('verifier');
+  yield* waitFor(1);
 
   scene.verifierRef().expression('thinking');
 
@@ -42,11 +53,17 @@ export default makeScene2D(function* (view) {
     scene.graphRef().pointAtVertex(revealedEdge[0], 1, true),
     scene.graphRef().pointAtVertex(revealedEdge[1], 1, true),
   );
-
   yield* scene.addText('verifier', 'Different\ncolors');
+  yield* waitFor(3);
+
+  yield* all(
+    scene.graphRef().unlockVertices(undefined, 1),
+    scene.removeText('verifier'),
+    scene.sendGraph('center'),
+    scene.verifierRef().expression('neutral', 0),
+  );
 
   let i = 0;
-  yield* all(scene.graphRef().unlockVertices(undefined, 1), scene.sendGraph('center'));
   const customPalette = solarizedPalette.filter(
     (c) =>
       [Solarized.red, Solarized.blue, Solarized.green].find((x) => x == c) ===
@@ -93,6 +110,7 @@ export default makeScene2D(function* (view) {
 
   scene.verifierRef().expression('looking');
   scene.proverRef().expression('alarmed');
+  yield* waitFor(5);
 
   yield* all(
     scene.graphRef().pointAtVertex('C', 1, true),

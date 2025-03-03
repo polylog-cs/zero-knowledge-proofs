@@ -76,8 +76,15 @@ export default makeScene2D(function* (view) {
 
   // evidence from seeing different colors
 
+  const properColors = new Map(
+    exampleGraphData.labels.map((label, index) => [
+      label,
+      exampleGraphData.colors[index],
+    ]),
+  );
+
   yield* all(
-    scene.graphRef().applyColors(0, 0, improperColoring),
+    scene.graphRef().applyColors(0, 0, properColors),
     scene.sendGraph('prover', 0),
     scene.graphRef().lockVertices(),
   );
@@ -88,17 +95,7 @@ export default makeScene2D(function* (view) {
   yield* scene.challenge();
   yield* scene.fadeOutGraph(1);
 
-  const properColors = new Map(
-    exampleGraphData.labels.map((label, index) => [
-      label,
-      exampleGraphData.colors[index],
-    ]),
-  );
-  yield* all(
-    scene.graphRef().applyColors(0, 0, properColors),
-    scene.sendGraph('prover', 0),
-    scene.graphRef().lockVertices(),
-  );
+  yield* all(scene.sendGraph('prover', 0), scene.graphRef().lockVertices());
 
   // getting evidence in each step
 

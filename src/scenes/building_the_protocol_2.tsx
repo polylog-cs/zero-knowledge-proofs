@@ -15,19 +15,24 @@ export default makeScene2D(function* (view) {
 
   yield* all(scene.addText('prover', '1. Lock'), scene.graphRef().lockVertices());
 
+  yield* waitFor(3);
+
   yield* scene.sendGraph('verifier');
 
   const challengeEdge: [string, string] = exampleGraphData.edges[0];
-  yield* all(
-    scene.addText('verifier', '2. Challenge'),
-    scene.graphRef().pointAtEdgeLooping(challengeEdge, -90, 2),
-  );
+  yield* all(scene.addText('verifier', '2. Challenge'));
+  scene.verifierRef().expression('thinking');
+  yield* waitFor(1);
+  scene.verifierRef().expression('neutral');
+  yield* scene.graphRef().pointAtEdgeLooping(challengeEdge, -90, 2);
 
   yield* all(
     scene.addText('prover', '3. Reveal'),
     scene.graphRef().unlockVertices(challengeEdge),
     scene.graphRef().removeArrows(),
   );
+
+  yield* waitFor(3);
 
   yield* all(
     scene.addText('verifier', '4. Check'),
