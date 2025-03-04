@@ -131,7 +131,7 @@ export default makeScene2D(function* (view) {
   yield* waitFor(3);
   yield* all(...[nosameSudoku, ar1, ar2].map((x) => x().opacity(1, 1)));
 
-  yield* waitFor(3);
+  yield* waitFor(10);
   const line = createRef<CubicBezier>();
   view.add(
     <CubicBezier
@@ -152,5 +152,12 @@ export default makeScene2D(function* (view) {
   makeWobbly(line);
   line().opacity(0);
   yield* all(line().end(1, 1), line().opacity(1, 0.5));
-  yield* waitFor(1);
+  yield* waitFor(10);
+  yield* all(
+    ...[sudoku.layoutRef, line, nosameSudoku, nosameGraph, ar1, ar2, ar3, ar4].map(
+      (x) => x().opacity(0, 1),
+    ),
+    graph.position(Vector2.zero, 1.5),
+  );
+  yield* waitFor(10);
 });

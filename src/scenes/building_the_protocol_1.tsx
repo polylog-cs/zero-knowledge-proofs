@@ -38,16 +38,19 @@ export default makeScene2D(function* (view) {
   );
 
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
+  yield* waitFor(1);
 
   yield* all(
-    scene.graphRef().pointAtVertex(revealedEdge[0], 1),
-    scene.graphRef().pointAtVertex(revealedEdge[1], 1),
+    scene.graphRef().pointAtVertex(revealedEdge[0], 1.5),
+    scene.graphRef().pointAtVertex(revealedEdge[1], 1.5),
   );
 
   yield* scene.sendGraph('verifier');
   yield* waitFor(1);
 
   scene.verifierRef().expression('thinking');
+
+  yield* waitFor(2);
 
   yield* all(
     scene.graphRef().pointAtVertex(revealedEdge[0], 1, true),
@@ -117,6 +120,5 @@ export default makeScene2D(function* (view) {
     scene.graphRef().pointAtVertex('F', 1, true),
   );
 
-  yield* waitFor(3);
-  yield* all(scene.containerRef().opacity(0, 1));
+  yield* waitFor(10);
 });
