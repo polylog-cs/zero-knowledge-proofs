@@ -16,6 +16,7 @@ import {
   createRef,
   delay,
   easeInBounce,
+  easeInExpo,
   easeInOutBack,
   easeInOutCirc,
   easeInOutQuad,
@@ -24,6 +25,7 @@ import {
   easeInQuad,
   easeOutBounce,
   easeOutElastic,
+  easeOutExpo,
   easeOutQuad,
   sequence,
   Vector2,
@@ -269,4 +271,86 @@ export default makeScene2D(function* (view) {
       ),
     ),
   );
+
+  // disgusting copy-pasting but idc
+  let attributionHidingRect = createRef<Rect>();
+  let anodaAttributionHidingRect = createRef<Circle>();
+
+  view.add(
+    <>
+      <Node cache>
+        <Rect
+          width={100}
+          height={100}
+          ref={anodaAttributionHidingRect}
+          opacity={100}
+          scale={10}
+          fill={background}
+          position={() => attributionHidingRect().position()}
+        ></Rect>
+        <Circle
+          width={100}
+          height={100}
+          scale={10}
+          fill={background}
+          compositeOperation={'source-in'}
+        />
+      </Node>
+      <Node cache>
+        <Circle width={100} height={100} scale={9.5} fill={background} />
+        <Rect
+          width={100}
+          height={100}
+          ref={attributionHidingRect}
+          opacity={0}
+          left={backgroundCircle()
+            .right()
+            .add(new Vector2(0, 250 + 40))}
+          scale={10}
+          fill={background}
+        ></Rect>
+        <Line
+          points={() => [
+            [attributionHidingRect().left().x, 1000],
+            [attributionHidingRect().left().x, -1000],
+          ]}
+          stroke={font}
+          lineWidth={10}
+          zIndex={10}
+          compositeOperation={'source-in'}
+        ></Line>
+      </Node>
+      <Node cache>
+        <Rect
+          width={100}
+          height={100}
+          ref={attributionHidingRect}
+          opacity={0}
+          left={backgroundCircle().right().add(new Vector2(0))}
+          scale={10}
+          fill={background}
+        ></Rect>
+        <MyTxt
+          ref={text}
+          text={
+            'Richard Hladík\nGabor Hollbeck\nTomáš Sláma\nVáclav Rozhoň\nVáclav Volhejn'
+          }
+          textAlign={'center'}
+          zIndex={10}
+          fontSize={90}
+          lineHeight={120}
+          fontWeight={500}
+          fill={font}
+          compositeOperation={'source-in'}
+        />
+      </Node>
+    </>,
+  );
+
+  yield* all(
+    attributionHidingRect().position(new Vector2(0, 0), 1),
+    attributionHidingRect().opacity(1, 1),
+  );
+
+  yield* waitFor(1);
 });
