@@ -41,7 +41,7 @@ type CircleDefinition = [Vector2, number, string];
 type EdgeDefinition = [number, number];
 
 export default makeScene2D(function* (view) {
-  view.fill(Solarized.base2);
+  view.fill(Solarized.background);
 
   let small_circle_size = 8.1;
   let letter_circle_size = 10.5;
@@ -50,21 +50,22 @@ export default makeScene2D(function* (view) {
   let inner_scale = 0.4;
 
   let background = Solarized.base3;
-  let backgroundTransparent = new Color(Solarized.yellow).alpha(0).css();
+  let foreground = Solarized.yellow2;
+  let backgroundTransparent = new Color(foreground).alpha(0).css();
   let font = Solarized.base02;
 
   // NOTE: positions are top-left corner since they are yoinked from Inkscape
   let circle_data: CircleDefinition[] = [
     [new Vector2(26.192, 45.6), letter_circle_size, font], // left O
     [new Vector2(64.611, 45.5), letter_circle_size, font], // right O
-    [new Vector2(34.582, 59.877), small_circle_size, Solarized.yellow],
-    [new Vector2(49.762, 61.619), large_circle_size, Solarized.yellow],
-    [new Vector2(34.339, 23.247), large_circle_size, Solarized.yellow],
-    [new Vector2(65.472, 72.545), small_circle_size, Solarized.yellow],
-    [new Vector2(45.989, 78.4), small_circle_size, Solarized.yellow],
-    [new Vector2(54.411, 28.131), small_circle_size, Solarized.yellow],
-    [new Vector2(45.791, 12.338), small_circle_size, Solarized.yellow],
-    [new Vector2(25.616, 14.474), small_circle_size, Solarized.yellow],
+    [new Vector2(34.582, 59.877), small_circle_size, foreground],
+    [new Vector2(49.762, 61.619), large_circle_size, foreground],
+    [new Vector2(34.339, 23.247), large_circle_size, foreground],
+    [new Vector2(65.472, 72.545), small_circle_size, foreground],
+    [new Vector2(45.989, 78.4), small_circle_size, foreground],
+    [new Vector2(54.411, 28.131), small_circle_size, foreground],
+    [new Vector2(45.791, 12.338), small_circle_size, foreground],
+    [new Vector2(25.616, 14.474), small_circle_size, foreground],
     [new Vector2(15.662, 26.801), small_circle_size, backgroundTransparent], // invisible -v
     [new Vector2(58.135, 11.856), small_circle_size, backgroundTransparent],
     [new Vector2(70.246, 25.196), small_circle_size, backgroundTransparent],
