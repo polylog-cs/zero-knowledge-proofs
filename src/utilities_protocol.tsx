@@ -220,13 +220,13 @@ export class ProtocolScene {
     if (unlock) {
       yield* this.graphRef().unlockVertices(undefined, fast ? 0.7 : 1);
     }
-    for (let i = 0; i < (fast ? 5 : 8); i++) {
-      yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.2);
-      yield* waitFor(fast ? 0.1 : 0.3);
+    for (let i = 0; i < 5; i++) {
+      yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.1);
+      yield* waitFor(fast ? 0.1 : 0.25);
     }
-    if (!fast) yield* waitFor(0.5);
+    //if (!fast) yield* waitFor(0.5);
     yield* this.graphRef().lockVertices(undefined, fast ? 0.7 : 1);
-    if (!fast) yield* waitFor(0.5);
+    //if (!fast) yield* waitFor(0.5);
     this.proverRef().expression('neutral');
   }
 
@@ -270,15 +270,14 @@ export class ProtocolScene {
       this.setGlobalText('Challenge', 'verifier'),
     );
 
-    const numChallenges = fast ? 1 : 10;
-    const pointingDuration = fast ? 0.5 : 2;
+    const numChallenges = fast ? 1 : 7;
+    const pointingDuration = fast ? 0.5 : 1;
     yield* all(
       this.graphRef().pointAtRandomEdges(undefined, numChallenges, pointingDuration),
     );
 
     yield* all(
       chain(
-        waitFor(fast ? 0 : 0.5),
         sequence(
           fast ? 0.5 : 1,
           this.setGlobalText('Reveal', 'prover'),
@@ -286,22 +285,22 @@ export class ProtocolScene {
         ),
       ),
       delay(
-        fast ? 1.5 : 3,
+        fast ? 1.5 : 2,
         chain(
           sequence(
             fast ? 0 : 1,
             this.setGlobalText('Check', 'verifier'),
             fast ? waitFor(0) : this.verifierRef().expression('thinking', 0),
           ),
-          waitFor(fast ? 0.5 : 2),
+          waitFor(fast ? 0.5 : 0),
           all(
             this.verifierRef().expression('happy', 0),
-            this.verifierHappy(1, fast ? 0 : 1),
+            this.verifierHappy(1, fast ? 0 : 0),
           ),
         ),
       ),
     );
-    if (!fast) yield* waitFor(0.5);
+    //if (!fast) yield* waitFor(0.5);
     yield* all(this.removeText('verifier'), this.graphRef().removeArrows());
     this.verifierRef().expression('neutral');
 

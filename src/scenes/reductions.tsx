@@ -2,7 +2,7 @@ import { Img, Layout, Line, makeScene2D, Node } from '@motion-canvas/2d';
 import { all, chain, createRef, sequence, Vector2, waitFor } from '@motion-canvas/core';
 
 import minePath from '../assets/images/minesweeper.png';
-import tuxPath from '../assets/images/tux.png';
+import tuxPath from '../assets/images/tux_hacked.png';
 import { MarioAlgorithm } from '../components/mario_algorithm';
 import { fontSize, Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
@@ -22,8 +22,9 @@ export default makeScene2D(function* (view) {
   view.add(graph);
 
   // Animate the graph into the scene
-  yield* g.fadeIn(1);
-  yield* sequence(0.5, g.applyColors(), graph.scale(0.5, 1));
+  yield* g.fadeIn(0);
+  yield* all(g.applyColors(0, 0), graph.scale(0.5, 0));
+  yield* waitFor(3);
 
   // We'll consider the center to be at (0,0)
   // so item final positions are around it in a circle
@@ -117,7 +118,6 @@ export default makeScene2D(function* (view) {
 
   {
     const img = <Img src={tuxPath} />;
-    yield view.add(img);
     objects.push(setUniformHeight(img as Layout, desiredHeight));
   }
 
@@ -135,12 +135,13 @@ export default makeScene2D(function* (view) {
 
   {
     const img = <Img src={minePath} />;
-    yield view.add(img);
     objects.push(setUniformHeight(img as Layout, desiredHeight));
   }
 
   const anims = [];
   for (let i = 0; i < 5; i++) {
+    if (i == 2) anims.push(waitFor(3));
+    yield view.add(objects[i]);
     objects[i].opacity(0);
     const angle = getAngleDeg(i);
     const initialPos = getCirclePos(initialRadius, angle);

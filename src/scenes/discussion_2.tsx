@@ -35,13 +35,14 @@ export default makeScene2D(function* (view) {
   exampleGraphData;
   yield* scene.fadeInGraph(1);
   let fast = false;
+  yield* waitFor(5);
   scene.verifierRef().expression('evil');
   const overlaidEdges = createRef<Node>();
   view.add(<Node ref={overlaidEdges} />);
   for (const e of [
     ['B', 'A'],
-    ['C', 'B'],
-    ['D', 'C'],
+    //    ['C', 'B'],
+    //    ['D', 'C'],
     ['C', 'E'],
     ['F', 'D'],
   ]) {
@@ -68,7 +69,7 @@ export default makeScene2D(function* (view) {
     yield* all(
       copy().scale(graphLayout.scale, fast ? 0.7 : 1),
       copy().absolutePosition(graphLayout.absolutePosition, fast ? 0.7 : 1),
-      delay(fast ? 0.4 : 0.6, scene.graphRef().lockVertices(e, fast ? 0.6 : 1)),
+      delay(fast ? 0.2 : 0.6, scene.graphRef().lockVertices(e, fast ? 0.6 : 1)),
     );
     fast = true;
   }
@@ -89,6 +90,17 @@ export default makeScene2D(function* (view) {
   yield* all(scene.containerRef().opacity(1, 1));
   yield* scene.graphRef().unlockVertices();
 
+  yield* waitFor(3);
+
+  scene.proverRef().expression('thinking');
+  for (let i = 0; i < 10; i++) {
+    yield* scene.graphRef().shuffleColors(0.05);
+    yield* waitFor(0.15);
+  }
+  scene.proverRef().expression('neutral');
+
+  yield* waitFor(3);
+
   // Highlight the vertices that are originally red when shuffling.
   const v1 = scene.graphRef().getVertex('B');
   const v2 = scene.graphRef().getVertex('D');
@@ -100,7 +112,7 @@ export default makeScene2D(function* (view) {
   v2.scale(1);
 
   yield* scene.sendGraph('verifier', 1);
-  fast = false;
+  fast = true;
   yield* graphLayout.opacity(1, 1);
   scene.verifierRef().expression('evil');
   for (const [i, _e] of [
@@ -146,7 +158,7 @@ export default makeScene2D(function* (view) {
           1,
         ),
       );
-      //scene.verifierRef().expression('alarmed');
+      scene.verifierRef().expression('alarmed');
       scene.proverRef().expression('happy');
       yield* all(
         cross().scale(5, 1),
@@ -161,23 +173,11 @@ export default makeScene2D(function* (view) {
       copy().scale(graphLayout.scale, fast ? 0.7 : 1),
       copy().absolutePosition(graphLayout.absolutePosition, fast ? 0.7 : 1),
       delay(fast ? 0.4 : 0.6, scene.graphRef().lockVertices(e, fast ? 0.6 : 1)),
+      delay(0.2, scene.sendGraph('prover', 0.5)),
     );
-    yield* scene.sendGraph('prover', 1);
-    yield* scene.shufflingColors(true);
-    yield* scene.sendGraph('verifier', 1);
+    yield* scene.shufflingColors(true, true);
+    yield* scene.sendGraph('verifier', 0.5);
   }
 
-  yield* all(
-    overlaidEdges().opacity(0, 1),
-    graphLayout.opacity(0, 1),
-    scene.containerRef().opacity(0, 1),
-  );
-  yield* waitFor(1);
-  shift(scene.containerRef(), new Vector2(0, -100));
-  yield* scene.graphRef().unlockVertices(undefined, 0);
-  yield* scene.graphRef().uncolor(0, 0);
-  yield* scene.sendGraph('prover', 0);
-  yield* all(scene.containerRef().opacity(1, 1));
-  yield* scene.basicProtocol();
   yield* waitFor(3);
 });

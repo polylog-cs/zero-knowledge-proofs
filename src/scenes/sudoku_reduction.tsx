@@ -1,6 +1,6 @@
 import { Layout, makeScene2D, Rect, Shape, Spline, Txt } from '@motion-canvas/2d';
-import { Color, createRef, Vector2 } from '@motion-canvas/core';
-import { all, sequence, waitFor } from '@motion-canvas/core/lib/flow';
+import { Color, createRef, easeInOutBack, linear, Vector2 } from '@motion-canvas/core';
+import { all, chain, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
 import { indicate, Solarized, solarizedPalette } from '../utilities';
 import { generateArcPoints } from '../utilities_graph';
@@ -21,7 +21,7 @@ export default makeScene2D(function* (view) {
   sudokuLayout.scale(1.2);
 
   // Wait a moment to show the Sudoku
-  yield* waitFor(0.5);
+  yield* waitFor(2);
 
   // 2) Slide Sudoku to the left.
   // Adjust the x value so it moves nicely to the left half of the screen.
@@ -47,8 +47,9 @@ export default makeScene2D(function* (view) {
   );
   const squares = Array.from(swatchRef().children()) as Rect[];
 
+  yield* waitFor(1);
   // Fade in the swatch
-  yield* sequence(0.1, ...squares.map((square) => square.opacity(1, 0.3)));
+  yield* sequence(0.2, ...squares.map((square) => square.opacity(1, 0.5)));
   yield* waitFor(1);
 
   // 5) On top of sudoku, show a list of 9 digits.
@@ -63,7 +64,13 @@ export default makeScene2D(function* (view) {
       justifyContent="center"
     >
       {Array.from({ length: 9 }, (_, i) => (
-        <MyTxt key={`digit-${i}`} text={(i + 1).toString()} fontSize={40} opacity={0} />
+        <MyTxt
+          key={`digit-${i}`}
+          text={(i + 1).toString()}
+          fontSize={40}
+          opacity={0}
+          fill={solarizedPalette[i]}
+        />
       ))}
     </Layout>,
   );
@@ -73,17 +80,7 @@ export default makeScene2D(function* (view) {
   yield* sequence(0.1, ...digits.map((digit) => digit.opacity(1, 0.3)));
   yield* waitFor(1);
 
-  yield* all(
-    sudoku.color(0.3, 0.5),
-    sequence(
-      0.3,
-      ...digitsRef()
-        .children()
-        .map((c, i) => {
-          return (c as MyTxt).fill(solarizedPalette[i], 0.5);
-        }),
-    ),
-  );
+  yield* all(sudoku.color(0, 1));
 
   yield* waitFor(2);
 
@@ -93,6 +90,16 @@ export default makeScene2D(function* (view) {
     digitsRef().opacity(0, 1),
     sudoku.color(0, 1, true),
   );
+
+  yield* waitFor(3);
+
+  yield* sudokuLayout.children()[0].zIndex(10, 0);
+  yield* all(
+    indicate(graph.getVertex('(0,0)')),
+    indicate(sudokuLayout.children()[0].children()[0]),
+  );
+
+  yield* waitFor(3);
 
   const arr = [
     Array.from({ length: 8 }, (_, i) => [0, i + 1]),
@@ -107,15 +114,15 @@ export default makeScene2D(function* (view) {
 
   for (let i = 0; i < arr.length; i++) {
     yield* graph.fadeEdgesSequential(
-      0.1,
+      i == 0 ? 0.3 : 0.1,
       1,
       arr[i].map(([r, c]) => ['(0,0)', `(${r},${c})`]),
     );
-    yield* waitFor(1);
+    yield* waitFor(2);
   }
 
   yield* graph.fadeEdgesSequential(
-    0.05,
+    0.02,
     1,
     arr.flat().map(([r, c]) => ['(0,0)', `(${r},${c})`]),
     0,
@@ -130,10 +137,10 @@ export default makeScene2D(function* (view) {
     exampleCell[1]
   ] as Rect;
 
-  yield* indicate(rect);
-  yield* waitFor(1);
-
-  yield* indicate(graph.getVertex(`(${exampleCell[0]},${exampleCell[1]})`));
+  yield* all(
+    indicate(rect),
+    indicate(graph.getVertex(`(${exampleCell[0]},${exampleCell[1]})`)),
+  );
   yield* waitFor(1);
 
   yield* sequence(
@@ -141,9 +148,8 @@ export default makeScene2D(function* (view) {
     graph.containerRef().position.y(-170, 1),
     graph.fadeVerticesSequential(0.05, 1, graph.cliqueVertices),
   );
-  yield* waitFor(1);
 
-  yield* graph.fadeEdgesSequential(0.05, 1, graph.cliqueArcs);
+  yield* graph.fadeEdgesSequential(0.02, 1, graph.cliqueArcs, 0.5);
   yield* waitFor(1);
 
   yield* graph.colorPalette(0.1, 0.5);
@@ -181,28 +187,62 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1);
   yield* fromVertex.fill(toVertex.fill(), 0.5);
   yield* waitFor(1);
-  yield* nonExistingEdge.opacity(0, 0.5);
-  yield* waitFor(0.5);
-  yield* fromVertex.fill(Solarized.gray, 0.5);
-  yield* waitFor(0.5);
-  yield* graph.colorPalette(0, 1, true);
+  yield* all(
+    nonExistingEdge.opacity(0, 0.5),
+    fromVertex.fill(Solarized.gray, 0.5),
+    graph.colorPalette(0, 1, true),
+  );
 
-  const edgeGroups = [graph.crossArcs, graph.rowArcs, graph.columnArcs, graph.boxArcs];
+  const edgeGroups = [graph.rowArcs, graph.columnArcs, graph.boxArcs];
+
+  yield* graph.fadeEdgesSequential(0.01, 1, graph.crossArcs, 0.7);
+  yield* graph.fadeEdgesSequential(
+    0.001,
+    0.5,
+    [...graph.crossArcs, ...graph.cliqueArcs],
+    0.1,
+  );
+  yield* waitFor(1);
 
   for (let i = 0; i < edgeGroups.length; i++) {
-    yield* graph.fadeEdgesSequential(i == 0 ? 0.01 : 0.005, 1, edgeGroups[i]);
-    // yield* waitFor(i == 0 ? 1 : 0.5);
-
-    const edges = edgeGroups[i];
-    if (i == 0) {
-      edges.push(...graph.cliqueArcs);
-    }
-    yield* graph.fadeEdgesSequential(i == 0 ? 0.001 : 0.001, 1, edges, 0.1);
-    yield* waitFor(i == 0 ? 1 : 0.5);
+    let factor = i < 2 ? 1 / (9 * 4 * 9) : 1 / (9 * 2 * 9);
+    yield* sequence(
+      1.5,
+      //graph.fadeEdgesSequential(0.3 * factor, 1, edgeGroups[i], 0.7),
+      graph.fadeEdgesSequential(0.3 * factor, 0.5, edgeGroups[i], i == 2 ? 0.3 : 0.1),
+    );
   }
 
   /*yield* indicate(graph.containerRef(), 1.1);
   yield* waitFor(1);*/
+  yield* all(graph.colorPalette(0, 1), graph.colorSolution(solution, undefined, 0, 1));
+  yield* waitFor(3);
+  yield* all(
+    ...[...Array(9).keys()].flatMap((i) =>
+      [...Array(9).keys()].map((j) =>
+        (function* () {
+          let v = graph.getVertex('(' + i + ',' + j + ')');
+          let w = v.clone();
+          view.add(w);
+          w.absolutePosition(v.absolutePosition());
+          let cell = sudoku.cells[i][j].textRef();
+          let sol = sudoku.solution[i][j];
+          yield* chain(
+            all(v.absolutePosition(cell.absolutePosition(), 2), v.scale(1.3, 1)),
+            waitFor(3),
+            all(
+              cell.text('' + sol, 0),
+              cell.fill(solarizedPalette[sol - 1], 0),
+              cell.opacity(1, 0),
+              v.opacity(0.2, 1),
+            ),
+          );
+        })(),
+      ),
+    ),
+  );
+  yield* waitFor(3);
+  return;
 
   yield* indicate(sudokuLayout, 1.1);
   yield* waitFor(1);

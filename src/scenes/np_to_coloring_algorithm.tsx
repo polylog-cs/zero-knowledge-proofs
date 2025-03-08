@@ -113,11 +113,15 @@ export default makeScene2D(function* (view) {
     yield;
 
     // Start fully off-screen to the left: negative X
-    toEdge(inputsContainer(), 'left', 0, 0);
-    shift(inputsContainer(), new Vector2(-inputsContainer().width(), 14), 0);
+    nextTo(inputsContainer(), view, 'left', 100);
     //inputsContainer().x(-inputsContainer().width());
 
-    yield* inputsContainer().x(inputsContainer().width() / 2 + 100, 12, linear);
+    yield* waitFor(5);
+    yield* inputsContainer().x(
+      inputsContainer().width() / 2 + 100,
+      it == 0 ? 3 : 2,
+      linear,
+    );
 
     // Update "No/Yes" text
     outputTextRect().x(100);

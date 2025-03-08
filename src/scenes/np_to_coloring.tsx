@@ -337,4 +337,6 @@ export default makeScene2D(function* (view) {
     ),
     delay(1 + duration - 1, smbge().opacity(1, 1)),
   );
+
+  yield* waitFor(10);
 });

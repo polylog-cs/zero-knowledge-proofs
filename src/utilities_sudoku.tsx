@@ -209,8 +209,14 @@ export class SudokuGraph extends Graph {
     );
   }
 
-  *colorSolution(solution: number[][], colors: string[] = solarizedPalette) {
+  *colorSolution(
+    solution: number[][],
+    colors: string[] = solarizedPalette,
+    initialDelay: number = 1,
+    fadeDuration: number = 0.5,
+  ) {
     // Now, for each digit 1 through 9, color all Sudoku vertices with that digit
+    let animations = [];
     for (let d = 1; d <= 9; d++) {
       const color = colors[d - 1];
       const colorAnimations: Array<ThreadGenerator> = [];
@@ -221,17 +227,15 @@ export class SudokuGraph extends Graph {
           if (solution[i][j] === d) {
             const vertex = this.getVertex(`(${i},${j})`);
             if (vertex) {
-              colorAnimations.push(vertex.fill(color, 0.5));
+              colorAnimations.push(vertex.fill(color, fadeDuration));
             }
           }
         }
       }
 
-      // Animate all these changes simultaneously
-      if (colorAnimations.length > 0) {
-        yield* all(...colorAnimations);
-      }
+      animations.push(all(...colorAnimations));
     }
+    yield* sequence(initialDelay, ...animations);
   }
 }
 

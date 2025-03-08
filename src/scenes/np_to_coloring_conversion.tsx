@@ -67,8 +67,9 @@ export default makeScene2D(function* (view) {
   makeWobbly(line1);
 
   line1().opacity(0);
+  yield* waitFor(2);
   yield* all(circuitStep().opacity(1, 1), line1().end(1, 1), line1().opacity(1, 0.5));
-  yield* waitFor(1);
+  yield* waitFor(2);
   yield* all(
     algorithmStep().scale(scale2, 1),
     algorithmStep().position([-xGap, -yGap], 1),

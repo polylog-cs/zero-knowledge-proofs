@@ -1,5 +1,13 @@
 import { Circle, Img, makeScene2D } from '@motion-canvas/2d';
-import { all, createRef, easeInQuad, easeOutQuad, waitFor } from '@motion-canvas/core';
+import {
+  all,
+  createRef,
+  delay,
+  easeInQuad,
+  easeOutQuad,
+  sequence,
+  waitFor,
+} from '@motion-canvas/core';
 
 import keyImage from '../assets/images/key.svg';
 import {
@@ -69,17 +77,18 @@ export default makeScene2D(function* (view) {
 
   //// Lock
   yield* waitFor(1);
-  yield* all(lock().lock(), commitText().opacity(1, 1));
+  yield* all(lock().lock(2), commitText().opacity(1, 1));
   yield* circle().position(VERIFIER_POSITION.addX(-350), 1);
 
+  yield* waitFor(2);
   //// Unlock
   nextTo(revealText(), circle(), 'down', 100);
 
   const passKey = function* () {
     nextTo(key(), prover(), 'right', 20);
     key().rotation(0);
-    yield* key().opacity(1, 0.5);
     yield* all(
+      key().opacity(1, 0.5),
       key().rotation(180, 1),
       key().position.x(verifier().position().x - 150, 1),
       key().position.y(-200, 0.5, easeInQuad).to(0, 0.5, easeOutQuad),
@@ -90,8 +99,8 @@ export default makeScene2D(function* (view) {
     yield* all(key().position.add([-50, 0], 1), key().opacity(0, 1), lock().unlock());
   };
 
-  yield* passKey();
-  yield* all(revealText().opacity(1, 1), unlockUsingKey());
+  yield* all(revealText().opacity(1, 1), delay(0.5, passKey()));
+  yield* unlockUsingKey();
   prover().expression('happy');
   verifier().expression('happy');
   yield* waitFor(2);
@@ -123,13 +132,12 @@ export default makeScene2D(function* (view) {
   // Pass to verifier
   prover().expression('evil');
   yield* lock().lock();
-  yield* circle().position(VERIFIER_POSITION.addX(-350), 1);
-  yield* waitFor(1);
+  circle().fill(Solarized.green);
+  yield* sequence(0.5, circle().position(VERIFIER_POSITION.addX(-350), 1), passKey());
 
   // Open with a different color
-  yield* passKey();
-  circle().fill(Solarized.green);
   yield* unlockUsingKey();
+  verifier().expression('happy');
 
   // prover().expression('embarrassed');
   // verifier().expression('alarmed');
