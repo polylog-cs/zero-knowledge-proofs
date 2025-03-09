@@ -334,7 +334,7 @@ export default makeScene2D(function* (view) {
         <Layout compositeOperation={'source-in'} layout gap={40} alignItems={'center'}>
           <MyTxt
             ref={text}
-            text={'Richard\nTomáš\nVáclav\nVáclav'}
+            text={'Richard\nVáclav\nTomáš\nVáclav'}
             textAlign={'right'}
             zIndex={10}
             fontSize={100}
@@ -344,7 +344,7 @@ export default makeScene2D(function* (view) {
           />
           <MyTxt
             ref={text}
-            text={'Hladík\nSláma\nRozhoň\nVolhejn'}
+            text={'Hladík\nRozhoň\nSláma\nVolhejn'}
             textAlign={'left'}
             zIndex={10}
             fontSize={100}
