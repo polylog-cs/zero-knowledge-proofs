@@ -18,8 +18,6 @@ import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
 import { MyTxt } from '../utilities_text';
 
-const random = useRandom(0xbeef2);
-
 export function* solve(
   view: View2D,
   object: MyTxt,
@@ -44,6 +42,8 @@ export function* solve(
       scale={() => object.scale().mul(opacityScaleSignal())}
     />,
   );
+
+  const random = useRandom();
 
   icon().absolutePosition(object.absolutePosition);
 
@@ -83,6 +83,11 @@ function* addChallengeAndResponse(
   gearColor,
   fake: boolean,
 ) {
+  const random = useRandom();
+
+  // disgusting hack to get better numbers
+  let x = random.nextInt(10, 99);
+
   if (fake) quick = true;
   const num1 = random.nextInt(10, 99);
   const num2 = random.nextInt(10, 99);
