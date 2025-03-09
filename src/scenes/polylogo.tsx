@@ -331,19 +331,28 @@ export default makeScene2D(function* (view) {
           scale={10}
           fill={background}
         ></Rect>
-        <MyTxt
-          ref={text}
-          text={
-            'Richard Hladík\nGabor Hollbeck\nTomáš Sláma\nVáclav Rozhoň\nVáclav Volhejn'
-          }
-          textAlign={'center'}
-          zIndex={10}
-          fontSize={90}
-          lineHeight={120}
-          fontWeight={500}
-          fill={font}
-          compositeOperation={'source-in'}
-        />
+        <Layout compositeOperation={'source-in'} layout gap={40} alignItems={'center'}>
+          <MyTxt
+            ref={text}
+            text={'Richard\nTomáš\nVáclav\nVáclav'}
+            textAlign={'right'}
+            zIndex={10}
+            fontSize={100}
+            lineHeight={120}
+            fontWeight={500}
+            fill={font}
+          />
+          <MyTxt
+            ref={text}
+            text={'Hladík\nSláma\nRozhoň\nVolhejn'}
+            textAlign={'left'}
+            zIndex={10}
+            fontSize={100}
+            lineHeight={120}
+            fontWeight={500}
+            fill={font}
+          />
+        </Layout>
       </Node>
     </>,
   );
