@@ -18,6 +18,8 @@ import teacherImage from '../assets/images/teacher.png';
 import { FONT_FAMILY, Icon, Solarized } from '../utilities';
 import { MyTxt } from '../utilities_text';
 
+const random = useRandom(0xbeef2);
+
 export function* solve(
   view: View2D,
   object: MyTxt,
@@ -25,7 +27,6 @@ export function* solve(
   solveTime: number = 0.1,
   answer: string = undefined,
 ): ThreadGenerator {
-  const random = useRandom();
   const [a, b] = object.text().split(' + ').map(Number);
   const result = answer === undefined ? a + b : answer;
 
@@ -83,8 +84,6 @@ function* addChallengeAndResponse(
   fake: boolean,
 ) {
   if (fake) quick = true;
-  const random = useRandom();
-
   const num1 = random.nextInt(10, 99);
   const num2 = random.nextInt(10, 99);
 
@@ -369,6 +368,18 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
     null,
   );
 
+  yield* addChallengeAndResponse(
+    view,
+    challengeLayout,
+    responseLayout,
+    challenge,
+    teacher,
+    student,
+    response,
+    false,
+    null,
+  );
+
   const onlyThisMuch = createRef<MyTxt>();
   view.add(
     <MyTxt
@@ -390,11 +401,11 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
   );
 
   // show probabilities
-  for (let i = 1; i <= 2; i++) {
+  for (let i = 1; i <= 3; i++) {
     yield* animatePercentage(view, responseLayout, i);
   }
 
-  for (let i = 3; i < 6; i++) {
+  for (let i = 3; i < 5; i++) {
     yield* all(
       addChallengeAndResponse(
         view,
@@ -407,7 +418,7 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
         true,
         Solarized.cyan,
       ),
-      delay(0.25, animatePercentage(view, responseLayout, i)),
+      delay(0.25, animatePercentage(view, responseLayout, i + 1)),
     );
   }
 
