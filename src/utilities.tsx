@@ -49,7 +49,9 @@ export const solarizedPalette = [
 ];
 
 export const fontSize = 50;
-export const FONT_FAMILY = 'Computer Modern Serif, Noto Color Emoji';
+export const FONT_FAMILY = 'Computer Modern Serif, Noto Color Emoji, sans-serif';
+// sans-serif so that it's visible CMU hasn't loaded
+// (if this has happened to you, just force a HMR update by touching a file)
 
 export interface IconProps extends LayoutProps {
   path: string;
