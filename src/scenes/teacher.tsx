@@ -473,9 +473,8 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
       );
   });
 
-  yield* p().opacity(1, 1);
-
   yield* all(
+    p().opacity(1, 1),
     addChallengeAndResponse(
       view,
       challengeLayout,
