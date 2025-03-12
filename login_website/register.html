@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
+<meta name="viewport" content="width=device-width">
+<title>Polylog</title>
+<link rel="preload" as="style" href="main.css">
+<link rel="stylesheet" href="main.css">
+<script>
+	function change(state) {
+		document.getElementById('hide').style.display = state;
+		document.getElementById('modal').style.display = state;
+	}
+</script>
+</head>
+<body>
+<div id="container">
+	<img src="polylogo.png" id="polylogo">
+
+	<input type="text" placeholder="Username">
+	<input type="password" placeholder="Password">
+	<input type="password" placeholder="Confirm password">
+	<button onclick="change('block')">Register</button>
+</div>
+<div id="hide"></div>
+<div id="modal">
+	Error: password already used by AttilaTheHun. Pick a different one.
+	<button onclick="change('none')">OK</button>
+</div>
+</body>
+</html>

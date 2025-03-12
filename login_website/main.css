@@ -1,0 +1,70 @@
+#container {
+  margin-top: 6%;
+}
+body {
+  background: #eee8d5;
+  font-size: 2rem;
+  color: #002b36;
+  font-family: 'Cantarell';
+}
+
+#polylogo {
+  display: block;
+  margin: 0.5em auto;
+  width: 45%;
+  height: auto;
+  padding: 2em;
+}
+input,
+button {
+  display: block;
+  margin: 0.5em auto;
+  font-size: 1em;
+  width: 20%;
+  box-sizing: content-box;
+  padding: 0.1em;
+  border-radius: 0.3em;
+  border: 0.1em solid #657b83;
+  -moz-transition: all 0.3s ease-in-out;
+}
+
+input:focus,
+button:focus,
+button:active {
+  outline: 0.1em solid #268bd2;
+  box-shadow: none;
+  border-color: #268bd2;
+}
+
+button {
+  background: #073642;
+  color: #fdf6e3;
+  border-color: #002b36;
+}
+
+#modal {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20%;
+  padding: 1em;
+  background: #fdf6e3;
+  border: 0.3em solid #002b36;
+  border-radius: 0.6em;
+}
+
+#modal button {
+  margin: 0.8em auto 0 auto;
+}
+
+#hide {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+}
