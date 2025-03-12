@@ -40,8 +40,8 @@ export default makeProject({
     // building_the_protocol_1, // TODO: malý crf
     // building_the_protocol_2, // TODO: malý crf
     // discussion_1,
-    discussion_1_fix,
-    // discussion_2,
+    discussion_1_fix, // TODO: render po pushi
+    // discussion_2,  // TODO: tohle je broken??
     // discussion_3,
     // commitments_1,
     // commitments_2,
