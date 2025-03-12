@@ -44,11 +44,11 @@ export default makeScene2D(function* (view) {
   const desiredHeight = 230;
 
   const arrowParams = [
-    { alpha: 0.3, beta: 0.6 }, // Sudoku
-    { alpha: 0.25, beta: 0.6 }, // Mario
-    { alpha: 0.3, beta: 0.7 }, // Tux
-    { alpha: 0.3, beta: 0.6 }, // Zeta
-    { alpha: 0.3, beta: 0.7 }, // Minesweeper
+    { alpha: 0.35, beta: 0.58 }, // Sudoku
+    { alpha: 0.3, beta: 0.58 }, // Mario
+    { alpha: 0.25, beta: 0.7 }, // Tux
+    { alpha: 0.28, beta: 0.62 }, // Zeta
+    { alpha: 0.35, beta: 0.7 }, // Minesweeper
   ];
 
   const offsets = [
@@ -150,15 +150,16 @@ export default makeScene2D(function* (view) {
     const arrow = createArrow(finalPos, i);
     view.add(arrow);
     const origScale = objects[i].scale();
+
     anims.push(
       sequence(
-        0.3,
+        0.0,
         all(
-          objects[i].position(finalPos.add(offsets[i]), 1),
+          objects[i].position(finalPos.add(offsets[i]), 0),
           objects[i].opacity(1, 1),
           objects[i].scale(origScale.mul(0.5)).scale(origScale, 1),
         ),
-        arrow().end(0).end(1, 0.8),
+        all(arrow().start(1).start(0, 0.8), arrow().end(1).end(1, 0.8)),
       ),
     );
   }

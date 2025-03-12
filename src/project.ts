@@ -31,7 +31,7 @@ import full_protocol from './scenes/full_protocol?scene';
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
-    // polylogo, // TODO: malý crf
+    polylogo,
     // teacher_failing, // TODO: malý crf
     // teacher, // TODO: malý crf
     // teacher_fixup, // TODO: malý crf
@@ -40,20 +40,19 @@ export default makeProject({
     // building_the_protocol_1, // TODO: malý crf
     // building_the_protocol_2, // TODO: malý crf
     // discussion_1,
-    // discussion_1_fix,
+    discussion_1_fix,
     // discussion_2,
     // discussion_3,
     // commitments_1,
     // commitments_2,
     // sudoku_reduction,
     // np_to_coloring,
-    full_protocol,
+    // full_protocol,
     // np_to_coloring_algorithm,
     // np_to_coloring_conversion,
     // np_to_coloring_big_graph,
-    // reductions,  // TODO: broken
+    // reductions,
     // phone,
-    // timeline,  // TODO: broken
     // mario_big_graph,
   ],
 });
