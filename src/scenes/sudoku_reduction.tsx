@@ -31,7 +31,7 @@ export default makeScene2D(function* (view) {
 
   view.add(graph.getGraphLayout());
   yield;
-  graph.containerRef().position([200, -250]);
+  graph.containerRef().position([150, -280]);
 
   yield* graph.fadeVerticesSequential(0.01, 0.7, graph.gridVertices);
 
@@ -39,7 +39,7 @@ export default makeScene2D(function* (view) {
 
   const swatchRef = createRef<Layout>();
   view.add(
-    <Layout ref={swatchRef} layout direction={'row'} gap={10} position={[480, -320]}>
+    <Layout ref={swatchRef} layout direction={'row'} gap={10} position={[430, -350]}>
       {solarizedPalette.map((c, i) => (
         <Rect key={`color-${i}`} width={30} height={30} fill={c} opacity={0} />
       ))}
@@ -74,7 +74,7 @@ export default makeScene2D(function* (view) {
       ))}
     </Layout>,
   );
-  nextTo(digitsRef(), sudoku.layoutRef(), 'up', 70);
+  nextTo(digitsRef(), sudoku.layoutRef(), 'up', 20);
 
   const digits = Array.from(digitsRef().children()) as Txt[];
   yield* sequence(0.1, ...digits.map((digit) => digit.opacity(1, 0.3)));
@@ -145,7 +145,7 @@ export default makeScene2D(function* (view) {
 
   yield* sequence(
     0.5,
-    graph.containerRef().position.y(-170, 1),
+    graph.containerRef().position.y(-150, 1),
     graph.fadeVerticesSequential(0.05, 1, graph.cliqueVertices),
   );
 
