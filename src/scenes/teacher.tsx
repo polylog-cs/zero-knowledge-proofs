@@ -460,17 +460,8 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
     />,
   );
 
-  p().absolutePosition(() => {
-    const response = responseLayout().children()[5];
-    const responseCenter = response.absolutePosition();
-
-    return responseCenter
-      .addX(-response.width() / 2)
-      .addX(-p().width() / 2)
-      .addX(responseLayout().width() * 0.9)
-      .add(
-        response.position().sub(responseLayout().children()[4].position()).scale(1.5),
-      );
+  p().position(() => {
+    return new Vector2(0, view.height() * 0.15);
   });
 
   yield* all(

@@ -215,7 +215,7 @@ export function* terriblehack(view: View2D, failing: boolean = false) {
   const student = createRef<Img>();
   const teacher = createRef<Img>();
 
-  view.scale(new Vector2(-1.25, 1.25));
+  view.scale(view.scale().mul(new Vector2(1.25, 1.25)));
 
   yield view.add(
     <>
