@@ -24,7 +24,7 @@ export default makeScene2D(function* (view) {
   scene.verifierRef().expression('thinking');
   yield* waitFor(1);
   scene.verifierRef().expression('neutral');
-  yield* scene.graphRef().pointAtEdgeLooping(challengeEdge, -90, 2);
+  yield* scene.graphRef().pointAtEdge(challengeEdge);
 
   yield* all(
     scene.addText('prover', '3. Reveal'),

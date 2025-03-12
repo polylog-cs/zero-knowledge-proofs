@@ -13,6 +13,7 @@ import {
   PlaybackState,
   sequence,
   useRandom,
+  Vector2,
   waitFor,
 } from '@motion-canvas/core';
 
@@ -71,12 +72,11 @@ export default makeScene2D(function* (view) {
   let n = 1000,
     m = 300;
   // To kill your computer:
-  //  n = 5000,
-  //  m = 5000;
+  /*
   if (view.playbackState() == PlaybackState.Rendering) {
     n = 5000;
     m = 10000;
-  }
+  }*/
 
   const cam = <Node />;
   const G = <Node scale={50} x={-300} y={-400} />;
@@ -149,14 +149,15 @@ export default makeScene2D(function* (view) {
     E.children()[E.children().length - 1].j = j;
   }
 
-  const ithDelay = (i: number) => invertIncreasing(easeInCubic, i / n) * 6;
+  const ithDelay = (i: number) => invertIncreasing(easeInCubic, i / n) * 8;
   cam.scale(30);
   yield* all(
-    cam.scale(1.2, 8),
+    cam.scale(1, 10),
+    cam.position(new Vector2(0, -40), 10),
     all(
       ...V.children().map((v, i) => {
         let old = v.scale();
-        return delay(ithDelay(i), v.scale(0).scale(old, 1, easeOutElastic));
+        return delay(ithDelay(i), v.scale(0).scale(old, 1.2, easeOutElastic));
       }),
     ),
     all(
@@ -165,7 +166,7 @@ export default makeScene2D(function* (view) {
         e.end(0).opacity(0);
         return delay(
           Math.max(ithDelay(e.i) + 0.5, ithDelay(e.j) - 0.5),
-          all(e.opacity(old, 1), e.end(1, 1.5)),
+          all(e.opacity(old, 1.2), e.end(1, 1.7)),
         );
       }),
     ),

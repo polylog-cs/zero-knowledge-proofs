@@ -95,10 +95,21 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     ...[...improperColoring.keys()].map((v, i) =>
-      delay(i * 0.05, scene.graphRef().getVertex(v).size(new Vector2(90, 90), 0.5)),
+      delay(0, scene.graphRef().getVertex(v).size(new Vector2(60, 60), 0.5)),
     ),
-    scene.graphRef().fadeEdgesSequential(0, 1, null, 0.25),
+    sequence(
+      0,
+      ...exampleGraphData.edges.map((e) =>
+        all(
+          scene.graphRef().getEdge(e).ref().stroke(Solarized.yellow2, 0.5),
+          scene.graphRef().getEdge(e).ref().lineWidth(30, 0.5),
+        ),
+      ),
+    ),
+    //    scene.graphRef().fadeEdgesSequential(0, 1, null, 0.25),
   );
+
+  yield* waitFor(2);
 
   yield* all(
     chance_ref().opacity(0, 1),

@@ -215,17 +215,23 @@ export class ProtocolScene {
     );
   }
 
-  public *shufflingColors(unlock: boolean = true, fast: boolean = false) {
+  public *shufflingColors(
+    unlock: boolean = true,
+    fast: boolean = false,
+    numShuffles: number = 5,
+    wait: number | undefined = undefined,
+    lock: boolean = true,
+  ) {
     this.proverRef().expression('thinking');
     if (unlock) {
       yield* this.graphRef().unlockVertices(undefined, fast ? 0.7 : 1);
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < numShuffles; i++) {
       yield* this.graphRef().shuffleColors(fast ? 0.05 : 0.1);
-      yield* waitFor(fast ? 0.1 : 0.25);
+      yield* waitFor(wait ?? (fast ? 0.1 : 0.25));
     }
     //if (!fast) yield* waitFor(0.5);
-    yield* this.graphRef().lockVertices(undefined, fast ? 0.7 : 1);
+    if (lock) yield* this.graphRef().lockVertices(undefined, fast ? 0.7 : 1);
     //if (!fast) yield* waitFor(0.5);
     this.proverRef().expression('neutral');
   }

@@ -101,6 +101,16 @@ export default makeScene2D(function* (view) {
 
   yield* waitFor(3);
 
+  for (let e of [
+    ...graph.boxArcs,
+    ...graph.rowArcs,
+    ...graph.crossArcs,
+    ...graph.cliqueArcs,
+    ...graph.columnArcs,
+  ]) {
+    graph.getEdge(e).ref().stroke(Solarized.base1);
+  }
+
   const arr = [
     Array.from({ length: 8 }, (_, i) => [0, i + 1]),
     Array.from({ length: 8 }, (_, i) => [i + 1, 0]),
@@ -200,7 +210,7 @@ export default makeScene2D(function* (view) {
     0.001,
     0.5,
     [...graph.crossArcs, ...graph.cliqueArcs],
-    0.1,
+    0.15,
   );
   yield* waitFor(1);
 
@@ -209,7 +219,7 @@ export default makeScene2D(function* (view) {
     yield* sequence(
       1.5,
       //graph.fadeEdgesSequential(0.3 * factor, 1, edgeGroups[i], 0.7),
-      graph.fadeEdgesSequential(0.3 * factor, 0.5, edgeGroups[i], i == 2 ? 0.3 : 0.1),
+      graph.fadeEdgesSequential(0.3 * factor, 0.5, edgeGroups[i], i == 2 ? 0.5 : 0.15),
     );
   }
 

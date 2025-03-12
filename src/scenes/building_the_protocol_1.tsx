@@ -111,14 +111,15 @@ export default makeScene2D(function* (view) {
   yield* scene.graphRef().lockVertices(nonRevealedVertices);
   yield* scene.sendGraph('verifier');
 
-  scene.verifierRef().expression('looking');
-  scene.proverRef().expression('alarmed');
-  yield* waitFor(5);
-
+  yield* waitFor(2);
   yield* all(
     scene.graphRef().pointAtVertex('C', 1, true),
     scene.graphRef().pointAtVertex('F', 1, true),
   );
+
+  scene.verifierRef().expression('looking');
+  scene.proverRef().expression('alarmed');
+  yield* waitFor(5);
 
   yield* waitFor(10);
 });

@@ -105,21 +105,27 @@ export default makeScene2D(function* (view) {
   const v1 = scene.graphRef().getVertex('B');
   const v2 = scene.graphRef().getVertex('D');
   yield* all(v1.scale(1.42, 1), v2.scale(1.42, 1));
-  yield* scene.shufflingColors(false);
-  // scene.shufflingColors() also locks the graph,
-  // so we can reset the scale without an animation
-  v1.scale(1);
-  v2.scale(1);
+  yield* scene.shufflingColors(false, false, 10, 0.4, false);
+  yield* all(v1.scale(1, 1), v2.scale(1, 1));
 
-  yield* scene.sendGraph('verifier', 1);
-  fast = true;
-  yield* graphLayout.opacity(1, 1);
-  scene.verifierRef().expression('evil');
+  fast = false;
   for (const [i, _e] of [
     ['B', 'A'],
     ['A', 'C'],
   ].entries()) {
     const e = _e as [string, string];
+    yield* waitFor(3);
+    yield* scene.shufflingColors(true, fast, 5);
+    yield* scene.sendGraph('verifier', fast ? 0.5 : 1);
+
+    if (i == 0) {
+      yield* waitFor(2);
+      yield* sequence(
+        0.1,
+        graphLayout.opacity(1, 1),
+        scene.verifierRef().expression('evil', 0),
+      );
+    }
     yield* sequence(
       fast ? 0.2 : 0.3,
       scene.graphRef().pointAtEdge(e as [string, string], undefined, fast ? 0.7 : 1),
@@ -172,11 +178,9 @@ export default makeScene2D(function* (view) {
     yield* all(
       copy().scale(graphLayout.scale, fast ? 0.7 : 1),
       copy().absolutePosition(graphLayout.absolutePosition, fast ? 0.7 : 1),
-      delay(fast ? 0.4 : 0.6, scene.graphRef().lockVertices(e, fast ? 0.6 : 1)),
-      delay(0.2, scene.sendGraph('prover', 0.5)),
+      delay(fast ? 0.4 : 2, scene.graphRef().lockVertices(e, fast ? 0.6 : 1)),
+      delay(fast ? 0.2 : 2, scene.sendGraph('prover', fast ? 0.5 : 1)),
     );
-    yield* scene.shufflingColors(true, true);
-    yield* scene.sendGraph('verifier', 0.5);
   }
 
   yield* waitFor(3);
