@@ -327,7 +327,7 @@ export class ProtocolScene {
     this.containerRef().add(
       <MyTxt
         ref={this.globalText}
-        position={new Vector2(0, -425)}
+        position={new Vector2(0, -450)}
         fontSize={128}
         fill={who == 'prover' ? Solarized.proverText : Solarized.verifierText}
         zIndex={-1}

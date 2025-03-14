@@ -10,6 +10,7 @@ export default makeScene2D(function* (view) {
   const logger = useLogger();
 
   const scene = new ProtocolScene(view);
+  shift(scene.containerRef(), new Vector2(0, 50));
 
   yield* scene.setup('prover', false);
 

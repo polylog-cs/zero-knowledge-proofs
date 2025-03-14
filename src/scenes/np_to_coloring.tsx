@@ -136,7 +136,7 @@ export default makeScene2D(function* (view) {
   let logger = useLogger();
 
   let zoomOutFactor = 10;
-  let duration = 3;
+  let duration = 7;
 
   let vertexAppearAnimations = [];
   let vertexRefs: Reference<Circle>[] = [imageCircle];
@@ -335,7 +335,7 @@ export default makeScene2D(function* (view) {
         view.height(view.height() * zoomOutFactor, duration),
       ),
     ),
-    delay(1 + duration - 1, smbge().opacity(1, 1)),
+    delay(duration, smbge().opacity(1, 1)),
   );
 
   yield* waitFor(10);
