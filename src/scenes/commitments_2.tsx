@@ -227,7 +227,9 @@ export default makeScene2D(function* (view) {
   }
 
   yield* all(...textRefs.map((r) => changeText(r, ' ')));
-  yield* waitFor(1);
+  yield* waitFor(0.5);
+  prover().expression('evil');
+  yield* waitFor(0.5);
 
   yield* all(
     changeText(textRefs[0], `hash(${color}${salt}) = ${hash}`),

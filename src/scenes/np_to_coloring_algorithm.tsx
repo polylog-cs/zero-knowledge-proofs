@@ -119,7 +119,7 @@ export default makeScene2D(function* (view) {
     yield* waitFor(5);
     yield* inputsContainer().x(
       inputsContainer().width() / 2 + 100,
-      it == 0 ? 3 : 2,
+      it == 0 ? 4 : 3,
       linear,
     );
 

@@ -2,7 +2,7 @@ import { CubicBezier, Layout, Line, makeScene2D, Rect } from '@motion-canvas/2d'
 import { createRef, Vector2 } from '@motion-canvas/core';
 import { all, delay, sequence, waitFor } from '@motion-canvas/core/lib/flow';
 
-import { Solarized } from '../utilities';
+import { indicate, Solarized } from '../utilities';
 import { exampleGraphData, Graph } from '../utilities_graph';
 import { absoluteToViewSpace, alignTo, nextTo, shift } from '../utilities_moving';
 import { clues, solution, Sudoku } from '../utilities_sudoku';
@@ -36,7 +36,9 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1);
 
   yield* all(swatchRef().opacity(0, 1), g.applyColors());
-  yield* waitFor(2);
+  yield* waitFor(0.5);
+  yield* all(...exampleGraphData.labels.map((v) => indicate(g.getVertex(v), 1.2)));
+  yield* waitFor(0.4);
   yield* sequence(
     0.8,
     g.pointAtVertexLooping('B', 45, 1.5),
