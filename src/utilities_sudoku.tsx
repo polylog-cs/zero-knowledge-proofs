@@ -321,7 +321,7 @@ export class Sudoku {
   *fillInNonClues(blurValue: number) {
     const random = useRandom();
     yield* sequence(
-      0.03, // Delay between each cell being filled
+      0.02, // Delay between each cell being filled
       ...this.cells
         .flat()
         .map((cell, index) => {

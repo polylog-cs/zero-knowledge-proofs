@@ -1,9 +1,12 @@
 import { Camera, Layout, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
 import {
   all,
+  chain,
   createRef,
   delay,
+  easeInCubic,
   easeInElastic,
+  easeOutCubic,
   easeOutElastic,
   Random,
   waitFor,
@@ -34,7 +37,6 @@ export default makeScene2D(function* (view) {
   // Create Sudoku instance
   const sudoku = new Sudoku(9, 95, solution, clues);
   const sudokuNode = sudoku.getLayout();
-  sudokuNode.position([0, -400]);
 
   const camera = createRef<Camera>();
   // Not sure why, but elements added later to the camera view
@@ -44,27 +46,43 @@ export default makeScene2D(function* (view) {
   // Add Sudoku layout to the view
   view.add(
     <Camera ref={camera}>
-      <Layout ref={outer}>{sudokuNode}</Layout>
+      <Layout ref={outer}></Layout>
     </Camera>,
   );
+  // Blurring doesn't work when the node is in the Layout, idk why
+  view.add(sudokuNode);
+  sudokuNode.position([0, -400]);
 
   // Fill in non-clue cells with initial blur effect
-  yield* sudoku.fillInNonClues(8);
+  yield* sudoku.fillInNonClues(10);
 
   yield* waitFor(1);
 
   yield* sudoku.setBlur(0);
 
+  yield* waitFor(1);
+
   const textMapping = ['⭐️', '❤️', '🍊', '🧠', '🙆‍♀️', '🧤', '🎩', '🦋', '🫖'];
   for (let c = 1; c <= 9; c++) {
+    const curAnims = [];
+    const stepTime = Math.min(0.3, 1 / c);
+
     for (let i = 0; i < sudoku.cells.length; i++) {
       for (let j = 0; j < sudoku.cells[i].length; j++) {
         if (solution[i][j] === c) {
-          sudoku.cells[i][j].textRef().text(textMapping[c - 1]);
+          const textNode = sudoku.cells[i][j].textRef();
+          curAnims.push(
+            chain(
+              textNode.scale(0, 0.5 * stepTime, easeInCubic),
+              textNode.text(textMapping[c - 1], 0),
+              textNode.scale(1, 0.5 * stepTime, easeOutCubic),
+            ),
+          );
+          // sudoku.cells[i][j].textRef().text(textMapping[c - 1]);
         }
       }
     }
-    yield* waitFor(1 / c);
+    yield* all(...curAnims, waitFor(1 / c));
   }
 
   yield* waitFor(1);
@@ -79,6 +97,9 @@ export default makeScene2D(function* (view) {
   const hidingRectRefs = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, () => createRef<Rect>()),
   );
+
+  sudokuNode.reparent(outer());
+  sudokuNode.position([0, -400]);
 
   const rng = new Random(1451);
 
@@ -155,8 +176,11 @@ export default makeScene2D(function* (view) {
   yield* revealRect(3, 0, 5, 2, 1);
   yield* waitFor(0.5);
 
+  // Zoom top center
   yield* all(camera().centerOn(sudokuToAbsolute([4.5, 3]), 1.5), camera().zoom(3, 1.5));
+  yield* waitFor(1);
 
+  // Zoom bottom left, show grid with a mistake
   sudoku.cells[7][0].textRef().text(textMapping[0]);
 
   const timeRezoom = 2.5;
@@ -169,5 +193,10 @@ export default makeScene2D(function* (view) {
   );
 
   yield* waitFor(3);
-  yield* revealRect(0, 0, 8, 8, 5);
+  const timeBRoll = 10;
+  yield* all(
+    camera().zoom(1, timeBRoll),
+    camera().position([1, 1], timeBRoll),
+    delay(1, revealRect(0, 0, 8, 8, timeBRoll)),
+  );
 });
