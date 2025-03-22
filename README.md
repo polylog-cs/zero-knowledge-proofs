@@ -1,5 +1,7 @@
 # Zero-knowledge proofs
 
+Animations for our video, "[I can prove I’ve solved this Sudoku without revealing it](https://www.youtube.com/watch?v=Otvcbw6k4eo)".
+
 ## Motion Canvas
 
 To run the animations, run
