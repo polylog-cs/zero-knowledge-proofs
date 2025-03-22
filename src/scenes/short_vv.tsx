@@ -1,71 +1,16 @@
-import {
-  Circle,
-  Img,
-  Layout,
-  Line,
-  makeScene2D,
-  Node,
-  Rect,
-  Txt,
-} from '@motion-canvas/2d';
+import { Camera, Layout, makeScene2D, Rect, Txt } from '@motion-canvas/2d';
 import {
   all,
-  chain,
   createRef,
-  createRefMap,
   delay,
+  easeInElastic,
   easeOutElastic,
   Random,
-  sequence,
-  Vector2,
   waitFor,
 } from '@motion-canvas/core';
 
-import minePath from '../assets/images/minesweeper.png';
-import tuxPath from '../assets/images/tux_hacked.png';
-import { MarioAlgorithm } from '../components/mario_algorithm';
-import { fontSize, Solarized } from '../utilities';
-import { exampleGraphData, Graph } from '../utilities_graph';
+import { Solarized } from '../utilities';
 import { clues, solution, Sudoku } from '../utilities_sudoku';
-import { MyLatex } from '../utilities_text';
-import discussion_3 from './discussion_3';
-
-/**
- * The original easeInOutCubic function
- * @param t - Input value between 0 and 1
- * @returns Eased value between 0 and 1
- */
-function easeInOutCubic(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
-/**
- * Inverse function of easeInOutCubic
- * @param y - Eased value between 0 and 1
- * @returns Original input value between 0 and 1
- */
-function inverseEaseInOutCubic(y: number): number {
-  // Ensure input is in valid range
-  if (y < 0 || y > 1) {
-    throw new Error('Input must be between 0 and 1');
-  }
-
-  // For the first half (y < 0.5), we need to solve: y = 4 * t * t * t
-  if (y < 0.5) {
-    // Solving cubic equation: 4t³ = y
-    // t = ∛(y/4)
-    return Math.cbrt(y / 4);
-  }
-  // For the second half (y >= 0.5), we need to solve: y = 1 - Math.pow(-2 * t + 2, 3) / 2
-  else {
-    // Rearranging: 1 - y = Math.pow(-2 * t + 2, 3) / 2
-    // 2(1 - y) = Math.pow(-2 * t + 2, 3)
-    // ∛(2(1 - y)) = -2 * t + 2
-    // -∛(2(1 - y)) + 2 = 2 * t
-    // (-∛(2(1 - y)) + 2) / 2 = t
-    return (-Math.cbrt(2 * (1 - y)) + 2) / 2;
-  }
-}
 
 /**
  * Inverse of easeInOutQuad
@@ -73,24 +18,13 @@ function inverseEaseInOutCubic(y: number): number {
  * @returns Original input value between 0 and 1
  */
 function inverseEaseInOutQuad(y: number): number {
-  // Ensure input is in valid range
   if (y < 0 || y > 1) {
     throw new Error('Input must be between 0 and 1');
   }
 
-  // For the first half (y < 0.5), we need to solve: y = 2 * t * t
   if (y < 0.5) {
-    // Solving: y = 2t²
-    // t = √(y/2)
     return Math.sqrt(y / 2);
-  }
-  // For the second half (y >= 0.5), we need to solve: y = 1 - Math.pow(-2 * t + 2, 2) / 2
-  else {
-    // Rearranging: 1 - y = Math.pow(-2 * t + 2, 2) / 2
-    // 2(1 - y) = Math.pow(-2 * t + 2, 2)
-    // √(2(1 - y)) = -2 * t + 2
-    // -√(2(1 - y)) + 2 = 2 * t
-    // (-√(2(1 - y)) + 2) / 2 = t
+  } else {
     return (-Math.sqrt(2 * (1 - y)) + 2) / 2;
   }
 }
@@ -102,8 +36,17 @@ export default makeScene2D(function* (view) {
   const sudokuNode = sudoku.getLayout();
   sudokuNode.position([0, -400]);
 
+  const camera = createRef<Camera>();
+  // Not sure why, but elements added later to the camera view
+  // don't appear unless I use this extra layout and add them here.
+  const outer = createRef<Layout>();
+
   // Add Sudoku layout to the view
-  view.add(sudokuNode);
+  view.add(
+    <Camera ref={camera}>
+      <Layout ref={outer}>{sudokuNode}</Layout>
+    </Camera>,
+  );
 
   // Fill in non-clue cells with initial blur effect
   yield* sudoku.fillInNonClues(8);
@@ -126,26 +69,12 @@ export default makeScene2D(function* (view) {
 
   yield* waitFor(1);
 
-  const rectRefs = createRefMap<Rect>();
-
   const sudokuToAbsolute = (pos: [number, number]) => {
     return sudoku
       .layoutRef()
       .topLeft()
       .add([sudoku.cellSize * pos[0], sudoku.cellSize * pos[1]]);
   };
-
-  view.add(
-    <>
-      <Rect
-        ref={rectRefs.a}
-        size={[sudoku.cellSize, sudoku.cellSize]}
-        topLeft={sudokuToAbsolute([0, 0])}
-        stroke={Solarized.red}
-        lineWidth={0}
-      />
-    </>,
-  );
 
   const hidingRectRefs = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, () => createRef<Rect>()),
@@ -159,7 +88,7 @@ export default makeScene2D(function* (view) {
         sudoku.cellSize / 2,
         sudoku.cellSize / 2,
       ]);
-      view.add(
+      outer().add(
         <Rect
           ref={hidingRectRefs[i][j]}
           size={[sudoku.cellSize * 0.9, sudoku.cellSize * 0.8]}
@@ -167,7 +96,7 @@ export default makeScene2D(function* (view) {
           fill={Solarized.yellow}
           stroke={Solarized.yellow}
           lineWidth={0}
-          rotation={rng.nextFloat(-10, 10)}
+          rotation={rng.nextFloat(-5, 5)}
           scale={0}
         >
           <Txt
@@ -182,22 +111,63 @@ export default makeScene2D(function* (view) {
   }
 
   const progress = (i: number, j: number) => {
-    const rawProgress = (i: number, j: number)  => i * 0.7 + j;
+    const rawProgress = (i: number, j: number) => i * 0.7 + j;
     const maxProgress = rawProgress(8, 8);
     return inverseEaseInOutQuad(0.05 + (rawProgress(i, j) / maxProgress) * 0.9);
   };
 
+  const revealRect = (
+    i1: number,
+    j1: number,
+    i2: number,
+    j2: number,
+    totalDelay: number,
+  ) => {
+    return all(
+      ...hidingRectRefs
+        .map((row, i) =>
+          row.map((ref, j) => {
+            const isOut = i < i1 || i > i2 || j < j1 || j > j2;
+            return delay(
+              progress(i, j) * totalDelay,
+              ref().scale(isOut ? 1 : 0, 0.5, isOut ? easeOutElastic : easeInElastic),
+            );
+          }),
+        )
+        .flat(),
+    );
+  };
+
+  const hideAll = (totalDelay: number) => {
+    return revealRect(-1, -1, -1, -1, totalDelay);
+  };
+
+  yield* hideAll(2);
+  yield* waitFor(1);
+
+  // Row
+  yield* revealRect(0, 2, 8, 2, 1);
+  yield* waitFor(1);
+  // Column
+  yield* revealRect(5, 0, 5, 8, 1);
+  yield* waitFor(0.5);
+  // Box
+  yield* revealRect(3, 0, 5, 2, 1);
+  yield* waitFor(0.5);
+
+  yield* all(camera().centerOn(sudokuToAbsolute([4.5, 3]), 1.5), camera().zoom(3, 1.5));
+
+  sudoku.cells[7][0].textRef().text(textMapping[0]);
+
+  const timeRezoom = 2.5;
   yield* all(
-    ...hidingRectRefs
-      .map((row, i) =>
-        row.map((ref, j) =>
-          delay(progress(i, j) * 2, ref().scale(1, 0.6, easeOutElastic)),
-        ),
-      )
-      .flat(),
+    camera().centerOn(sudokuToAbsolute([1.5, 7 + 2]), timeRezoom),
+    revealRect(0, 6, 2, 8, timeRezoom),
+    camera()
+      .zoom(2, timeRezoom / 2)
+      .to(3, timeRezoom / 2),
   );
 
-  yield* rectRefs.a().lineWidth(3, 1);
-
   yield* waitFor(3);
+  yield* revealRect(0, 0, 8, 8, 5);
 });
