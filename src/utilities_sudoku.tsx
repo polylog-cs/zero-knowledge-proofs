@@ -1,4 +1,4 @@
-import { Layout, Rect, Txt } from '@motion-canvas/2d';
+import { blur, Circle, Layout, Rect, Txt } from '@motion-canvas/2d';
 import {
   all,
   createRef,
@@ -302,12 +302,12 @@ export class Sudoku {
               >
                 <Txt
                   ref={this.cells[i][j].textRef}
-                  fontSize={48}
+                  fontSize={0.75 * this.cellSize}
                   fill={Solarized.gray}
                   opacity={this.clues[i][j] === 1 ? 1 : 0} // Show only clues initially
                   text={this.clues[i][j] === 1 ? `${value}` : ''}
-                  fontFamily={FONT_FAMILY}
-                  //filters={[blur(this.cells[i][j].blurSignal)]} // Apply blur filter
+                  fontFamily={'Helvetica Neue'}
+                  filters={[blur(this.cells[i][j].blurSignal)]} // Apply blur filter
                 />
               </Rect>
             ))}
@@ -342,16 +342,14 @@ export class Sudoku {
     );
   }
 
-  // Method to apply blur to all non-clue cells
-  *blur_nonClues(blurValue: number) {
+  *setBlur(blurValue: number, onlyNonClues: boolean = true) {
     yield* all(
       ...this.cells
         .flat()
         .map((cell, index) => {
           const row = Math.floor(index / this.gridSize);
           const col = index % this.gridSize;
-          if (this.clues[row][col] === 0) {
-            // Only blur non-clues
+          if (!onlyNonClues || this.clues[row][col] === 0) {
             return cell.blurSignal(blurValue, 0.5); // Set blur to specified value
           }
         })

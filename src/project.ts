@@ -8,6 +8,7 @@ import discussion_1_fix from './scenes/discussion_1_fix?scene';
 import discussion_1 from './scenes/discussion_1?scene';
 import discussion_2 from './scenes/discussion_2?scene';
 import discussion_3 from './scenes/discussion_3?scene';
+import full_protocol from './scenes/full_protocol?scene';
 import graph_coloring from './scenes/graph_coloring?scene';
 import mario_big_graph from './scenes/mario_big_graph?scene';
 import np_to_coloring_algorithm from './scenes/np_to_coloring_algorithm?scene';
@@ -17,6 +18,7 @@ import np_to_coloring from './scenes/np_to_coloring?scene';
 import phone from './scenes/phone?scene';
 import polylogo from './scenes/polylogo?scene';
 import reductions from './scenes/reductions?scene';
+import short_vv from './scenes/short_vv?scene';
 import sudoku_reduction from './scenes/sudoku_reduction?scene';
 import teacher_failing from './scenes/teacher_failing?scene';
 import teacher_fixup from './scenes/teacher_fixup?scene';
@@ -26,12 +28,11 @@ import timeline from './scenes/timeline?scene';
 
 import './global.css';
 
-import full_protocol from './scenes/full_protocol?scene';
-
 export default makeProject({
   experimentalFeatures: true,
   scenes: [
-    polylogo,
+    short_vv,
+    // polylogo,
     // teacher_failing, // TODO: malý crf
     // teacher, // TODO: malý crf
     // teacher_fixup, // TODO: malý crf
@@ -40,7 +41,7 @@ export default makeProject({
     // building_the_protocol_1, // TODO: malý crf
     // building_the_protocol_2, // TODO: malý crf
     // discussion_1,
-    discussion_1_fix, // TODO: render po pushi
+    // discussion_1_fix, // TODO: render po pushi
     // discussion_2,  // TODO: tohle je broken??
     // discussion_3,
     // commitments_1,
