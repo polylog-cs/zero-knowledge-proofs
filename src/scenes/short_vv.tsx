@@ -35,7 +35,7 @@ function inverseEaseInOutQuad(y: number): number {
 export default makeScene2D(function* (view) {
   view.fill(Solarized.base2);
   // Create Sudoku instance
-  const sudoku = new Sudoku(9, 95, solution, clues);
+  const sudoku = new Sudoku(9, 92, solution, clues);
   const sudokuNode = sudoku.getLayout();
 
   const camera = createRef<Camera>();
@@ -58,33 +58,49 @@ export default makeScene2D(function* (view) {
 
   yield* waitFor(1);
 
-  yield* sudoku.setBlur(0);
+  const xOffset = sudoku.cellSize;
+  yield* all(sudoku.setBlur(0), sudokuNode.position([-xOffset, -400], 1));
+
+  sudokuNode.reparent(outer());
+  // Pass the x offset to outer
+  outer().position([-xOffset, 0]);
+  sudokuNode.position([0, -400]);
 
   yield* waitFor(1);
 
   const textMapping = ['⭐️', '❤️', '🍊', '🧠', '🙆‍♀️', '🧤', '🎩', '🦋', '🫖'];
-  for (let c = 1; c <= 9; c++) {
-    const curAnims = [];
-    const stepTime = Math.min(0.3, 1 / c);
 
-    for (let i = 0; i < sudoku.cells.length; i++) {
-      for (let j = 0; j < sudoku.cells[i].length; j++) {
-        if (solution[i][j] === c) {
-          const textNode = sudoku.cells[i][j].textRef();
-          curAnims.push(
-            chain(
-              textNode.scale(0, 0.5 * stepTime, easeInCubic),
-              textNode.text(textMapping[c - 1], 0),
-              textNode.scale(1, 0.5 * stepTime, easeOutCubic),
-            ),
-          );
-          // sudoku.cells[i][j].textRef().text(textMapping[c - 1]);
+  const remapNumbers = function* (forward: boolean, stepwise: boolean) {
+    const anims = [];
+    let totalWaitTime = 0;
+
+    for (let c = 1; c <= 9; c++) {
+      const curAnims = [];
+      const stepTime = stepwise ? Math.min(0.3, 1 / c) : 1;
+
+      for (let i = 0; i < sudoku.cells.length; i++) {
+        for (let j = 0; j < sudoku.cells[i].length; j++) {
+          if (solution[i][j] === c) {
+            const textNode = sudoku.cells[i][j].textRef();
+            curAnims.push(
+              chain(
+                textNode.scale(0, 0.5 * stepTime, easeInCubic),
+                textNode.text(forward ? textMapping[c - 1] : c + '', 0),
+                textNode.scale(1, 0.5 * stepTime, easeOutCubic),
+              ),
+            );
+            // sudoku.cells[i][j].textRef().text(textMapping[c - 1]);
+          }
         }
       }
-    }
-    yield* all(...curAnims, waitFor(1 / c));
-  }
 
+      anims.push(delay(totalWaitTime, all(...curAnims)));
+      totalWaitTime += stepwise ? stepTime : 0;
+    }
+    yield* all(...anims);
+  };
+
+  yield* remapNumbers(true, true);
   yield* waitFor(1);
 
   const sudokuToAbsolute = (pos: [number, number]) => {
@@ -97,9 +113,6 @@ export default makeScene2D(function* (view) {
   const hidingRectRefs = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, () => createRef<Rect>()),
   );
-
-  sudokuNode.reparent(outer());
-  sudokuNode.position([0, -400]);
 
   const rng = new Random(1451);
 
@@ -164,6 +177,7 @@ export default makeScene2D(function* (view) {
   };
 
   yield* hideAll(2);
+  yield* outer().position([xOffset, 0], 1);
   yield* waitFor(1);
 
   // Row
@@ -177,7 +191,16 @@ export default makeScene2D(function* (view) {
   yield* waitFor(0.5);
 
   // Zoom top center
-  yield* all(camera().centerOn(sudokuToAbsolute([4.5, 3]), 1.5), camera().zoom(3, 1.5));
+  yield* all(
+    outer().position([0, 0], 1),
+    camera().centerOn(sudokuToAbsolute([4.5, 3]), 1.5),
+    camera().zoom(3, 1.5),
+  );
+  yield* waitFor(1);
+
+  yield* remapNumbers(false, false);
+  yield* waitFor(1);
+  yield* remapNumbers(true, false);
   yield* waitFor(1);
 
   // Zoom bottom left, show grid with a mistake
